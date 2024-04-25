@@ -1,0 +1,16 @@
+{
+	"name": "JSON_Invoices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_Bondura_Invoices",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": ""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,9 @@
+{
+	"name": "Bondura-SAP",
+	"location": "norwayeast",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "fcfdb908-cdcf-49e1-a5f7-c314080098ea",
+		"tenantId": "44bb8895-fe47-42e3-b8d6-04104af43346"
+	}
+}

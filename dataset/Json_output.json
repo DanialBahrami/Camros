@@ -1,0 +1,19 @@
+{
+	"name": "Json_output",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_json",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "bondura"
+			}
+		},
+		"schema": {}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

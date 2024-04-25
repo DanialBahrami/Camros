@@ -1,0 +1,17 @@
+{
+	"name": "DestinationDataset_vmk",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbr",
+			"table": "invoices"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

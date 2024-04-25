@@ -1,0 +1,13 @@
+{
+	"name": "RestResource_loop",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_orders",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "JsonFlatten",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Invoices_Historical"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

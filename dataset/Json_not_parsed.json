@@ -1,0 +1,16 @@
+{
+	"name": "Json_not_parsed",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": ""
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

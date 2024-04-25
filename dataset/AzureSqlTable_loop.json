@@ -1,0 +1,17 @@
+{
+	"name": "AzureSqlTable_loop",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Orders_Dump"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,12 @@
+{
+	"name": "AzureSqlDatabase_Bondura",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=db-server-bondura.database.windows.net;initial catalog=db-sql-bondura;user id=dbadmin",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEE2RjE4ODEyLTg5N0YtNDhFNS1CMDVDLTI1RUFCNDA3NjkyRF9lZGVjMTIxMC0wZjQ5LTQ0OGQtOTNhZi04MmZlZGQwYmM1YjAiDQp9"
+		}
+	}
+}

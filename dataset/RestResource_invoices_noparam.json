@@ -1,0 +1,13 @@
+{
+	"name": "RestResource_invoices_noparam",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_Bondura_Invoices",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

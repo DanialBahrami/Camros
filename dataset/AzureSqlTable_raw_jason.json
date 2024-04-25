@@ -1,0 +1,31 @@
+{
+	"name": "AzureSqlTable_raw_jason",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "@odata.count",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "@odata.context",
+				"type": "nvarchar"
+			},
+			{
+				"name": "@odata.nextLink",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "autoInvoices"
+		}
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
