@@ -1,0 +1,16 @@
+{
+	"name": "AzureSqlTable_all_src",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "invoices_all_src"
+		}
+	}
+}

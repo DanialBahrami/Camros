@@ -44,8 +44,7 @@
 									"tableOption": "autoCreate"
 								},
 								"enableStaging": false,
-								"enableSkipIncompatibleRow": true,
-								"validateDataConsistency": false
+								"enableSkipIncompatibleRow": true
 							},
 							"inputs": [
 								{
@@ -53,15 +52,6 @@
 									"type": "DatasetReference",
 									"parameters": {
 										"cw_path": "@item().source.path"
-									}
-								}
-							],
-							"outputs": [
-								{
-									"referenceName": "DestinationDataset_oap",
-									"type": "DatasetReference",
-									"parameters": {
-										"cw_table": "@item().destination.table"
 									}
 								}
 							]

@@ -4250,12 +4250,6 @@
 						"referenceName": "JSON_Invoices",
 						"type": "DatasetReference"
 					}
-				],
-				"outputs": [
-					{
-						"referenceName": "SqlTable_Invoices",
-						"type": "DatasetReference"
-					}
 				]
 			}
 		],
