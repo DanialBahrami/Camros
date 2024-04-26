@@ -1,0 +1,12 @@
+{
+	"name": "RestResource_orders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_orders",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}

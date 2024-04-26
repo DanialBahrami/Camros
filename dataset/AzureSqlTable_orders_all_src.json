@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "Orders_Dump"
+			"table": "orders_all_src"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
