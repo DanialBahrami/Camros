@@ -333,7 +333,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Orders_Dump"
+					"table": "orders_all_src"
 				}
 			},
 			"dependsOn": [
@@ -2091,12 +2091,12 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_param')]",
+			"name": "[concat(parameters('factoryName'), '/RestResource_orders')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"linkedServiceName": {
-					"referenceName": "RestService_bondura",
+					"referenceName": "RestService_orders",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],
@@ -2105,7 +2105,7 @@
 				"schema": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/RestService_bondura')]"
+				"[concat(variables('factoryId'), '/linkedServices/RestService_orders')]"
 			]
 		}
 	]

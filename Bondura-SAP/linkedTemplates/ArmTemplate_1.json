@@ -13,6 +13,22 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_param')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/SourceDataset_oap')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -527,15 +543,19 @@
 						"userProperties": [],
 						"typeProperties": {
 							"source": {
-								"type": "AzureSqlSource",
+								"type": "RestSource",
 								"additionalColumns": [
 									{
 										"name": "m_ds",
 										"value": "Bondura"
 									}
 								],
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"QueryParameters.{skip}": "RANGE:0:8217:1"
+								}
 							},
 							"sink": {
 								"type": "AzureSqlSink",
@@ -564,7 +584,7 @@
 										},
 										"sink": {
 											"name": "DocNum",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -573,7 +593,7 @@
 										},
 										"sink": {
 											"name": "DocDate",
-											"type": "Date"
+											"type": "DateTime"
 										}
 									},
 									{
@@ -582,7 +602,7 @@
 										},
 										"sink": {
 											"name": "DocDueDate",
-											"type": "Date"
+											"type": "DateTime"
 										}
 									},
 									{
@@ -591,7 +611,7 @@
 										},
 										"sink": {
 											"name": "CardCode",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -684,17 +704,12 @@
 											"type": "String"
 										}
 									}
-								],
-								"typeConversion": true,
-								"typeConversionSettings": {
-									"allowDataTruncation": true,
-									"treatBooleanAsNumber": false
-								}
+								]
 							}
 						},
 						"inputs": [
 							{
-								"referenceName": "AzureSqlTable_orders_all_src",
+								"referenceName": "RestResource_orders",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
