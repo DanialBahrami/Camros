@@ -1,0 +1,2112 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Bondura-SAP"
+		},
+		"AzureBlobStorage_json_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_json'"
+		},
+		"AzureSqlDatabase_Bondura_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_Bondura'"
+		},
+		"BonduraServiceLayer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BonduraServiceLayer'"
+		},
+		"BonduraServiceLayerV1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BonduraServiceLayerV1'"
+		},
+		"OData_Semantic_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'OData_Semantic'"
+		},
+		"RestService_Bondura_Invoices_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_Bondura_Invoices'"
+		},
+		"RestService_Semantic_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_Semantic'"
+		},
+		"RestService_bondura_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bondura'"
+		},
+		"RestService_orders_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_orders'"
+		},
+		"SapEcc_Bondura_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
+		},
+		"BonduraServiceLayer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"BonduraServiceLayer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"BonduraServiceLayerV1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"BonduraServiceLayerV1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"OData_Semantic_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/sml.svc/SalesAnalysisQuery"
+		},
+		"OData_Semantic_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_Bondura_Invoices_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices?$count=true&$top=1&$skip={skip}"
+		},
+		"RestService_Bondura_Invoices_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_Semantic_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/sml.svc/SalesAnalysisQuery"
+		},
+		"RestService_Semantic_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bondura_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"RestService_bondura_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_orders_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$top=1&$skip={skip}"
+		},
+		"RestService_orders_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"SapEcc_Bondura_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"SapEcc_Bondura_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureBlobStorage_json')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureBlobStorage_json_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase_Bondura')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('AzureSqlDatabase_Bondura_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BonduraServiceLayer')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Conncection to Bondura OData REST APIs",
+				"annotations": [],
+				"type": "OData",
+				"typeProperties": {
+					"url": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]",
+					"authenticationType": "Basic",
+					"userName": "[parameters('BonduraServiceLayer_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('BonduraServiceLayer_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BonduraServiceLayerV1')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "OData",
+				"typeProperties": {
+					"url": "[parameters('BonduraServiceLayerV1_properties_typeProperties_url')]",
+					"authenticationType": "Basic",
+					"userName": "[parameters('BonduraServiceLayerV1_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('BonduraServiceLayerV1_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/OData_Semantic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "OData",
+				"typeProperties": {
+					"url": "[parameters('OData_Semantic_properties_typeProperties_url')]",
+					"authenticationType": "Basic",
+					"userName": "[parameters('OData_Semantic_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('OData_Semantic_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_Bondura_Invoices')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_Bondura_Invoices_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_Bondura_Invoices_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_Bondura_Invoices_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_Semantic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_Semantic_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_Semantic_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_Semantic_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_bondura')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_bondura_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_bondura_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_bondura_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_orders')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_orders_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_orders_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_orders_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SapEcc_Bondura')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SapEcc",
+				"typeProperties": {
+					"url": "[parameters('SapEcc_Bondura_properties_typeProperties_url')]",
+					"username": "[parameters('SapEcc_Bondura_properties_typeProperties_username')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('SapEcc_Bondura_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_invoives_all_src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "invoices_all_src"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_orders_all_src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Orders_Dump"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/JSON_Invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_Bondura_Invoices",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": ""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_Bondura_Invoices')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/JsonFlatten')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Invoices_Historical"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_dump')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": "data_5b9bf0fc-d291-43a4-9733-db090d193601_71638bfd-55cf-45af-910d-0b45d89c9832.json",
+						"container": "bondura"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"@odata.count": {
+							"type": "integer"
+						},
+						"@odata.context": {
+							"type": "string"
+						},
+						"value": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"@odata.etag": {
+										"type": "string"
+									},
+									"DocEntry": {
+										"type": "integer"
+									},
+									"DocNum": {
+										"type": "integer"
+									},
+									"DocType": {
+										"type": "string"
+									},
+									"HandWritten": {
+										"type": "string"
+									},
+									"Printed": {
+										"type": "string"
+									},
+									"DocDate": {
+										"type": "string"
+									},
+									"DocDueDate": {
+										"type": "string"
+									},
+									"CardCode": {
+										"type": "string"
+									},
+									"CardName": {
+										"type": "string"
+									},
+									"Address": {
+										"type": "string"
+									},
+									"NumAtCard": {
+										"type": "string"
+									},
+									"DocTotal": {
+										"type": "number"
+									},
+									"AttachmentEntry": {
+										"type": "null"
+									},
+									"DocCurrency": {
+										"type": "string"
+									},
+									"DocRate": {
+										"type": "number"
+									},
+									"Reference1": {
+										"type": "string"
+									},
+									"Reference2": {
+										"type": "null"
+									},
+									"Comments": {
+										"type": "string"
+									},
+									"JournalMemo": {
+										"type": "string"
+									},
+									"PaymentGroupCode": {
+										"type": "integer"
+									},
+									"DocTime": {
+										"type": "string"
+									},
+									"SalesPersonCode": {
+										"type": "integer"
+									},
+									"TransportationCode": {
+										"type": "integer"
+									},
+									"Confirmed": {
+										"type": "string"
+									},
+									"ImportFileNum": {
+										"type": "null"
+									},
+									"SummeryType": {
+										"type": "string"
+									},
+									"ContactPersonCode": {
+										"type": "integer"
+									},
+									"ShowSCN": {
+										"type": "string"
+									},
+									"Series": {
+										"type": "integer"
+									},
+									"TaxDate": {
+										"type": "string"
+									},
+									"PartialSupply": {
+										"type": "string"
+									},
+									"DocObjectCode": {
+										"type": "string"
+									},
+									"ShipToCode": {
+										"type": "string"
+									},
+									"Indicator": {
+										"type": "null"
+									},
+									"FederalTaxID": {
+										"type": "string"
+									},
+									"DiscountPercent": {
+										"type": "number"
+									},
+									"PaymentReference": {
+										"type": "string"
+									},
+									"CreationDate": {
+										"type": "string"
+									},
+									"UpdateDate": {
+										"type": "string"
+									},
+									"FinancialPeriod": {
+										"type": "integer"
+									},
+									"UserSign": {
+										"type": "integer"
+									},
+									"TransNum": {
+										"type": "integer"
+									},
+									"VatSum": {
+										"type": "number"
+									},
+									"VatSumSys": {
+										"type": "number"
+									},
+									"VatSumFc": {
+										"type": "number"
+									},
+									"NetProcedure": {
+										"type": "string"
+									},
+									"DocTotalFc": {
+										"type": "number"
+									},
+									"DocTotalSys": {
+										"type": "number"
+									},
+									"Form1099": {
+										"type": "null"
+									},
+									"Box1099": {
+										"type": "null"
+									},
+									"RevisionPo": {
+										"type": "string"
+									},
+									"RequriedDate": {
+										"type": "null"
+									},
+									"CancelDate": {
+										"type": "null"
+									},
+									"BlockDunning": {
+										"type": "string"
+									},
+									"Submitted": {
+										"type": "string"
+									},
+									"Segment": {
+										"type": "integer"
+									},
+									"PickStatus": {
+										"type": "string"
+									},
+									"Pick": {
+										"type": "string"
+									},
+									"PaymentMethod": {
+										"type": "string"
+									},
+									"PaymentBlock": {
+										"type": "string"
+									},
+									"PaymentBlockEntry": {
+										"type": "null"
+									},
+									"CentralBankIndicator": {
+										"type": "null"
+									},
+									"MaximumCashDiscount": {
+										"type": "string"
+									},
+									"Reserve": {
+										"type": "string"
+									},
+									"Project": {
+										"type": "null"
+									},
+									"ExemptionValidityDateFrom": {
+										"type": "null"
+									},
+									"ExemptionValidityDateTo": {
+										"type": "null"
+									},
+									"WareHouseUpdateType": {
+										"type": "string"
+									},
+									"Rounding": {
+										"type": "string"
+									},
+									"ExternalCorrectedDocNum": {
+										"type": "null"
+									},
+									"InternalCorrectedDocNum": {
+										"type": "null"
+									},
+									"NextCorrectingDocument": {
+										"type": "null"
+									},
+									"DeferredTax": {
+										"type": "string"
+									},
+									"TaxExemptionLetterNum": {
+										"type": "null"
+									},
+									"WTApplied": {
+										"type": "number"
+									},
+									"WTAppliedFC": {
+										"type": "number"
+									},
+									"BillOfExchangeReserved": {
+										"type": "string"
+									},
+									"AgentCode": {
+										"type": "null"
+									},
+									"WTAppliedSC": {
+										"type": "number"
+									},
+									"TotalEqualizationTax": {
+										"type": "number"
+									},
+									"TotalEqualizationTaxFC": {
+										"type": "number"
+									},
+									"TotalEqualizationTaxSC": {
+										"type": "number"
+									},
+									"NumberOfInstallments": {
+										"type": "integer"
+									},
+									"ApplyTaxOnFirstInstallment": {
+										"type": "string"
+									},
+									"WTNonSubjectAmount": {
+										"type": "number"
+									},
+									"WTNonSubjectAmountSC": {
+										"type": "number"
+									},
+									"WTNonSubjectAmountFC": {
+										"type": "number"
+									},
+									"WTExemptedAmount": {
+										"type": "number"
+									},
+									"WTExemptedAmountSC": {
+										"type": "number"
+									},
+									"WTExemptedAmountFC": {
+										"type": "number"
+									},
+									"BaseAmount": {
+										"type": "number"
+									},
+									"BaseAmountSC": {
+										"type": "number"
+									},
+									"BaseAmountFC": {
+										"type": "number"
+									},
+									"WTAmount": {
+										"type": "number"
+									},
+									"WTAmountSC": {
+										"type": "number"
+									},
+									"WTAmountFC": {
+										"type": "number"
+									},
+									"VatDate": {
+										"type": "null"
+									},
+									"DocumentsOwner": {
+										"type": "integer"
+									},
+									"FolioPrefixString": {
+										"type": "null"
+									},
+									"FolioNumber": {
+										"type": "null"
+									},
+									"DocumentSubType": {
+										"type": "string"
+									},
+									"BPChannelCode": {
+										"type": "null"
+									},
+									"BPChannelContact": {
+										"type": "null"
+									},
+									"Address2": {
+										"type": "string"
+									},
+									"DocumentStatus": {
+										"type": "string"
+									},
+									"PeriodIndicator": {
+										"type": "string"
+									},
+									"PayToCode": {
+										"type": "string"
+									},
+									"ManualNumber": {
+										"type": "null"
+									},
+									"UseShpdGoodsAct": {
+										"type": "string"
+									},
+									"IsPayToBank": {
+										"type": "string"
+									},
+									"PayToBankCountry": {
+										"type": "null"
+									},
+									"PayToBankCode": {
+										"type": "null"
+									},
+									"PayToBankAccountNo": {
+										"type": "null"
+									},
+									"PayToBankBranch": {
+										"type": "null"
+									},
+									"BPL_IDAssignedToInvoice": {
+										"type": "null"
+									},
+									"DownPayment": {
+										"type": "number"
+									},
+									"ReserveInvoice": {
+										"type": "string"
+									},
+									"LanguageCode": {
+										"type": "integer"
+									},
+									"TrackingNumber": {
+										"type": "null"
+									},
+									"PickRemark": {
+										"type": "string"
+									},
+									"ClosingDate": {
+										"type": "null"
+									},
+									"SequenceCode": {
+										"type": "null"
+									},
+									"SequenceSerial": {
+										"type": "null"
+									},
+									"SeriesString": {
+										"type": "null"
+									},
+									"SubSeriesString": {
+										"type": "null"
+									},
+									"SequenceModel": {
+										"type": "string"
+									},
+									"UseCorrectionVATGroup": {
+										"type": "string"
+									},
+									"TotalDiscount": {
+										"type": "number"
+									},
+									"DownPaymentAmount": {
+										"type": "number"
+									},
+									"DownPaymentPercentage": {
+										"type": "number"
+									},
+									"DownPaymentType": {
+										"type": "string"
+									},
+									"DownPaymentAmountSC": {
+										"type": "number"
+									},
+									"DownPaymentAmountFC": {
+										"type": "number"
+									},
+									"VatPercent": {
+										"type": "number"
+									},
+									"ServiceGrossProfitPercent": {
+										"type": "null"
+									},
+									"OpeningRemarks": {
+										"type": "string"
+									},
+									"ClosingRemarks": {
+										"type": "string"
+									},
+									"RoundingDiffAmount": {
+										"type": "number"
+									},
+									"RoundingDiffAmountFC": {
+										"type": "number"
+									},
+									"RoundingDiffAmountSC": {
+										"type": "number"
+									},
+									"Cancelled": {
+										"type": "string"
+									},
+									"SignatureInputMessage": {
+										"type": "null"
+									},
+									"SignatureDigest": {
+										"type": "null"
+									},
+									"CertificationNumber": {
+										"type": "null"
+									},
+									"PrivateKeyVersion": {
+										"type": "null"
+									},
+									"ControlAccount": {
+										"type": "string"
+									},
+									"InsuranceOperation347": {
+										"type": "string"
+									},
+									"ArchiveNonremovableSalesQuotation": {
+										"type": "string"
+									},
+									"GTSChecker": {
+										"type": "null"
+									},
+									"GTSPayee": {
+										"type": "null"
+									},
+									"ExtraMonth": {
+										"type": "integer"
+									},
+									"ExtraDays": {
+										"type": "integer"
+									},
+									"CashDiscountDateOffset": {
+										"type": "integer"
+									},
+									"StartFrom": {
+										"type": "string"
+									},
+									"NTSApproved": {
+										"type": "string"
+									},
+									"ETaxWebSite": {
+										"type": "null"
+									},
+									"ETaxNumber": {
+										"type": "null"
+									},
+									"NTSApprovedNumber": {
+										"type": "null"
+									},
+									"EDocGenerationType": {
+										"type": "string"
+									},
+									"EDocSeries": {
+										"type": "null"
+									},
+									"EDocNum": {
+										"type": "null"
+									},
+									"EDocExportFormat": {
+										"type": "null"
+									},
+									"EDocStatus": {
+										"type": "string"
+									},
+									"EDocErrorCode": {
+										"type": "null"
+									},
+									"EDocErrorMessage": {
+										"type": "null"
+									},
+									"DownPaymentStatus": {
+										"type": "string"
+									},
+									"GroupSeries": {
+										"type": "null"
+									},
+									"GroupNumber": {
+										"type": "null"
+									},
+									"GroupHandWritten": {
+										"type": "string"
+									},
+									"ReopenOriginalDocument": {
+										"type": "null"
+									},
+									"ReopenManuallyClosedOrCanceledDocument": {
+										"type": "null"
+									},
+									"CreateOnlineQuotation": {
+										"type": "string"
+									},
+									"POSEquipmentNumber": {
+										"type": "null"
+									},
+									"POSManufacturerSerialNumber": {
+										"type": "null"
+									},
+									"POSCashierNumber": {
+										"type": "null"
+									},
+									"ApplyCurrentVATRatesForDownPaymentsToDraw": {
+										"type": "string"
+									},
+									"ClosingOption": {
+										"type": "string"
+									},
+									"SpecifiedClosingDate": {
+										"type": "null"
+									},
+									"OpenForLandedCosts": {
+										"type": "string"
+									},
+									"AuthorizationStatus": {
+										"type": "string"
+									},
+									"TotalDiscountFC": {
+										"type": "number"
+									},
+									"TotalDiscountSC": {
+										"type": "number"
+									},
+									"RelevantToGTS": {
+										"type": "string"
+									},
+									"BPLName": {
+										"type": "null"
+									},
+									"VATRegNum": {
+										"type": "null"
+									},
+									"AnnualInvoiceDeclarationReference": {
+										"type": "null"
+									},
+									"Supplier": {
+										"type": "null"
+									},
+									"Releaser": {
+										"type": "null"
+									},
+									"Receiver": {
+										"type": "null"
+									},
+									"BlanketAgreementNumber": {
+										"type": "null"
+									},
+									"IsAlteration": {
+										"type": "string"
+									},
+									"CancelStatus": {
+										"type": "string"
+									},
+									"AssetValueDate": {
+										"type": "null"
+									},
+									"InvoicePayment": {
+										"type": "string"
+									},
+									"DocumentDelivery": {
+										"type": "string"
+									},
+									"AuthorizationCode": {
+										"type": "null"
+									},
+									"StartDeliveryDate": {
+										"type": "null"
+									},
+									"StartDeliveryTime": {
+										"type": "null"
+									},
+									"EndDeliveryDate": {
+										"type": "null"
+									},
+									"EndDeliveryTime": {
+										"type": "null"
+									},
+									"VehiclePlate": {
+										"type": "null"
+									},
+									"ATDocumentType": {
+										"type": "null"
+									},
+									"ElecCommStatus": {
+										"type": "null"
+									},
+									"ElecCommMessage": {
+										"type": "null"
+									},
+									"ReuseDocumentNum": {
+										"type": "string"
+									},
+									"ReuseNotaFiscalNum": {
+										"type": "string"
+									},
+									"PrintSEPADirect": {
+										"type": "string"
+									},
+									"FiscalDocNum": {
+										"type": "null"
+									},
+									"POSDailySummaryNo": {
+										"type": "null"
+									},
+									"POSReceiptNo": {
+										"type": "null"
+									},
+									"PointOfIssueCode": {
+										"type": "null"
+									},
+									"Letter": {
+										"type": "null"
+									},
+									"FolioNumberFrom": {
+										"type": "null"
+									},
+									"FolioNumberTo": {
+										"type": "null"
+									},
+									"InterimType": {
+										"type": "string"
+									},
+									"RelatedType": {
+										"type": "integer"
+									},
+									"RelatedEntry": {
+										"type": "null"
+									},
+									"SAPPassport": {
+										"type": "null"
+									},
+									"DocumentTaxID": {
+										"type": "null"
+									},
+									"DateOfReportingControlStatementVAT": {
+										"type": "null"
+									},
+									"ReportingSectionControlStatementVAT": {
+										"type": "null"
+									},
+									"ExcludeFromTaxReportControlStatementVAT": {
+										"type": "string"
+									},
+									"POS_CashRegister": {
+										"type": "null"
+									},
+									"UpdateTime": {
+										"type": "string"
+									},
+									"CreateQRCodeFrom": {
+										"type": "null"
+									},
+									"PriceMode": {
+										"type": "null"
+									},
+									"Revision": {
+										"type": "string"
+									},
+									"OriginalRefNo": {
+										"type": "null"
+									},
+									"OriginalRefDate": {
+										"type": "null"
+									},
+									"GSTTransactionType": {
+										"type": "null"
+									},
+									"OriginalCreditOrDebitNo": {
+										"type": "null"
+									},
+									"OriginalCreditOrDebitDate": {
+										"type": "null"
+									},
+									"ECommerceOperator": {
+										"type": "null"
+									},
+									"ECommerceGSTIN": {
+										"type": "null"
+									},
+									"ShipFrom": {
+										"type": "string"
+									},
+									"CommissionTrade": {
+										"type": "string"
+									},
+									"CommissionTradeReturn": {
+										"type": "string"
+									},
+									"UseBillToAddrToDetermineTax": {
+										"type": "null"
+									},
+									"IssuingReason": {
+										"type": "integer"
+									},
+									"Cig": {
+										"type": "null"
+									},
+									"Cup": {
+										"type": "null"
+									},
+									"EDocType": {
+										"type": "string"
+									},
+									"FCEAsPaymentMeans": {
+										"type": "string"
+									},
+									"PaidToDate": {
+										"type": "number"
+									},
+									"PaidToDateFC": {
+										"type": "number"
+									},
+									"PaidToDateSys": {
+										"type": "number"
+									},
+									"BaseType": {
+										"type": "integer"
+									},
+									"BaseEntry": {
+										"type": "null"
+									},
+									"FatherCard": {
+										"type": "null"
+									},
+									"FatherType": {
+										"type": "string"
+									},
+									"ShipState": {
+										"type": "null"
+									},
+									"ShipPlace": {
+										"type": "null"
+									},
+									"CustOffice": {
+										"type": "null"
+									},
+									"FCI": {
+										"type": "null"
+									},
+									"AddLegIn": {
+										"type": "null"
+									},
+									"LegTextF": {
+										"type": "null"
+									},
+									"DANFELgTxt": {
+										"type": "null"
+									},
+									"IndFinal": {
+										"type": "string"
+									},
+									"DataVersion": {
+										"type": "integer"
+									},
+									"LastPageFolioNumber": {
+										"type": "null"
+									},
+									"U_AIG_KID": {
+										"type": "null"
+									},
+									"U_Ordrenummer": {
+										"type": "null"
+									},
+									"U_esurl": {
+										"type": "null"
+									},
+									"U_sluttkunde": {
+										"type": "null"
+									},
+									"U_Levbet": {
+										"type": "null"
+									},
+									"U_Sted": {
+										"type": "null"
+									},
+									"U_Opperk": {
+										"type": "null"
+									},
+									"U_DSS_SendStatus": {
+										"type": "integer"
+									},
+									"U_DSS_EHFBuyersRef": {
+										"type": "null"
+									},
+									"Document_ApprovalRequests": {
+										"type": "array"
+									},
+									"DocumentLines": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"LineNum": {
+													"type": "integer"
+												},
+												"ItemCode": {
+													"type": "string"
+												},
+												"ItemDescription": {
+													"type": "string"
+												},
+												"Quantity": {
+													"type": "number"
+												},
+												"ShipDate": {
+													"type": "string"
+												},
+												"Price": {
+													"type": "number"
+												},
+												"PriceAfterVAT": {
+													"type": "number"
+												},
+												"Currency": {
+													"type": "string"
+												},
+												"Rate": {
+													"type": "number"
+												},
+												"DiscountPercent": {
+													"type": "number"
+												},
+												"VendorNum": {
+													"type": "string"
+												},
+												"SerialNum": {
+													"type": "null"
+												},
+												"WarehouseCode": {
+													"type": "string"
+												},
+												"SalesPersonCode": {
+													"type": "integer"
+												},
+												"CommisionPercent": {
+													"type": "number"
+												},
+												"TreeType": {
+													"type": "string"
+												},
+												"AccountCode": {
+													"type": "string"
+												},
+												"UseBaseUnits": {
+													"type": "string"
+												},
+												"SupplierCatNum": {
+													"type": "string"
+												},
+												"CostingCode": {
+													"type": "string"
+												},
+												"ProjectCode": {
+													"type": "string"
+												},
+												"BarCode": {
+													"type": "string"
+												},
+												"VatGroup": {
+													"type": "string"
+												},
+												"Height1": {
+													"type": "number"
+												},
+												"Hight1Unit": {
+													"type": "null"
+												},
+												"Height2": {
+													"type": "number"
+												},
+												"Height2Unit": {
+													"type": "null"
+												},
+												"Lengh1": {
+													"type": "number"
+												},
+												"Lengh1Unit": {
+													"type": "null"
+												},
+												"Lengh2": {
+													"type": "number"
+												},
+												"Lengh2Unit": {
+													"type": "null"
+												},
+												"Weight1": {
+													"type": "number"
+												},
+												"Weight1Unit": {
+													"type": "null"
+												},
+												"Weight2": {
+													"type": "number"
+												},
+												"Weight2Unit": {
+													"type": "null"
+												},
+												"Factor1": {
+													"type": "number"
+												},
+												"Factor2": {
+													"type": "number"
+												},
+												"Factor3": {
+													"type": "number"
+												},
+												"Factor4": {
+													"type": "number"
+												},
+												"BaseType": {
+													"type": "integer"
+												},
+												"BaseEntry": {
+													"type": "integer"
+												},
+												"BaseLine": {
+													"type": "integer"
+												},
+												"Volume": {
+													"type": "number"
+												},
+												"VolumeUnit": {
+													"type": "integer"
+												},
+												"Width1": {
+													"type": "number"
+												},
+												"Width1Unit": {
+													"type": "null"
+												},
+												"Width2": {
+													"type": "number"
+												},
+												"Width2Unit": {
+													"type": "null"
+												},
+												"Address": {
+													"type": "string"
+												},
+												"TaxCode": {
+													"type": "null"
+												},
+												"TaxType": {
+													"type": "string"
+												},
+												"TaxLiable": {
+													"type": "string"
+												},
+												"PickStatus": {
+													"type": "string"
+												},
+												"PickQuantity": {
+													"type": "number"
+												},
+												"PickListIdNumber": {
+													"type": "null"
+												},
+												"OriginalItem": {
+													"type": "string"
+												},
+												"BackOrder": {
+													"type": "string"
+												},
+												"FreeText": {
+													"type": "null"
+												},
+												"ShippingMethod": {
+													"type": "integer"
+												},
+												"POTargetNum": {
+													"type": "null"
+												},
+												"POTargetEntry": {
+													"type": "string"
+												},
+												"POTargetRowNum": {
+													"type": "null"
+												},
+												"CorrectionInvoiceItem": {
+													"type": "string"
+												},
+												"CorrInvAmountToStock": {
+													"type": "number"
+												},
+												"CorrInvAmountToDiffAcct": {
+													"type": "number"
+												},
+												"AppliedTax": {
+													"type": "number"
+												},
+												"AppliedTaxFC": {
+													"type": "number"
+												},
+												"AppliedTaxSC": {
+													"type": "number"
+												},
+												"WTLiable": {
+													"type": "string"
+												},
+												"DeferredTax": {
+													"type": "string"
+												},
+												"EqualizationTaxPercent": {
+													"type": "number"
+												},
+												"TotalEqualizationTax": {
+													"type": "number"
+												},
+												"TotalEqualizationTaxFC": {
+													"type": "number"
+												},
+												"TotalEqualizationTaxSC": {
+													"type": "number"
+												},
+												"NetTaxAmount": {
+													"type": "number"
+												},
+												"NetTaxAmountFC": {
+													"type": "number"
+												},
+												"NetTaxAmountSC": {
+													"type": "number"
+												},
+												"MeasureUnit": {
+													"type": "string"
+												},
+												"UnitsOfMeasurment": {
+													"type": "number"
+												},
+												"LineTotal": {
+													"type": "number"
+												},
+												"TaxPercentagePerRow": {
+													"type": "number"
+												},
+												"TaxTotal": {
+													"type": "number"
+												},
+												"ConsumerSalesForecast": {
+													"type": "string"
+												},
+												"ExciseAmount": {
+													"type": "number"
+												},
+												"TaxPerUnit": {
+													"type": "number"
+												},
+												"TotalInclTax": {
+													"type": "number"
+												},
+												"CountryOrg": {
+													"type": "string"
+												},
+												"SWW": {
+													"type": "string"
+												},
+												"TransactionType": {
+													"type": "null"
+												},
+												"DistributeExpense": {
+													"type": "string"
+												},
+												"RowTotalFC": {
+													"type": "number"
+												},
+												"RowTotalSC": {
+													"type": "number"
+												},
+												"LastBuyInmPrice": {
+													"type": "number"
+												},
+												"LastBuyDistributeSumFc": {
+													"type": "number"
+												},
+												"LastBuyDistributeSumSc": {
+													"type": "number"
+												},
+												"LastBuyDistributeSum": {
+													"type": "number"
+												},
+												"StockDistributesumForeign": {
+													"type": "number"
+												},
+												"StockDistributesumSystem": {
+													"type": "number"
+												},
+												"StockDistributesum": {
+													"type": "number"
+												},
+												"StockInmPrice": {
+													"type": "number"
+												},
+												"PickStatusEx": {
+													"type": "string"
+												},
+												"TaxBeforeDPM": {
+													"type": "number"
+												},
+												"TaxBeforeDPMFC": {
+													"type": "number"
+												},
+												"TaxBeforeDPMSC": {
+													"type": "number"
+												},
+												"CFOPCode": {
+													"type": "null"
+												},
+												"CSTCode": {
+													"type": "null"
+												},
+												"Usage": {
+													"type": "null"
+												},
+												"TaxOnly": {
+													"type": "string"
+												},
+												"VisualOrder": {
+													"type": "integer"
+												},
+												"BaseOpenQuantity": {
+													"type": "number"
+												},
+												"UnitPrice": {
+													"type": "number"
+												},
+												"LineStatus": {
+													"type": "string"
+												},
+												"PackageQuantity": {
+													"type": "number"
+												},
+												"Text": {
+													"type": "null"
+												},
+												"LineType": {
+													"type": "string"
+												},
+												"COGSCostingCode": {
+													"type": "string"
+												},
+												"COGSAccountCode": {
+													"type": "string"
+												},
+												"ChangeAssemlyBoMWarehouse": {
+													"type": "string"
+												},
+												"GrossBuyPrice": {
+													"type": "number"
+												},
+												"GrossBase": {
+													"type": "integer"
+												},
+												"GrossProfitTotalBasePrice": {
+													"type": "number"
+												},
+												"CostingCode2": {
+													"type": "null"
+												},
+												"CostingCode3": {
+													"type": "null"
+												},
+												"CostingCode4": {
+													"type": "null"
+												},
+												"CostingCode5": {
+													"type": "null"
+												},
+												"ItemDetails": {
+													"type": "null"
+												},
+												"LocationCode": {
+													"type": "null"
+												},
+												"ActualDeliveryDate": {
+													"type": "string"
+												},
+												"RemainingOpenQuantity": {
+													"type": "number"
+												},
+												"OpenAmount": {
+													"type": "number"
+												},
+												"OpenAmountFC": {
+													"type": "number"
+												},
+												"OpenAmountSC": {
+													"type": "number"
+												},
+												"ExLineNo": {
+													"type": "null"
+												},
+												"RequiredDate": {
+													"type": "null"
+												},
+												"RequiredQuantity": {
+													"type": "null"
+												},
+												"COGSCostingCode2": {
+													"type": "null"
+												},
+												"COGSCostingCode3": {
+													"type": "null"
+												},
+												"COGSCostingCode4": {
+													"type": "null"
+												},
+												"COGSCostingCode5": {
+													"type": "null"
+												},
+												"CSTforIPI": {
+													"type": "null"
+												},
+												"CSTforPIS": {
+													"type": "null"
+												},
+												"CSTforCOFINS": {
+													"type": "null"
+												},
+												"CreditOriginCode": {
+													"type": "null"
+												},
+												"WithoutInventoryMovement": {
+													"type": "string"
+												},
+												"AgreementNo": {
+													"type": "null"
+												},
+												"AgreementRowNumber": {
+													"type": "null"
+												},
+												"ActualBaseEntry": {
+													"type": "null"
+												},
+												"ActualBaseLine": {
+													"type": "null"
+												},
+												"DocEntry": {
+													"type": "integer"
+												},
+												"Surpluses": {
+													"type": "null"
+												},
+												"DefectAndBreakup": {
+													"type": "null"
+												},
+												"Shortages": {
+													"type": "null"
+												},
+												"ConsiderQuantity": {
+													"type": "string"
+												},
+												"PartialRetirement": {
+													"type": "string"
+												},
+												"RetirementQuantity": {
+													"type": "null"
+												},
+												"RetirementAPC": {
+													"type": "null"
+												},
+												"ThirdParty": {
+													"type": "string"
+												},
+												"PoNum": {
+													"type": "null"
+												},
+												"PoItmNum": {
+													"type": "null"
+												},
+												"ExpenseType": {
+													"type": "null"
+												},
+												"ReceiptNumber": {
+													"type": "null"
+												},
+												"ExpenseOperationType": {
+													"type": "null"
+												},
+												"FederalTaxID": {
+													"type": "null"
+												},
+												"GrossProfit": {
+													"type": "number"
+												},
+												"GrossProfitFC": {
+													"type": "number"
+												},
+												"GrossProfitSC": {
+													"type": "number"
+												},
+												"PriceSource": {
+													"type": "string"
+												},
+												"StgSeqNum": {
+													"type": "null"
+												},
+												"StgEntry": {
+													"type": "null"
+												},
+												"StgDesc": {
+													"type": "null"
+												},
+												"UoMEntry": {
+													"type": "integer"
+												},
+												"UoMCode": {
+													"type": "string"
+												},
+												"InventoryQuantity": {
+													"type": "number"
+												},
+												"RemainingOpenInventoryQuantity": {
+													"type": "number"
+												},
+												"ParentLineNum": {
+													"type": "null"
+												},
+												"Incoterms": {
+													"type": "integer"
+												},
+												"TransportMode": {
+													"type": "integer"
+												},
+												"NatureOfTransaction": {
+													"type": "null"
+												},
+												"DestinationCountryForImport": {
+													"type": "null"
+												},
+												"DestinationRegionForImport": {
+													"type": "null"
+												},
+												"OriginCountryForExport": {
+													"type": "null"
+												},
+												"OriginRegionForExport": {
+													"type": "null"
+												},
+												"ItemType": {
+													"type": "string"
+												},
+												"ChangeInventoryQuantityIndependently": {
+													"type": "string"
+												},
+												"FreeOfChargeBP": {
+													"type": "null"
+												},
+												"SACEntry": {
+													"type": "null"
+												},
+												"HSNEntry": {
+													"type": "null"
+												},
+												"GrossPrice": {
+													"type": "number"
+												},
+												"GrossTotal": {
+													"type": "number"
+												},
+												"GrossTotalFC": {
+													"type": "number"
+												},
+												"GrossTotalSC": {
+													"type": "number"
+												},
+												"NCMCode": {
+													"type": "integer"
+												},
+												"NVECode": {
+													"type": "null"
+												},
+												"IndEscala": {
+													"type": "string"
+												},
+												"CtrSealQty": {
+													"type": "null"
+												},
+												"CNJPMan": {
+													"type": "null"
+												},
+												"CESTCode": {
+													"type": "null"
+												},
+												"UFFiscalBenefitCode": {
+													"type": "null"
+												},
+												"ReverseCharge": {
+													"type": "string"
+												},
+												"ShipToCode": {
+													"type": "string"
+												},
+												"ShipToDescription": {
+													"type": "string"
+												},
+												"ExternalCalcTaxRate": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmount": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmountFC": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmountSC": {
+													"type": "null"
+												},
+												"StandardItemIdentification": {
+													"type": "null"
+												},
+												"CommodityClassification": {
+													"type": "null"
+												},
+												"UnencumberedReason": {
+													"type": "null"
+												},
+												"CUSplit": {
+													"type": "string"
+												},
+												"U_Installasjon": {
+													"type": "string"
+												},
+												"U_ParentItem": {
+													"type": "null"
+												},
+												"U_Codebars": {
+													"type": "null"
+												},
+												"U_PlannedQty": {
+													"type": "number"
+												},
+												"U_AIG_IN": {
+													"type": "null"
+												},
+												"U_AIG_IA": {
+													"type": "null"
+												},
+												"U_AIG_PD": {
+													"type": "null"
+												},
+												"U_AIG_PDate": {
+													"type": "null"
+												},
+												"U_AIG_ID": {
+													"type": "null"
+												},
+												"U_PItemCode": {
+													"type": "null"
+												},
+												"U_AIG_IR": {
+													"type": "null"
+												},
+												"U_AIG_DDate": {
+													"type": "null"
+												},
+												"U_U_AIG_DDate": {
+													"type": "null"
+												},
+												"U_DSS_Charge": {
+													"type": "null"
+												},
+												"U_DSS_ProdOrdr": {
+													"type": "null"
+												},
+												"LineTaxJurisdictions": {
+													"type": "array"
+												},
+												"ExportProcesses": {
+													"type": "array"
+												},
+												"EBooksDetails": {
+													"type": "array"
+												},
+												"DocumentLineAdditionalExpenses": {
+													"type": "array"
+												},
+												"WithholdingTaxLines": {
+													"type": "array"
+												},
+												"SerialNumbers": {
+													"type": "array"
+												},
+												"BatchNumbers": {
+													"type": "array"
+												},
+												"CCDNumbers": {
+													"type": "array"
+												},
+												"DocumentLinesBinAllocations": {
+													"type": "array"
+												}
+											}
+										}
+									},
+									"EWayBillDetails": {
+										"type": "object"
+									},
+									"ElectronicProtocols": {
+										"type": "array"
+									},
+									"DocumentAdditionalExpenses": {
+										"type": "array"
+									},
+									"WithholdingTaxDataWTXCollection": {
+										"type": "array"
+									},
+									"WithholdingTaxDataCollection": {
+										"type": "array"
+									},
+									"DocumentPackages": {
+										"type": "array"
+									},
+									"DocumentSpecialLines": {
+										"type": "array"
+									},
+									"DocumentInstallments": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"DueDate": {
+													"type": "string"
+												},
+												"Percentage": {
+													"type": "number"
+												},
+												"Total": {
+													"type": "number"
+												},
+												"LastDunningDate": {
+													"type": "null"
+												},
+												"DunningLevel": {
+													"type": "integer"
+												},
+												"TotalFC": {
+													"type": "null"
+												},
+												"InstallmentId": {
+													"type": "integer"
+												},
+												"PaymentOrdered": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"DownPaymentsToDraw": {
+										"type": "array"
+									},
+									"TaxExtension": {
+										"type": "object"
+									},
+									"AddressExtension": {
+										"type": "object"
+									},
+									"DocumentReferences": {
+										"type": "array"
+									}
+								}
+							}
+						},
+						"@odata.nextLink": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_not_parsed')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": ""
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/Json_output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "bondura"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_Bondura_Invoices",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_Bondura_Invoices')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_invoices_noparam')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_Bondura_Invoices",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_Bondura_Invoices')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_param')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_bondura')]"
+			]
+		}
+	]
+}

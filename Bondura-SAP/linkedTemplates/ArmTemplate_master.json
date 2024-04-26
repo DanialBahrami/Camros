@@ -1,0 +1,244 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "Bondura-SAP"
+		},
+		"AzureBlobStorage_json_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureBlobStorage_json'"
+		},
+		"AzureSqlDatabase_Bondura_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'AzureSqlDatabase_Bondura'"
+		},
+		"BonduraServiceLayer_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BonduraServiceLayer'"
+		},
+		"BonduraServiceLayerV1_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'BonduraServiceLayerV1'"
+		},
+		"OData_Semantic_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'OData_Semantic'"
+		},
+		"RestService_Bondura_Invoices_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_Bondura_Invoices'"
+		},
+		"RestService_Semantic_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_Semantic'"
+		},
+		"RestService_bondura_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bondura'"
+		},
+		"RestService_orders_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_orders'"
+		},
+		"SapEcc_Bondura_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
+		},
+		"BonduraServiceLayer_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"BonduraServiceLayer_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"BonduraServiceLayerV1_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"BonduraServiceLayerV1_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"OData_Semantic_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/sml.svc/SalesAnalysisQuery"
+		},
+		"OData_Semantic_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_Bondura_Invoices_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices?$count=true&$top=1&$skip={skip}"
+		},
+		"RestService_Bondura_Invoices_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_Semantic_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/sml.svc/SalesAnalysisQuery"
+		},
+		"RestService_Semantic_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bondura_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"RestService_bondura_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_orders_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$top=1&$skip={skip}"
+		},
+		"RestService_orders_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"SapEcc_Bondura_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"SapEcc_Bondura_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "Bondura-SAP_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"AzureBlobStorage_json_connectionString": {
+						"value": "[parameters('AzureBlobStorage_json_connectionString')]"
+					},
+					"AzureSqlDatabase_Bondura_connectionString": {
+						"value": "[parameters('AzureSqlDatabase_Bondura_connectionString')]"
+					},
+					"BonduraServiceLayer_password": {
+						"value": "[parameters('BonduraServiceLayer_password')]"
+					},
+					"BonduraServiceLayerV1_password": {
+						"value": "[parameters('BonduraServiceLayerV1_password')]"
+					},
+					"OData_Semantic_password": {
+						"value": "[parameters('OData_Semantic_password')]"
+					},
+					"RestService_Bondura_Invoices_password": {
+						"value": "[parameters('RestService_Bondura_Invoices_password')]"
+					},
+					"RestService_Semantic_password": {
+						"value": "[parameters('RestService_Semantic_password')]"
+					},
+					"RestService_bondura_password": {
+						"value": "[parameters('RestService_bondura_password')]"
+					},
+					"RestService_orders_password": {
+						"value": "[parameters('RestService_orders_password')]"
+					},
+					"SapEcc_Bondura_password": {
+						"value": "[parameters('SapEcc_Bondura_password')]"
+					},
+					"BonduraServiceLayer_properties_typeProperties_url": {
+						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"
+					},
+					"BonduraServiceLayer_properties_typeProperties_userName": {
+						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_userName')]"
+					},
+					"BonduraServiceLayerV1_properties_typeProperties_url": {
+						"value": "[parameters('BonduraServiceLayerV1_properties_typeProperties_url')]"
+					},
+					"BonduraServiceLayerV1_properties_typeProperties_userName": {
+						"value": "[parameters('BonduraServiceLayerV1_properties_typeProperties_userName')]"
+					},
+					"OData_Semantic_properties_typeProperties_url": {
+						"value": "[parameters('OData_Semantic_properties_typeProperties_url')]"
+					},
+					"OData_Semantic_properties_typeProperties_userName": {
+						"value": "[parameters('OData_Semantic_properties_typeProperties_userName')]"
+					},
+					"RestService_Bondura_Invoices_properties_typeProperties_url": {
+						"value": "[parameters('RestService_Bondura_Invoices_properties_typeProperties_url')]"
+					},
+					"RestService_Bondura_Invoices_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_Bondura_Invoices_properties_typeProperties_userName')]"
+					},
+					"RestService_Semantic_properties_typeProperties_url": {
+						"value": "[parameters('RestService_Semantic_properties_typeProperties_url')]"
+					},
+					"RestService_Semantic_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_Semantic_properties_typeProperties_userName')]"
+					},
+					"RestService_bondura_properties_typeProperties_url": {
+						"value": "[parameters('RestService_bondura_properties_typeProperties_url')]"
+					},
+					"RestService_bondura_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_bondura_properties_typeProperties_userName')]"
+					},
+					"RestService_orders_properties_typeProperties_url": {
+						"value": "[parameters('RestService_orders_properties_typeProperties_url')]"
+					},
+					"RestService_orders_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_orders_properties_typeProperties_userName')]"
+					},
+					"SapEcc_Bondura_properties_typeProperties_url": {
+						"value": "[parameters('SapEcc_Bondura_properties_typeProperties_url')]"
+					},
+					"SapEcc_Bondura_properties_typeProperties_username": {
+						"value": "[parameters('SapEcc_Bondura_properties_typeProperties_username')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "Bondura-SAP_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Bondura-SAP_ArmTemplate_0')]"
+			]
+		}
+	]
+}
