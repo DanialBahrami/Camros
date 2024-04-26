@@ -1,8 +1,8 @@
 {
-	"name": "RestResource_loop",
+	"name": "RestResource_invoices",
 	"properties": {
 		"linkedServiceName": {
-			"referenceName": "RestService_orders",
+			"referenceName": "RestService_Bondura_Invoices",
 			"type": "LinkedServiceReference"
 		},
 		"annotations": [],

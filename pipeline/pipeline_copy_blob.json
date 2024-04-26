@@ -50,7 +50,7 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResource_loop",
+									"referenceName": "RestResource_invoices",
 									"type": "DatasetReference"
 								}
 							],

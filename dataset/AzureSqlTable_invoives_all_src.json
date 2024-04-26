@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable_all_src",
+	"name": "AzureSqlTable_invoives_all_src",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_Bondura",

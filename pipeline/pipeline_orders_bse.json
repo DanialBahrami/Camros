@@ -1,5 +1,5 @@
 {
-	"name": "pipeline_invoices_bse",
+	"name": "pipeline_orders_bse",
 	"properties": {
 		"activities": [
 			{
@@ -17,19 +17,15 @@
 				"userProperties": [],
 				"typeProperties": {
 					"source": {
-						"type": "RestSource",
+						"type": "AzureSqlSource",
 						"additionalColumns": [
 							{
 								"name": "m_ds",
 								"value": "Bondura"
 							}
 						],
-						"httpRequestTimeout": "00:01:40",
-						"requestInterval": "00.00:00:00.010",
-						"requestMethod": "GET",
-						"paginationRules": {
-							"QueryParameters.{skip}": "RANGE:0:10:1"
-						}
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
 					},
 					"sink": {
 						"type": "AzureSqlSink",
@@ -178,18 +174,23 @@
 									"type": "String"
 								}
 							}
-						]
+						],
+						"typeConversion": true,
+						"typeConversionSettings": {
+							"allowDataTruncation": true,
+							"treatBooleanAsNumber": false
+						}
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "RestResource_invoices",
+						"referenceName": "AzureSqlTable_orders_all_src",
 						"type": "DatasetReference"
 					}
 				],
 				"outputs": [
 					{
-						"referenceName": "AzureSqlTable_invoives_all_src",
+						"referenceName": "AzureSqlTable_orders_all_src",
 						"type": "DatasetReference"
 					}
 				]

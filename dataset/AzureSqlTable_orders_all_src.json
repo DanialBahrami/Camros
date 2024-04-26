@@ -1,5 +1,5 @@
 {
-	"name": "AzureSqlTable_loop",
+	"name": "AzureSqlTable_orders_all_src",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureSqlDatabase_Bondura",

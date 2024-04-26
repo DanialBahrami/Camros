@@ -152,13 +152,13 @@
 							},
 							"inputs": [
 								{
-									"referenceName": "RestResource_loop",
+									"referenceName": "RestResource_invoices",
 									"type": "DatasetReference"
 								}
 							],
 							"outputs": [
 								{
-									"referenceName": "AzureSqlTable_loop",
+									"referenceName": "AzureSqlTable_orders_all_src",
 									"type": "DatasetReference"
 								}
 							]
