@@ -8,8 +8,8 @@
 			"url": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices",
 			"enableServerCertificateValidation": true,
 			"authenticationType": "Basic",
-			"userName": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
-			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEE2RjE4ODEyLTg5N0YtNDhFNS1CMDVDLTI1RUFCNDA3NjkyRF8wNGQ2YmIwNi03ZDM0LTRhMTEtOTk2Ny0xZDE0MThjYjM3ODIiDQp9"
+			"userName": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEE2RjE4ODEyLTg5N0YtNDhFNS1CMDVDLTI1RUFCNDA3NjkyRF80OGZhMzFkZC1lYzQwLTRlNGQtYjgwZi1mM2Q2M2NmZmQ0OGIiDQp9"
 		}
 	}
 }
