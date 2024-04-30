@@ -47,6 +47,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
+		"RestService_Bondura_SE_invoives_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_Bondura_SE_invoives'"
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -111,6 +115,14 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
+		},
+		"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"containerUri": {
 			"type": "string",
 			"metadata": "URI to storage account containing linked ARM templates"
@@ -168,6 +180,9 @@
 					"SapEcc_Bondura_password": {
 						"value": "[parameters('SapEcc_Bondura_password')]"
 					},
+					"RestService_Bondura_SE_invoives_password": {
+						"value": "[parameters('RestService_Bondura_SE_invoives_password')]"
+					},
 					"BonduraServiceLayer_properties_typeProperties_url": {
 						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"
 					},
@@ -215,6 +230,12 @@
 					},
 					"SapEcc_Bondura_properties_typeProperties_username": {
 						"value": "[parameters('SapEcc_Bondura_properties_typeProperties_username')]"
+					},
+					"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
+						"value": "[parameters('RestService_Bondura_SE_invoives_properties_typeProperties_url')]"
+					},
+					"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_Bondura_SE_invoives_properties_typeProperties_userName')]"
 					}
 				}
 			},
