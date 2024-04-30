@@ -23,7 +23,13 @@
 		"RestService_Bondura_Invoices_password": {
 			"value": ""
 		},
+		"RestService_Bondura_SE_invoives_password": {
+			"value": ""
+		},
 		"RestService_Semantic_password": {
+			"value": ""
+		},
+		"RestService_bo_invoices_incparam_password": {
 			"value": ""
 		},
 		"RestService_bondura_password": {
@@ -33,9 +39,6 @@
 			"value": ""
 		},
 		"SapEcc_Bondura_password": {
-			"value": ""
-		},
-		"RestService_Bondura_SE_invoives_password": {
 			"value": ""
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
@@ -62,10 +65,22 @@
 		"RestService_Bondura_Invoices_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
+		},
+		"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
+			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_Semantic_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/sml.svc/SalesAnalysisQuery"
 		},
 		"RestService_Semantic_properties_typeProperties_userName": {
+			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bo_invoices_incparam_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
+		},
+		"RestService_bo_invoices_incparam_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_bondura_properties_typeProperties_url": {
@@ -85,12 +100,6 @@
 		},
 		"SapEcc_Bondura_properties_typeProperties_username": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
-		},
-		"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
-			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
-		},
-		"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
-			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"containerUri": {
 			"value": ""
