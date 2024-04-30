@@ -1,0 +1,15 @@
+{
+	"name": "RestService_bo_invoices_incparam",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"annotations": [],
+		"type": "RestService",
+		"typeProperties": {
+			"url": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices?$filter=DocDate gt {date}",
+			"enableServerCertificateValidation": true,
+			"authenticationType": "Basic",
+			"userName": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQEE2RjE4ODEyLTg5N0YtNDhFNS1CMDVDLTI1RUFCNDA3NjkyRF9mYjkxNjllMy0zZjJmLTQwZWItYmNhNi0yMzZlNDYyNTVhY2IiDQp9"
+		}
+	}
+}
