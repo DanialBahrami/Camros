@@ -1,0 +1,85 @@
+{
+	"name": "sql_invoices_dump",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "DocEntry",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocNum",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "DocDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "DocDueDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CardCode",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CardName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NumAtCard",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocTotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "DocCurrency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SalesPersonCode",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "FederalTaxID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VatSum",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Address2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LineTotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "m_ds",
+				"type": "nvarchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Invoices_Dump"
+		}
+	}
+}

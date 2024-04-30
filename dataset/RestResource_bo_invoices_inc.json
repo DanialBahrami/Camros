@@ -1,0 +1,23 @@
+{
+	"name": "RestResource_bo_invoices_inc",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_bo_invoices_incparam",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"QueryParamInc": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().QueryParamInc",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
