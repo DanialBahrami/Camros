@@ -1,5 +1,5 @@
 {
-	"name": "pipeline_invoices_bo",
+	"name": "pipeline_invoices_bse",
 	"properties": {
 		"activities": [
 			{
@@ -183,7 +183,7 @@
 				},
 				"inputs": [
 					{
-						"referenceName": "RestResource_invoices",
+						"referenceName": "RestResource_invoices_se",
 						"type": "DatasetReference"
 					}
 				],

@@ -1,5 +1,5 @@
 {
-	"name": "pipeline_orders_bse",
+	"name": "pipeline_orders_bo",
 	"properties": {
 		"activities": [
 			{

@@ -1,0 +1,12 @@
+{
+	"name": "RestResource_invoices_se",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_Bondura_SE_invoives",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
