@@ -13,6 +13,27 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/Json_output')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"container": "bondura"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestResource_bo_invoices_inc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -310,7 +331,8 @@
 				"lastPublishTime": "2024-04-25T11:07:39Z"
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/RestResource_invoices')]"
+				"[concat(variables('factoryId'), '/datasets/RestResource_invoices')]",
+				"[concat(variables('factoryId'), '/datasets/Json_output')]"
 			]
 		},
 		{
@@ -595,6 +617,20 @@
 							},
 							"enableStaging": false,
 							"enableSkipIncompatibleRow": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Warning",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "linkedService_bo_inc_log_blob",
+										"type": "LinkedServiceReference"
+									},
+									"path": "bondura"
+								}
+							},
 							"translator": {
 								"type": "TabularTranslator",
 								"mappings": [
@@ -743,7 +779,7 @@
 								"type": "DatasetReference",
 								"parameters": {
 									"QueryParamInc": {
-										"value": "?$filter=DocDate gt '@{activity('get_max_date').output.firstRow.date}'",
+										"value": "?$filter=DocDate ge '@{activity('get_max_date').output.firstRow.date}'",
 										"type": "Expression"
 									}
 								}
@@ -2042,6 +2078,37 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Json_Pars')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline_invoices_bo_inc",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-05-03T05:00:00",
+						"timeZone": "W. Europe Standard Time",
+						"schedule": {}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline_invoices_bo_inc')]"
 			]
 		}
 	]

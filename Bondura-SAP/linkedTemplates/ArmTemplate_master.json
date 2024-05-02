@@ -55,6 +55,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
+		"linkedService_bo_inc_log_blob_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_inc_log_blob'"
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -197,6 +201,9 @@
 					},
 					"SapEcc_Bondura_password": {
 						"value": "[parameters('SapEcc_Bondura_password')]"
+					},
+					"linkedService_bo_inc_log_blob_connectionString": {
+						"value": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
 					},
 					"BonduraServiceLayer_properties_typeProperties_url": {
 						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"

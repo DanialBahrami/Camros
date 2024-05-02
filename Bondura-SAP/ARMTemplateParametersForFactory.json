@@ -41,6 +41,9 @@
 		"SapEcc_Bondura_password": {
 			"value": ""
 		},
+		"linkedService_bo_inc_log_blob_connectionString": {
+			"value": ""
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
