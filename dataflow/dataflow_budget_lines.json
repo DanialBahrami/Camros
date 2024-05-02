@@ -1,19 +1,33 @@
 {
-	"name": "dataflow1",
+	"name": "dataflow_budget_lines",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
+					"dataset": {
+						"referenceName": "RestResource_bo_budgets",
+						"type": "DatasetReference"
+					},
 					"name": "ReadAPI",
 					"description": "Read Budgets API, AccountCode=3000"
 				}
 			],
 			"sinks": [],
-			"transformations": [],
+			"transformations": [
+				{
+					"name": "Flatten"
+				}
+			],
 			"scriptLines": [
 				"source(allowSchemaDrift: true,",
-				"     validateSchema: false) ~> ReadAPI"
+				"     validateSchema: false,",
+				"     httpMethod: 'GET',",
+				"     timeout: 30,",
+				"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
+				"ReadAPI foldDown(unroll(),",
+				"     skipDuplicateMapInputs: false,",
+				"     skipDuplicateMapOutputs: false) ~> Flatten"
 			]
 		}
 	}
