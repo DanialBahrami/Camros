@@ -21,7 +21,7 @@
 						"additionalColumns": [
 							{
 								"name": "m_ds",
-								"value": "Bondura"
+								"value": "Bondura_SE"
 							}
 						],
 						"httpRequestTimeout": "00:01:40",
