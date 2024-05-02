@@ -1,0 +1,130 @@
+{
+	"name": "AzureSqlTable_bo_budgets",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "FutureAnnualExpensesCreditSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureAnnualExpensesCreditLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureAnnualExpensesDebitSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureAnnualExpensesDebitLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureAnnualRevenuesCredit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureAnnualRevenuesDebit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureRevenuesDebitSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "FutureRevenuesDebitLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "ParentAccPercent",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "StartofFiscalYear",
+				"type": "datetimeoffset",
+				"scale": 7
+			},
+			{
+				"name": "ParentAccountKey",
+				"type": "nvarchar"
+			},
+			{
+				"name": "TotalAnnualBudgetDebitSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "BudgetBalanceDebitSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "BudgetBalanceDebitLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalAnnualBudgetDebitLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalAnnualBudgetCreditSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "TotalAnnualBudgetCreditLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "BudgetBalanceCreditSys",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "BudgetBalanceCreditLoc",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "DivisionCode",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "AccountCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "Numerator",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "BudgetScenario",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "Budgets_Dump"
+		}
+	}
+}

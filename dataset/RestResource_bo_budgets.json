@@ -1,0 +1,15 @@
+{
+	"name": "RestResource_bo_budgets",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "Budgets?$count=true&$filter=AccountCode eq '3000'"
+		},
+		"schema": []
+	}
+}
