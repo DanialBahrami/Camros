@@ -67,6 +67,20 @@
 					},
 					"enableStaging": false,
 					"enableSkipIncompatibleRow": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "linkedService_bo_inc_log_blob",
+								"type": "LinkedServiceReference"
+							},
+							"path": "bondura"
+						}
+					},
 					"translator": {
 						"type": "TabularTranslator",
 						"mappings": [
@@ -215,7 +229,7 @@
 						"type": "DatasetReference",
 						"parameters": {
 							"QueryParamInc": {
-								"value": "?$filter=DocDate gt '@{activity('get_max_date').output.firstRow.date}'",
+								"value": "?$filter=DocDate ge '@{activity('get_max_date').output.firstRow.date}'",
 								"type": "Expression"
 							}
 						}
