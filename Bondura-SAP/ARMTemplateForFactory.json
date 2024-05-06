@@ -340,9 +340,9 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "api_call_all",
-						"description": "all records in AccountCode=3000",
-						"type": "Copy",
+						"name": "ReadBudgetLine",
+						"description": "Create Dim for Budgets",
+						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -353,117 +353,22 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"additionalColumns": [
-									{
-										"name": "m_ds",
-										"value": "Bondura"
-									}
-								],
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "linkedService_bo_log_budgets_lines",
-										"type": "LinkedServiceReference"
-									},
-									"path": "bondura"
+							"dataflow": {
+								"referenceName": "dataflow_budget_lines",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ReadAPI": {},
+									"SqlDimTable": {}
 								}
 							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['value'][0]['BudgetScenario']"
-										},
-										"sink": {
-											"name": "BudgetScenario",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BudgetLines'][0]['PrecentOfAnnualBudgetAmount']"
-										},
-										"sink": {
-											"name": "PrecentOfAnnualBudgetAmount",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BudgetLines'][0]['RowNumber']"
-										},
-										"sink": {
-											"name": "RowNumber",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BudgetLines'][0]['BudgetTotCredit']"
-										},
-										"sink": {
-											"name": "BudgetTotCredit",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BudgetLines'][0]['BudgetSysTotCredit']"
-										},
-										"sink": {
-											"name": "BudgetSysTotCredit",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "$['m_ds']"
-										},
-										"sink": {
-											"name": "m_ds",
-											"type": "String"
-										}
-									}
-								],
-								"collectionReference": "$['value'][0]['BudgetLines']",
-								"mapComplexValuesToString": false
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResource_bo_budgets",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTable_bo_budgets_lines",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
+							"staging": {},
+							"compute": {
+								"coreCount": 16,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
 					}
 				],
 				"policy": {
@@ -472,9 +377,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/RestResource_bo_budgets')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_bo_budgets_lines')]",
-				"[concat(variables('factoryId'), '/linkedServices/linkedService_bo_log_budgets_lines')]"
+				"[concat(variables('factoryId'), '/dataflows/dataflow_budget_lines')]"
 			]
 		},
 		{
