@@ -55,9 +55,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
+		"linkedService_bo_budgets_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_budgets'"
+		},
 		"linkedService_bo_inc_log_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_inc_log_blob'"
+		},
+		"linkedService_bo_log_budgets_lines_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
@@ -189,6 +197,284 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/Json_Pars')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_bo_budgets')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "api_call_all",
+						"description": "all records in AccountCode=3000",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"additionalColumns": [
+									{
+										"name": "m_ds",
+										"value": "Bondura"
+									}
+								],
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Warning",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "linkedService_bo_budgets",
+										"type": "LinkedServiceReference"
+									},
+									"path": "bondura"
+								}
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "[['StartofFiscalYear']"
+										},
+										"sink": {
+											"name": "StartofFiscalYear",
+											"type": "Date"
+										}
+									},
+									{
+										"source": {
+											"path": "[['TotalAnnualBudgetCreditSys']"
+										},
+										"sink": {
+											"name": "TotalAnnualBudgetCreditSys",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "[['TotalAnnualBudgetCreditLoc']"
+										},
+										"sink": {
+											"name": "TotalAnnualBudgetCreditLoc",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "[['BudgetScenario']"
+										},
+										"sink": {
+											"name": "BudgetScenario",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['m_ds']"
+										},
+										"sink": {
+											"name": "m_ds",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['value']"
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResource_bo_budgets",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_bo_budgets",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RestResource_bo_budgets')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_bo_budgets')]",
+				"[concat(variables('factoryId'), '/linkedServices/linkedService_bo_budgets')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_bo_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "api_call_all",
+						"description": "all records in AccountCode=3000",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"additionalColumns": [
+									{
+										"name": "m_ds",
+										"value": "Bondura"
+									}
+								],
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"logSettings": {
+								"enableCopyActivityLog": true,
+								"copyActivityLogSettings": {
+									"logLevel": "Warning",
+									"enableReliableLogging": false
+								},
+								"logLocationSettings": {
+									"linkedServiceName": {
+										"referenceName": "linkedService_bo_log_budgets_lines",
+										"type": "LinkedServiceReference"
+									},
+									"path": "bondura"
+								}
+							},
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['BudgetScenario']"
+										},
+										"sink": {
+											"name": "BudgetScenario",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['BudgetLines'][0]['PrecentOfAnnualBudgetAmount']"
+										},
+										"sink": {
+											"name": "PrecentOfAnnualBudgetAmount",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['BudgetLines'][0]['RowNumber']"
+										},
+										"sink": {
+											"name": "RowNumber",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['BudgetLines'][0]['BudgetTotCredit']"
+										},
+										"sink": {
+											"name": "BudgetTotCredit",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['BudgetLines'][0]['BudgetSysTotCredit']"
+										},
+										"sink": {
+											"name": "BudgetSysTotCredit",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['m_ds']"
+										},
+										"sink": {
+											"name": "m_ds",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": "$['value'][0]['BudgetLines']",
+								"mapComplexValuesToString": false
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResource_bo_budgets",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_bo_budgets_lines",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RestResource_bo_budgets')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_bo_budgets_lines')]",
+				"[concat(variables('factoryId'), '/linkedServices/linkedService_bo_log_budgets_lines')]"
 			]
 		},
 		{
@@ -770,7 +1056,7 @@
 								"additionalColumns": [
 									{
 										"name": "m_ds",
-										"value": "Bondura"
+										"value": "Bondura_SE"
 									}
 								],
 								"httpRequestTimeout": "00:01:40",
@@ -1542,6 +1828,192 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_orders_all_src')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "FutureAnnualExpensesCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualRevenuesCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualRevenuesDebit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureRevenuesDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureRevenuesDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "ParentAccPercent",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "StartofFiscalYear",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "ParentAccountKey",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TotalAnnualBudgetDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DivisionCode",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AccountCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Numerator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BudgetScenario",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Budgets_Dump"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BudgetScenario",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "PrecentOfAnnualBudgetAmount",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RowNumber",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "BudgetTotCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetSysTotCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "m_ds",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Budgets_Lines"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
 			]
 		},
 		{
@@ -3391,6 +3863,26 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_bo_budgets')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "Budgets?%24count=true&%24filter=AccountCode%20eq%20%273000%27"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_bondura')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestResource_bo_invoices_inc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -3849,6 +4341,75 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/linkedService_bo_budgets')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('linkedService_bo_budgets_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService_bo_inc_log_blob')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService_bo_log_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "pipeline_invoices_bo_inc",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2024-05-03T05:00:00",
+						"timeZone": "W. Europe Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/pipeline_invoices_bo_inc')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/Json_Pars')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -4287,47 +4848,87 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/linkedService_bo_inc_log_blob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"name": "[concat(parameters('factoryName'), '/dataflow_budget_lines')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
 			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
+				"type": "MappingDataFlow",
 				"typeProperties": {
-					"connectionString": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "pipeline_invoices_bo_inc",
-							"type": "PipelineReference"
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RestResource_bo_budgets",
+								"type": "DatasetReference"
+							},
+							"name": "ReadAPI",
+							"description": "Read Budgets API, AccountCode=3000"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_bo_budgets_lines",
+								"type": "DatasetReference"
+							},
+							"name": "SqlDimTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Flatten"
 						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2024-05-03T05:00:00",
-						"timeZone": "W. Europe Standard Time",
-						"schedule": {}
-					}
+						{
+							"name": "DataSourceColumn"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          body as ({@odata.context} as string, {@odata.count} as short, value as (AccountCode as short, BudgetBalanceCreditLoc as double, BudgetBalanceCreditSys as double, BudgetBalanceDebitLoc as double, BudgetBalanceDebitSys as double, BudgetCostAccountingLines as string[], BudgetLines as (AccountCode as short, BalSysTotCredit as double, BalSysTotDebit as double, BalTotCredit as double, BalTotDebit as double, BudgetKey as short, BudgetSysTotCredit as double, BudgetSysTotDebit as double, BudgetTotCredit as double, BudgetTotDebit as double, FutExpenCredit as double, FutExpenDebit as double, FutExpenSysCredit as double, FutExpenSysDebit as double, FutIncomesCredit as double, FutIncomesSysCredit as double, FutIncomesSysDebit as double, FutureIncomeDeb as double, PrecentOfAnnualBudgetAmount as double, RowDetails as string, RowNumber as short)[], BudgetScenario as short, DivisionCode as short, FutureAnnualExpensesCreditLoc as double, FutureAnnualExpensesCreditSys as double, FutureAnnualExpensesDebitLoc as double, FutureAnnualExpensesDebitSys as double, FutureAnnualRevenuesCredit as double, FutureAnnualRevenuesDebit as double, FutureRevenuesDebitLoc as double, FutureRevenuesDebitSys as double, Numerator as short, ParentAccPercent as double, ParentAccountKey as string, StartofFiscalYear as date, TotalAnnualBudgetCreditLoc as double, TotalAnnualBudgetCreditSys as double, TotalAnnualBudgetDebitLoc as double, TotalAnnualBudgetDebitSys as double)[]),",
+						"          headers as [string,string]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     httpMethod: 'GET',",
+						"     timeout: 30,",
+						"     requestInterval: 0,",
+						"     headers: ['m_ds' -> 'Bondura'],",
+						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
+						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
+						"     mapColumn(",
+						"          BudgetScenario = body.value.BudgetScenario,",
+						"          RowNumber = body.value.BudgetLines.RowNumber,",
+						"          PrecentOfAnnualBudgetAmount = body.value.BudgetLines.PrecentOfAnnualBudgetAmount,",
+						"          BudgetTotCredit = body.value.BudgetLines.BudgetTotCredit,",
+						"          BudgetSysTotCredit = body.value.BudgetLines.BudgetSysTotCredit",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> Flatten",
+						"Flatten derive(m_ds = 'Bondura') ~> DataSourceColumn",
+						"DataSourceColumn sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          BudgetScenario as integer,",
+						"          PrecentOfAnnualBudgetAmount as double,",
+						"          RowNumber as integer,",
+						"          BudgetTotCredit as double,",
+						"          BudgetSysTotCredit as double,",
+						"          m_ds as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SqlDimTable"
+					]
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/pipeline_invoices_bo_inc')]"
+				"[concat(variables('factoryId'), '/datasets/RestResource_bo_budgets')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_bo_budgets_lines')]"
 			]
 		}
 	]

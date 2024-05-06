@@ -55,9 +55,17 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
+		"linkedService_bo_budgets_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_budgets'"
+		},
 		"linkedService_bo_inc_log_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_inc_log_blob'"
+		},
+		"linkedService_bo_log_budgets_lines_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
@@ -202,8 +210,14 @@
 					"SapEcc_Bondura_password": {
 						"value": "[parameters('SapEcc_Bondura_password')]"
 					},
+					"linkedService_bo_budgets_connectionString": {
+						"value": "[parameters('linkedService_bo_budgets_connectionString')]"
+					},
 					"linkedService_bo_inc_log_blob_connectionString": {
 						"value": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
+					},
+					"linkedService_bo_log_budgets_lines_connectionString": {
+						"value": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
 					},
 					"BonduraServiceLayer_properties_typeProperties_url": {
 						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"
@@ -287,6 +301,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'Bondura-SAP_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "Bondura-SAP_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'Bondura-SAP_ArmTemplate_1')]"
 			]
 		}
 	]

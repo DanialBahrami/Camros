@@ -41,7 +41,13 @@
 		"SapEcc_Bondura_password": {
 			"value": ""
 		},
+		"linkedService_bo_budgets_connectionString": {
+			"value": ""
+		},
 		"linkedService_bo_inc_log_blob_connectionString": {
+			"value": ""
+		},
+		"linkedService_bo_log_budgets_lines_connectionString": {
 			"value": ""
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
