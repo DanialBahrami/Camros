@@ -7,7 +7,37 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "BudgetScenario",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "PrecentOfAnnualBudgetAmount",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "RowNumber",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "BudgetTotCredit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "BudgetSysTotCredit",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "m_ds",
+				"type": "nvarchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
 			"table": "Budgets_Lines"
