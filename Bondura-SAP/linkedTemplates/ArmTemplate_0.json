@@ -43,6 +43,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bo_invoices_incparam'"
 		},
+		"RestService_bo_orders_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bo_orders'"
+		},
 		"RestService_bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bondura'"
@@ -126,6 +130,14 @@
 		"RestService_bo_invoices_incparam_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bo_orders_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true"
+		},
+		"RestService_bo_orders_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_bondura_properties_typeProperties_url": {
 			"type": "string",
@@ -323,6 +335,26 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('RestService_bo_invoices_incparam_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_bo_orders')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_bo_orders_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_bo_orders_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_bo_orders_password')]"
 					}
 				}
 			},
@@ -646,98 +678,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "Invoices_Dump"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_orders_all_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "DocEntry",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocNum",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "DocDueDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "CardCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CardName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "NumAtCard",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "DocCurrency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SalesPersonCode",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "FederalTaxID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VatSum",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Address2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LineTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "m_ds",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocDueDateYearMonth",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orders_Dump"
 				}
 			},
 			"dependsOn": [
