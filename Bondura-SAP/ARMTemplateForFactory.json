@@ -101,7 +101,7 @@
 		},
 		"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices?$count=true&$skip={skip}"
 		},
 		"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
 			"type": "string",
@@ -966,14 +966,13 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "GET",
 								"paginationRules": {
-									"QueryParameters.{skip}": "RANGE:0:8684:1"
+									"QueryParameters.{skip}": "RANGE:0:101:1"
 								}
 							},
 							"sink": {
 								"type": "AzureSqlSink",
 								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
 								"disableMetricsCollection": false
 							},
 							"enableStaging": false,
@@ -1933,7 +1932,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "invoices_all_src"
+					"table": "Invoices_Dump"
 				}
 			},
 			"dependsOn": [

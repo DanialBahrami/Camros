@@ -101,7 +101,7 @@
 		},
 		"RestService_Bondura_SE_invoives_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices?$count=true&$skip={skip}"
 		},
 		"RestService_Bondura_SE_invoives_properties_typeProperties_userName": {
 			"type": "string",
@@ -613,7 +613,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "invoices_all_src"
+					"table": "Invoices_Dump"
 				}
 			},
 			"dependsOn": [
