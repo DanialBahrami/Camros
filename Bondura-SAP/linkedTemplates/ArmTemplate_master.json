@@ -51,6 +51,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_orders'"
 		},
+		"RestService_orders_bse_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_orders_bse'"
+		},
 		"SapEcc_Bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
@@ -139,6 +143,14 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_orders_bse_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$skip={skip}"
+		},
+		"RestService_orders_bse_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"SapEcc_Bondura_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -207,6 +219,9 @@
 					"RestService_orders_password": {
 						"value": "[parameters('RestService_orders_password')]"
 					},
+					"RestService_orders_bse_password": {
+						"value": "[parameters('RestService_orders_bse_password')]"
+					},
 					"SapEcc_Bondura_password": {
 						"value": "[parameters('SapEcc_Bondura_password')]"
 					},
@@ -272,6 +287,12 @@
 					},
 					"RestService_orders_properties_typeProperties_userName": {
 						"value": "[parameters('RestService_orders_properties_typeProperties_userName')]"
+					},
+					"RestService_orders_bse_properties_typeProperties_url": {
+						"value": "[parameters('RestService_orders_bse_properties_typeProperties_url')]"
+					},
+					"RestService_orders_bse_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_orders_bse_properties_typeProperties_userName')]"
 					},
 					"SapEcc_Bondura_properties_typeProperties_url": {
 						"value": "[parameters('SapEcc_Bondura_properties_typeProperties_url')]"

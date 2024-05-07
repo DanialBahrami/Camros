@@ -13,6 +13,394 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_invoices_bse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "call_api_all_records",
+						"description": "Call SAP API and get all records. looping for each row with Skip param",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"additionalColumns": [
+									{
+										"name": "m_ds",
+										"value": "Bondura_SE"
+									}
+								],
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"QueryParameters.{skip}": "RANGE:0:101:1"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['DocEntry']"
+										},
+										"sink": {
+											"name": "DocEntry",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocNum']"
+										},
+										"sink": {
+											"name": "DocNum",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDate']"
+										},
+										"sink": {
+											"name": "DocDate",
+											"type": "Date"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDueDate']"
+										},
+										"sink": {
+											"name": "DocDueDate",
+											"type": "Date"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardCode']"
+										},
+										"sink": {
+											"name": "CardCode",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardName']"
+										},
+										"sink": {
+											"name": "CardName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['NumAtCard']"
+										},
+										"sink": {
+											"name": "NumAtCard",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocTotal']"
+										},
+										"sink": {
+											"name": "DocTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocCurrency']"
+										},
+										"sink": {
+											"name": "DocCurrency",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesPersonCode']"
+										},
+										"sink": {
+											"name": "SalesPersonCode",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['FederalTaxID']"
+										},
+										"sink": {
+											"name": "FederalTaxID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['VatSum']"
+										},
+										"sink": {
+											"name": "VatSum",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Address2']"
+										},
+										"sink": {
+											"name": "Address2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotal']"
+										},
+										"sink": {
+											"name": "LineTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['m_ds']"
+										},
+										"sink": {
+											"name": "m_ds",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResource_invoices_se",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_invoives_all_src",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_invoices_dump')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ForEach",
+						"type": "ForEach",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@range(0, 1)",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "Copy data_api",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET",
+											"paginationRules": {
+												"QueryParameters.{skip}": "RANGE:0:8678:1"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "$['value'][0]['DocEntry']"
+													},
+													"sink": {
+														"name": "DocEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocNum']"
+													},
+													"sink": {
+														"name": "DocNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDate']"
+													},
+													"sink": {
+														"name": "DocDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDueDate']"
+													},
+													"sink": {
+														"name": "DocDueDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardCode']"
+													},
+													"sink": {
+														"name": "CardCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardName']"
+													},
+													"sink": {
+														"name": "CardName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['NumAtCard']"
+													},
+													"sink": {
+														"name": "NumAtCard",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocTotal']"
+													},
+													"sink": {
+														"name": "DocTotal",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocCurrency']"
+													},
+													"sink": {
+														"name": "DocCurrency",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['VatSum']"
+													},
+													"sink": {
+														"name": "VatSum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotal']"
+													},
+													"sink": {
+														"name": "LineTotal",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": ""
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "RestResource_invoices",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "AzureSqlTable_orders_all_src",
+											"type": "DatasetReference",
+											"parameters": {}
+										}
+									]
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-04-25T11:07:39Z"
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipeline_orders_bo')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -200,6 +588,213 @@
 						"inputs": [
 							{
 								"referenceName": "RestResource_orders",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_orders_all_src",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_orders_bse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "call_api_all_records",
+						"description": "Call SAP API and get all records. looping for each row with Skip param",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"additionalColumns": [
+									{
+										"name": "m_ds",
+										"value": "Bondura_SE"
+									}
+								],
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"QueryParameters.{skip}": "RANGE:0:110:1"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['DocEntry']"
+										},
+										"sink": {
+											"name": "DocEntry",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocNum']"
+										},
+										"sink": {
+											"name": "DocNum",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDate']"
+										},
+										"sink": {
+											"name": "DocDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDueDate']"
+										},
+										"sink": {
+											"name": "DocDueDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardCode']"
+										},
+										"sink": {
+											"name": "CardCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardName']"
+										},
+										"sink": {
+											"name": "CardName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['NumAtCard']"
+										},
+										"sink": {
+											"name": "NumAtCard",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocTotal']"
+										},
+										"sink": {
+											"name": "DocTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocCurrency']"
+										},
+										"sink": {
+											"name": "DocCurrency",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesPersonCode']"
+										},
+										"sink": {
+											"name": "SalesPersonCode",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['FederalTaxID']"
+										},
+										"sink": {
+											"name": "FederalTaxID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['VatSum']"
+										},
+										"sink": {
+											"name": "VatSum",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Address2']"
+										},
+										"sink": {
+											"name": "Address2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotal']"
+										},
+										"sink": {
+											"name": "LineTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['m_ds']"
+										},
+										"sink": {
+											"name": "m_ds",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResource_orders_bse",
 								"type": "DatasetReference",
 								"parameters": {}
 							}

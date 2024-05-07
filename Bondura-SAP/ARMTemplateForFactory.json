@@ -51,6 +51,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_orders'"
 		},
+		"RestService_orders_bse_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_orders_bse'"
+		},
 		"SapEcc_Bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
@@ -138,6 +142,14 @@
 		"RestService_orders_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_orders_bse_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$skip={skip}"
+		},
+		"RestService_orders_bse_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"SapEcc_Bondura_properties_typeProperties_url": {
 			"type": "string",
@@ -1540,6 +1552,216 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_orders_bse')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "call_api_all_records",
+						"description": "Call SAP API and get all records. looping for each row with Skip param",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"additionalColumns": [
+									{
+										"name": "m_ds",
+										"value": "Bondura_SE"
+									}
+								],
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"QueryParameters.{skip}": "RANGE:0:110:1"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"enableSkipIncompatibleRow": true,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['DocEntry']"
+										},
+										"sink": {
+											"name": "DocEntry",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocNum']"
+										},
+										"sink": {
+											"name": "DocNum",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDate']"
+										},
+										"sink": {
+											"name": "DocDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocDueDate']"
+										},
+										"sink": {
+											"name": "DocDueDate",
+											"type": "DateTime"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardCode']"
+										},
+										"sink": {
+											"name": "CardCode",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CardName']"
+										},
+										"sink": {
+											"name": "CardName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['NumAtCard']"
+										},
+										"sink": {
+											"name": "NumAtCard",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocTotal']"
+										},
+										"sink": {
+											"name": "DocTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocCurrency']"
+										},
+										"sink": {
+											"name": "DocCurrency",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesPersonCode']"
+										},
+										"sink": {
+											"name": "SalesPersonCode",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['FederalTaxID']"
+										},
+										"sink": {
+											"name": "FederalTaxID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['VatSum']"
+										},
+										"sink": {
+											"name": "VatSum",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Address2']"
+										},
+										"sink": {
+											"name": "Address2",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotal']"
+										},
+										"sink": {
+											"name": "LineTotal",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['m_ds']"
+										},
+										"sink": {
+											"name": "m_ds",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "RestResource_orders_bse",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "AzureSqlTable_orders_all_src",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/RestResource_orders_bse')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_orders_all_src')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pipeline_orders_dump')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1950,10 +2172,81 @@
 				},
 				"annotations": [],
 				"type": "AzureSqlTable",
-				"schema": [],
+				"schema": [
+					{
+						"name": "DocEntry",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DocNum",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DocDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "DocDueDate",
+						"type": "datetime2",
+						"scale": 7
+					},
+					{
+						"name": "CardCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "CardName",
+						"type": "nvarchar"
+					},
+					{
+						"name": "NumAtCard",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DocTotal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DocCurrency",
+						"type": "nvarchar"
+					},
+					{
+						"name": "SalesPersonCode",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "FederalTaxID",
+						"type": "nvarchar"
+					},
+					{
+						"name": "VatSum",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "Address2",
+						"type": "nvarchar"
+					},
+					{
+						"name": "LineTotal",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "m_ds",
+						"type": "nvarchar"
+					},
+					{
+						"name": "DocDueDateYearMonth",
+						"type": "varchar"
+					}
+				],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "orders_all_src"
+					"table": "Orders_Dump"
 				}
 			},
 			"dependsOn": [
@@ -3885,6 +4178,24 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_orders_bse')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_orders_bse",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/RestService_orders_bse')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestResource_param')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -4219,6 +4530,26 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('RestService_orders_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_orders_bse')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_orders_bse_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_orders_bse_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_orders_bse_password')]"
 					}
 				}
 			},
