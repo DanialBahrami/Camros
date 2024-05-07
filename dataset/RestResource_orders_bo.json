@@ -1,0 +1,23 @@
+{
+	"name": "RestResource_orders_bo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_bo_orders",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"QueryParamInc": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().QueryParamInc",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
