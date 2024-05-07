@@ -28,14 +28,13 @@
 						"requestInterval": "00.00:00:00.010",
 						"requestMethod": "GET",
 						"paginationRules": {
-							"QueryParameters.{skip}": "RANGE:0:8684:1"
+							"QueryParameters.{skip}": "RANGE:0:101:1"
 						}
 					},
 					"sink": {
 						"type": "AzureSqlSink",
 						"writeBehavior": "insert",
 						"sqlWriterUseTableLock": false,
-						"tableOption": "autoCreate",
 						"disableMetricsCollection": false
 					},
 					"enableStaging": false,

@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "invoices_all_src"
+			"table": "Invoices_Dump"
 		}
 	}
 }
