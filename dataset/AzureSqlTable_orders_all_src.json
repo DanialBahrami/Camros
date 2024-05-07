@@ -7,10 +7,81 @@
 		},
 		"annotations": [],
 		"type": "AzureSqlTable",
-		"schema": [],
+		"schema": [
+			{
+				"name": "DocEntry",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocNum",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "DocDueDate",
+				"type": "datetime2",
+				"scale": 7
+			},
+			{
+				"name": "CardCode",
+				"type": "nvarchar"
+			},
+			{
+				"name": "CardName",
+				"type": "nvarchar"
+			},
+			{
+				"name": "NumAtCard",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocTotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "DocCurrency",
+				"type": "nvarchar"
+			},
+			{
+				"name": "SalesPersonCode",
+				"type": "smallint",
+				"precision": 5
+			},
+			{
+				"name": "FederalTaxID",
+				"type": "nvarchar"
+			},
+			{
+				"name": "VatSum",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "Address2",
+				"type": "nvarchar"
+			},
+			{
+				"name": "LineTotal",
+				"type": "float",
+				"precision": 15
+			},
+			{
+				"name": "m_ds",
+				"type": "nvarchar"
+			},
+			{
+				"name": "DocDueDateYearMonth",
+				"type": "varchar"
+			}
+		],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "orders_all_src"
+			"table": "Orders_Dump"
 		}
 	},
 	"type": "Microsoft.DataFactory/factories/datasets"
