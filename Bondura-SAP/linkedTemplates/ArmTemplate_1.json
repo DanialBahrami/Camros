@@ -13,6 +13,93 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "BudgetScenario",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "PrecentOfAnnualBudgetAmount",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "RowNumber",
+						"type": "smallint",
+						"precision": 5
+					},
+					{
+						"name": "BudgetTotCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetSysTotCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "m_ds",
+						"type": "nvarchar"
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Budgets_Lines"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_businessPartners')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "BusinessPartners"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_invoives_all_src')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Invoices_Dump"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_orders_all_src')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2004,6 +2091,22 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_bo_businessPartners')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bo_businessPartners",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestResource_bo_invoices_inc')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -2025,6 +2128,22 @@
 						"type": "Expression"
 					}
 				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestResource_bse_businessPartners')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "RestService_bse_businessPartners",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {},
 				"schema": []
 			},
 			"dependsOn": []
@@ -2116,242 +2235,6 @@
 					}
 				},
 				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_orders_bse')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_orders_bse",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_param')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SourceDataset_oap')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "BonduraServiceLayer",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"cw_path": {
-						"type": "String"
-					}
-				},
-				"annotations": [],
-				"type": "ODataResource",
-				"schema": [],
-				"typeProperties": {
-					"path": {
-						"value": "@dataset().cw_path",
-						"type": "Expression"
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sql_invoices_dump')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "DocEntry",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocNum",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "DocDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "DocDueDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "CardCode",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "CardName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "NumAtCard",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "DocCurrency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SalesPersonCode",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "FederalTaxID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VatSum",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Address2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LineTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "m_ds",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Invoices_Dump"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/sql_orders_dump')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "DocEntry",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocNum",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "DocDueDate",
-						"type": "datetime2",
-						"scale": 7
-					},
-					{
-						"name": "CardCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "CardName",
-						"type": "nvarchar"
-					},
-					{
-						"name": "NumAtCard",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "DocCurrency",
-						"type": "nvarchar"
-					},
-					{
-						"name": "SalesPersonCode",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "FederalTaxID",
-						"type": "nvarchar"
-					},
-					{
-						"name": "VatSum",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "Address2",
-						"type": "nvarchar"
-					},
-					{
-						"name": "LineTotal",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "m_ds",
-						"type": "nvarchar"
-					},
-					{
-						"name": "DocDueDateYearMonth",
-						"type": "varchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Orders_Dump"
-				}
 			},
 			"dependsOn": []
 		}

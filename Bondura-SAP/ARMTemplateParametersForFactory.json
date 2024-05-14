@@ -29,6 +29,9 @@
 		"RestService_Semantic_password": {
 			"value": ""
 		},
+		"RestService_bo_businessPartners_password": {
+			"value": ""
+		},
 		"RestService_bo_invoices_incparam_password": {
 			"value": ""
 		},
@@ -36,6 +39,9 @@
 			"value": ""
 		},
 		"RestService_bondura_password": {
+			"value": ""
+		},
+		"RestService_bse_businessPartners_password": {
 			"value": ""
 		},
 		"RestService_orders_password": {
@@ -92,6 +98,12 @@
 		"RestService_Semantic_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_bo_businessPartners_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/BusinessPartners?$count=true&$skip={skip}"
+		},
+		"RestService_bo_businessPartners_properties_typeProperties_userName": {
+			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_bo_invoices_incparam_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
 		},
@@ -109,6 +121,12 @@
 		},
 		"RestService_bondura_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bse_businessPartners_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/BusinessPartners?$count=True"
+		},
+		"RestService_bse_businessPartners_properties_typeProperties_userName": {
+			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_orders_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$top=1&$skip={skip}"

@@ -39,6 +39,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_Semantic'"
 		},
+		"RestService_bo_businessPartners_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bo_businessPartners'"
+		},
 		"RestService_bo_invoices_incparam_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bo_invoices_incparam'"
@@ -50,6 +54,10 @@
 		"RestService_bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bondura'"
+		},
+		"RestService_bse_businessPartners_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bse_businessPartners'"
 		},
 		"RestService_orders_password": {
 			"type": "secureString",
@@ -123,6 +131,14 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_bo_businessPartners_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/BusinessPartners?$count=true&$skip={skip}"
+		},
+		"RestService_bo_businessPartners_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_bo_invoices_incparam_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
@@ -146,6 +162,14 @@
 		"RestService_bondura_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"RestService_bse_businessPartners_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/BusinessPartners?$count=True"
+		},
+		"RestService_bse_businessPartners_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_orders_properties_typeProperties_url": {
 			"type": "string",
@@ -321,6 +345,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestService_bo_businessPartners')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_bo_businessPartners_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_bo_businessPartners_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_bo_businessPartners_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestService_bo_invoices_incparam')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -375,6 +419,26 @@
 					"password": {
 						"type": "SecureString",
 						"value": "[parameters('RestService_bondura_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/RestService_bse_businessPartners')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_bse_businessPartners_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_bse_businessPartners_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_bse_businessPartners_password')]"
 					}
 				}
 			},
@@ -606,78 +670,6 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "Budgets_Dump"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets_lines')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "BudgetScenario",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "PrecentOfAnnualBudgetAmount",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "RowNumber",
-						"type": "smallint",
-						"precision": 5
-					},
-					{
-						"name": "BudgetTotCredit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "BudgetSysTotCredit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "m_ds",
-						"type": "nvarchar"
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Budgets_Lines"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_invoives_all_src')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Invoices_Dump"
 				}
 			},
 			"dependsOn": [
