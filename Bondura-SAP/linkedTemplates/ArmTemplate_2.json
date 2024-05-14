@@ -409,7 +409,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "GET",
 								"paginationRules": {
-									"QueryParameters.{skip}": "RANGE:0:85:1"
+									"QueryParameters.{skip}": "RANGE:0:1960:1"
 								}
 							},
 							"sink": {
@@ -443,7 +443,7 @@
 										},
 										"sink": {
 											"name": "CardCode",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -506,7 +506,7 @@
 										},
 										"sink": {
 											"name": "ContactEmployees_CardCode",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -591,7 +591,6 @@
 								"type": "AzureSqlSink",
 								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
 								"disableMetricsCollection": false
 							},
 							"enableStaging": false,

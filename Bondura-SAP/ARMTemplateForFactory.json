@@ -137,7 +137,7 @@
 		},
 		"RestService_bo_businessPartners_properties_typeProperties_userName": {
 			"type": "string",
-			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_bo_invoices_incparam_properties_typeProperties_url": {
 			"type": "string",
@@ -459,7 +459,7 @@
 								"requestInterval": "00.00:00:00.010",
 								"requestMethod": "GET",
 								"paginationRules": {
-									"QueryParameters.{skip}": "RANGE:0:85:1"
+									"QueryParameters.{skip}": "RANGE:0:1960:1"
 								}
 							},
 							"sink": {
@@ -493,7 +493,7 @@
 										},
 										"sink": {
 											"name": "CardCode",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -556,7 +556,7 @@
 										},
 										"sink": {
 											"name": "ContactEmployees_CardCode",
-											"type": "Int32"
+											"type": "String"
 										}
 									},
 									{
@@ -645,7 +645,6 @@
 								"type": "AzureSqlSink",
 								"writeBehavior": "insert",
 								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
 								"disableMetricsCollection": false
 							},
 							"enableStaging": false,

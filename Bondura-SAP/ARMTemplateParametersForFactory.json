@@ -102,7 +102,7 @@
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/BusinessPartners?$count=true&$skip={skip}"
 		},
 		"RestService_bo_businessPartners_properties_typeProperties_userName": {
-			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
 		"RestService_bo_invoices_incparam_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Invoices"
