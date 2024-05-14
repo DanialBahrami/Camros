@@ -1,0 +1,167 @@
+{
+	"name": "pipeline_bo_businessPartners",
+	"properties": {
+		"activities": [
+			{
+				"name": "api_call",
+				"type": "Copy",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "RestSource",
+						"additionalColumns": [
+							{
+								"name": "m_ds",
+								"value": "Bondura"
+							}
+						],
+						"httpRequestTimeout": "00:01:40",
+						"requestInterval": "00.00:00:00.010",
+						"requestMethod": "GET",
+						"paginationRules": {
+							"QueryParameters.{skip}": "RANGE:0:85:1"
+						}
+					},
+					"sink": {
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
+					},
+					"enableStaging": false,
+					"enableSkipIncompatibleRow": true,
+					"logSettings": {
+						"enableCopyActivityLog": true,
+						"copyActivityLogSettings": {
+							"logLevel": "Warning",
+							"enableReliableLogging": false
+						},
+						"logLocationSettings": {
+							"linkedServiceName": {
+								"referenceName": "linkedService_bo_inc_log_blob",
+								"type": "LinkedServiceReference"
+							}
+						}
+					},
+					"translator": {
+						"type": "TabularTranslator",
+						"mappings": [
+							{
+								"source": {
+									"path": "$['value'][0]['CardCode']"
+								},
+								"sink": {
+									"name": "CardCode",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['CardName']"
+								},
+								"sink": {
+									"name": "CardName",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['CardType']"
+								},
+								"sink": {
+									"name": "CardType",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['Currency']"
+								},
+								"sink": {
+									"name": "Currency",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['City']"
+								},
+								"sink": {
+									"name": "City",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['Country']"
+								},
+								"sink": {
+									"name": "Country",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['PeymentMethodCode']"
+								},
+								"sink": {
+									"name": "PeymentMethodCode",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['ContactEmployees'][0]['CardCode']"
+								},
+								"sink": {
+									"name": "ContactEmployees_CardCode",
+									"type": "Int32"
+								}
+							},
+							{
+								"source": {
+									"path": "$['value'][0]['ContactEmployees'][0]['Name']"
+								},
+								"sink": {
+									"name": "ContactEmployees_Name",
+									"type": "String"
+								}
+							},
+							{
+								"source": {
+									"path": "$['m_ds']"
+								},
+								"sink": {
+									"name": "m_ds",
+									"type": "String"
+								}
+							}
+						]
+					}
+				},
+				"inputs": [
+					{
+						"referenceName": "RestResource_bo_businessPartners",
+						"type": "DatasetReference"
+					}
+				],
+				"outputs": [
+					{
+						"referenceName": "AzureSqlTable_bo_businessPartners",
+						"type": "DatasetReference"
+					}
+				]
+			}
+		],
+		"annotations": []
+	}
+}

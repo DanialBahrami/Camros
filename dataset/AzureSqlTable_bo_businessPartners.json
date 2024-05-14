@@ -1,0 +1,16 @@
+{
+	"name": "AzureSqlTable_bo_businessPartners",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "BusinessPartners"
+		}
+	}
+}

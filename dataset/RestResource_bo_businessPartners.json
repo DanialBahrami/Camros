@@ -1,0 +1,12 @@
+{
+	"name": "RestResource_bo_businessPartners",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "RestService_bo_businessPartners",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"schema": []
+	}
+}
