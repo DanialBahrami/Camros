@@ -91,6 +91,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
+		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_bo_sap_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -5334,6 +5342,32 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_bo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_bo_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_bo_sap')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_bo_sap_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlDatabase_Bondura')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -6319,7 +6353,6 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> apiOrders",
 						"apiOrders foldDown(unroll(body.value.DocumentLines),",
 						"     mapColumn(",

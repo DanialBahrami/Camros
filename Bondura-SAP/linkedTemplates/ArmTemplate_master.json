@@ -91,6 +91,14 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
+		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_bo_sap_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -300,11 +308,11 @@
 					"link_bo_sap_password": {
 						"value": "[parameters('link_bo_sap_password')]"
 					},
-					"linkedService_bo_budgets_connectionString": {
-						"value": "[parameters('linkedService_bo_budgets_connectionString')]"
+					"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_bo_properties_typeProperties_baseUrl')]"
 					},
-					"linkedService_bo_inc_log_blob_connectionString": {
-						"value": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
+					"AzureKeyVault_bo_sap_properties_typeProperties_baseUrl": {
+						"value": "[parameters('AzureKeyVault_bo_sap_properties_typeProperties_baseUrl')]"
 					},
 					"BonduraServiceLayer_properties_typeProperties_url": {
 						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"
@@ -419,6 +427,12 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"linkedService_bo_budgets_connectionString": {
+						"value": "[parameters('linkedService_bo_budgets_connectionString')]"
+					},
+					"linkedService_bo_inc_log_blob_connectionString": {
+						"value": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
 					},
 					"linkedService_bo_log_budgets_lines_connectionString": {
 						"value": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"

@@ -79,13 +79,13 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'link_bo_sap'"
 		},
-		"linkedService_bo_budgets_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_budgets'"
+		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
 		},
-		"linkedService_bo_inc_log_blob_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_inc_log_blob'"
+		"AzureKeyVault_bo_sap_properties_typeProperties_baseUrl": {
+			"type": "string",
+			"defaultValue": "https://camrosKeys.vault.azure.net/"
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
@@ -229,6 +229,32 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('AzureBlobStorage_json_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_bo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_bo_properties_typeProperties_baseUrl')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureKeyVault_bo_sap')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureKeyVault",
+				"typeProperties": {
+					"baseUrl": "[parameters('AzureKeyVault_bo_sap_properties_typeProperties_baseUrl')]"
 				}
 			},
 			"dependsOn": []
@@ -558,32 +584,6 @@
 						"type": "SecureString",
 						"value": "[parameters('link_bo_sap_password')]"
 					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/linkedService_bo_budgets')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('linkedService_bo_budgets_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/linkedService_bo_inc_log_blob')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
 				}
 			},
 			"dependsOn": []

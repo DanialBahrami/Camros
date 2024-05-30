@@ -68,6 +68,12 @@
 		"linkedService_bo_log_budgets_lines_connectionString": {
 			"value": ""
 		},
+		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
+			"value": "https://camrosKeys.vault.azure.net/"
+		},
+		"AzureKeyVault_bo_sap_properties_typeProperties_baseUrl": {
+			"value": "https://camrosKeys.vault.azure.net/"
+		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
