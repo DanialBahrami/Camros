@@ -6,12 +6,172 @@
 			"type": "string",
 			"metadata": "Data Factory name",
 			"defaultValue": "Bondura-SAP"
+		},
+		"linkedService_bo_log_budgets_lines_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		}
 	},
 	"variables": {
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/linkedService_bo_log_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobStorage",
+				"typeProperties": {
+					"connectionString": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntime-selfhosted')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "SelfHosted",
+				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [
+					{
+						"name": "FutureAnnualExpensesCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualExpensesDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualRevenuesCredit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureAnnualRevenuesDebit",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureRevenuesDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "FutureRevenuesDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "ParentAccPercent",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "StartofFiscalYear",
+						"type": "datetimeoffset",
+						"scale": 7
+					},
+					{
+						"name": "ParentAccountKey",
+						"type": "nvarchar"
+					},
+					{
+						"name": "TotalAnnualBudgetDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceDebitSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetDebitLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "TotalAnnualBudgetCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceCreditSys",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "BudgetBalanceCreditLoc",
+						"type": "float",
+						"precision": 15
+					},
+					{
+						"name": "DivisionCode",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "AccountCode",
+						"type": "nvarchar"
+					},
+					{
+						"name": "Numerator",
+						"type": "int",
+						"precision": 10
+					},
+					{
+						"name": "BudgetScenario",
+						"type": "int",
+						"precision": 10
+					}
+				],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "Budgets_Dump"
+				}
+			},
+			"dependsOn": []
+		},
 		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets_lines')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
@@ -2176,64 +2336,6 @@
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_invoices_se')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_Bondura_SE_invoives",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_orders",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_orders_bo')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_bo_orders",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"QueryParamInc": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "@dataset().QueryParamInc",
-						"type": "Expression"
-					}
-				},
 				"schema": []
 			},
 			"dependsOn": []

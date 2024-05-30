@@ -51,6 +51,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bo_orders'"
 		},
+		"RestService_bo_orders_pag_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bo_orders_pag'"
+		},
 		"RestService_bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bondura'"
@@ -70,6 +74,10 @@
 		"SapEcc_Bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
+		},
+		"link_bo_sap_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'link_bo_sap'"
 		},
 		"linkedService_bo_budgets_connectionString": {
 			"type": "secureString",
@@ -155,6 +163,14 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_bo_orders_pag_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$skip={skip}"
+		},
+		"RestService_bo_orders_pag_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_bondura_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -192,6 +208,14 @@
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
 		"SapEcc_Bondura_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"link_bo_sap_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"link_bo_sap_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
@@ -255,6 +279,9 @@
 					"RestService_bo_orders_password": {
 						"value": "[parameters('RestService_bo_orders_password')]"
 					},
+					"RestService_bo_orders_pag_password": {
+						"value": "[parameters('RestService_bo_orders_pag_password')]"
+					},
 					"RestService_bondura_password": {
 						"value": "[parameters('RestService_bondura_password')]"
 					},
@@ -270,14 +297,14 @@
 					"SapEcc_Bondura_password": {
 						"value": "[parameters('SapEcc_Bondura_password')]"
 					},
+					"link_bo_sap_password": {
+						"value": "[parameters('link_bo_sap_password')]"
+					},
 					"linkedService_bo_budgets_connectionString": {
 						"value": "[parameters('linkedService_bo_budgets_connectionString')]"
 					},
 					"linkedService_bo_inc_log_blob_connectionString": {
 						"value": "[parameters('linkedService_bo_inc_log_blob_connectionString')]"
-					},
-					"linkedService_bo_log_budgets_lines_connectionString": {
-						"value": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
 					},
 					"BonduraServiceLayer_properties_typeProperties_url": {
 						"value": "[parameters('BonduraServiceLayer_properties_typeProperties_url')]"
@@ -333,6 +360,12 @@
 					"RestService_bo_orders_properties_typeProperties_userName": {
 						"value": "[parameters('RestService_bo_orders_properties_typeProperties_userName')]"
 					},
+					"RestService_bo_orders_pag_properties_typeProperties_url": {
+						"value": "[parameters('RestService_bo_orders_pag_properties_typeProperties_url')]"
+					},
+					"RestService_bo_orders_pag_properties_typeProperties_userName": {
+						"value": "[parameters('RestService_bo_orders_pag_properties_typeProperties_userName')]"
+					},
 					"RestService_bondura_properties_typeProperties_url": {
 						"value": "[parameters('RestService_bondura_properties_typeProperties_url')]"
 					},
@@ -362,6 +395,12 @@
 					},
 					"SapEcc_Bondura_properties_typeProperties_username": {
 						"value": "[parameters('SapEcc_Bondura_properties_typeProperties_username')]"
+					},
+					"link_bo_sap_properties_typeProperties_url": {
+						"value": "[parameters('link_bo_sap_properties_typeProperties_url')]"
+					},
+					"link_bo_sap_properties_typeProperties_userName": {
+						"value": "[parameters('link_bo_sap_properties_typeProperties_userName')]"
 					}
 				}
 			},
@@ -380,6 +419,9 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
+					},
+					"linkedService_bo_log_budgets_lines_connectionString": {
+						"value": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
 					}
 				}
 			},

@@ -38,6 +38,9 @@
 		"RestService_bo_orders_password": {
 			"value": ""
 		},
+		"RestService_bo_orders_pag_password": {
+			"value": ""
+		},
 		"RestService_bondura_password": {
 			"value": ""
 		},
@@ -51,6 +54,9 @@
 			"value": ""
 		},
 		"SapEcc_Bondura_password": {
+			"value": ""
+		},
+		"link_bo_sap_password": {
 			"value": ""
 		},
 		"linkedService_bo_budgets_connectionString": {
@@ -116,6 +122,12 @@
 		"RestService_bo_orders_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_bo_orders_pag_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$skip={skip}"
+		},
+		"RestService_bo_orders_pag_properties_typeProperties_userName": {
+			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_bondura_properties_typeProperties_url": {
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
@@ -144,6 +156,12 @@
 			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
 		"SapEcc_Bondura_properties_typeProperties_username": {
+			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"link_bo_sap_properties_typeProperties_url": {
+			"value": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"link_bo_sap_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		}
 	}

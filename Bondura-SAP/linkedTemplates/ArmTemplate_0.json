@@ -51,6 +51,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bo_orders'"
 		},
+		"RestService_bo_orders_pag_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'RestService_bo_orders_pag'"
+		},
 		"RestService_bondura_password": {
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'RestService_bondura'"
@@ -71,6 +75,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
+		"link_bo_sap_password": {
+			"type": "secureString",
+			"metadata": "Secure string for 'password' of 'link_bo_sap'"
+		},
 		"linkedService_bo_budgets_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_budgets'"
@@ -78,10 +86,6 @@
 		"linkedService_bo_inc_log_blob_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_inc_log_blob'"
-		},
-		"linkedService_bo_log_budgets_lines_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
 		"BonduraServiceLayer_properties_typeProperties_url": {
 			"type": "string",
@@ -155,6 +159,14 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA_SE\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
+		"RestService_bo_orders_pag_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders?$count=true&$skip={skip}"
+		},
+		"RestService_bo_orders_pag_properties_typeProperties_userName": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
 		"RestService_bondura_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
@@ -192,6 +204,14 @@
 			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 		},
 		"SapEcc_Bondura_properties_typeProperties_username": {
+			"type": "string",
+			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"link_bo_sap_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+		},
+		"link_bo_sap_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		}
@@ -405,6 +425,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/RestService_bo_orders_pag')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('RestService_bo_orders_pag_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('RestService_bo_orders_pag_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('RestService_bo_orders_pag_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/RestService_bondura')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -503,6 +543,26 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/link_bo_sap')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('link_bo_sap_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Basic",
+					"userName": "[parameters('link_bo_sap_properties_typeProperties_userName')]",
+					"password": {
+						"type": "SecureString",
+						"value": "[parameters('link_bo_sap_password')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/linkedService_bo_budgets')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -527,154 +587,6 @@
 				}
 			},
 			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/linkedService_bo_log_budgets_lines')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureBlobStorage",
-				"typeProperties": {
-					"connectionString": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "AzureSqlDatabase_Bondura",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "AzureSqlTable",
-				"schema": [
-					{
-						"name": "FutureAnnualExpensesCreditSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureAnnualExpensesCreditLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureAnnualExpensesDebitSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureAnnualExpensesDebitLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureAnnualRevenuesCredit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureAnnualRevenuesDebit",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureRevenuesDebitSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "FutureRevenuesDebitLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "ParentAccPercent",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "StartofFiscalYear",
-						"type": "datetimeoffset",
-						"scale": 7
-					},
-					{
-						"name": "ParentAccountKey",
-						"type": "nvarchar"
-					},
-					{
-						"name": "TotalAnnualBudgetDebitSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "BudgetBalanceDebitSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "BudgetBalanceDebitLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "TotalAnnualBudgetDebitLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "TotalAnnualBudgetCreditSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "TotalAnnualBudgetCreditLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "BudgetBalanceCreditSys",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "BudgetBalanceCreditLoc",
-						"type": "float",
-						"precision": 15
-					},
-					{
-						"name": "DivisionCode",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "AccountCode",
-						"type": "nvarchar"
-					},
-					{
-						"name": "Numerator",
-						"type": "int",
-						"precision": 10
-					},
-					{
-						"name": "BudgetScenario",
-						"type": "int",
-						"precision": 10
-					}
-				],
-				"typeProperties": {
-					"schema": "dbo",
-					"table": "Budgets_Dump"
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
-			]
 		}
 	]
 }
