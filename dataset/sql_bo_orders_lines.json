@@ -1,0 +1,16 @@
+{
+	"name": "sql_bo_orders_lines",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureSqlDatabase_Bondura",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "order_lines"
+		}
+	}
+}

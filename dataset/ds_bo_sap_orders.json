@@ -1,0 +1,15 @@
+{
+	"name": "ds_bo_sap_orders",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "link_bo_sap",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": "Orders"
+		},
+		"schema": []
+	}
+}
