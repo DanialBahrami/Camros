@@ -8,6 +8,10 @@
 				"dependsOn": [],
 				"userProperties": [],
 				"typeProperties": {
+					"expression": {
+						"value": "@empty(variables('nextLink'))",
+						"type": "Expression"
+					},
 					"activities": [
 						{
 							"name": "ETL",
