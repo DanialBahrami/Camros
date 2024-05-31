@@ -1,5 +1,5 @@
 {
-	"name": "pipeline1",
+	"name": "pipeline_test",
 	"properties": {
 		"activities": [
 			{
@@ -81,7 +81,7 @@
 				"typeProperties": {
 					"variableName": "NextLink",
 					"value": {
-						"value": "@activity('Pagination').output.@odata.nextLink",
+						"value": "@activity('Pagination').output['@odata.nextLink']\n",
 						"type": "Expression"
 					}
 				}
