@@ -16,7 +16,14 @@
 						{
 							"name": "ApiCallPagination",
 							"type": "WebActivity",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "ETLDocLines",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -27,7 +34,10 @@
 							"userProperties": [],
 							"typeProperties": {
 								"method": "GET",
-								"url": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders",
+								"url": {
+									"value": "@concat(variables('baseUrl'),variables('nextLink'))",
+									"type": "Expression"
+								},
 								"authentication": {
 									"type": "Basic",
 									"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
@@ -69,14 +79,7 @@
 						{
 							"name": "ETLDocLines",
 							"type": "ExecuteDataFlow",
-							"dependsOn": [
-								{
-									"activity": "GetNextLink",
-									"dependencyConditions": [
-										"Completed"
-									]
-								}
-							],
+							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -88,7 +91,15 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "df_bo_orders_doclines",
-									"type": "DataFlowReference"
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"apiOrders": {
+											"QueryParam": {
+												"value": "@variables('nextLink')",
+												"type": "Expression"
+											}
+										}
+									}
 								},
 								"compute": {
 									"coreCount": 16,
@@ -104,13 +115,12 @@
 		],
 		"variables": {
 			"baseUrl": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
 			},
 			"nextLink": {
-				"type": "String"
-			},
-			"hasMorePages": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "Orders"
 			}
 		},
 		"annotations": []
