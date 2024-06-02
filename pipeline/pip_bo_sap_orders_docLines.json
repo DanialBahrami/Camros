@@ -14,9 +14,69 @@
 					},
 					"activities": [
 						{
-							"name": "ETL",
-							"type": "ExecuteDataFlow",
+							"name": "ApiCallPagination",
+							"type": "WebActivity",
 							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/Orders",
+								"authentication": {
+									"type": "Basic",
+									"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+									"password": {
+										"type": "AzureKeyVaultSecret",
+										"store": {
+											"referenceName": "AzureKeyVault_bo",
+											"type": "LinkedServiceReference"
+										},
+										"secretName": "Bondura"
+									}
+								}
+							}
+						},
+						{
+							"name": "GetNextLink",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "ApiCallPagination",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "nextLink",
+								"value": {
+									"value": "@activity('ApiCallPagination').output['@odata.nextLink']\n",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "ETLDocLines",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [
+								{
+									"activity": "GetNextLink",
+									"dependencyConditions": [
+										"Completed"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,

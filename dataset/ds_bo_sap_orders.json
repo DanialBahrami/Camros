@@ -5,10 +5,18 @@
 			"referenceName": "link_bo_sap",
 			"type": "LinkedServiceReference"
 		},
+		"parameters": {
+			"QueryParam": {
+				"type": "string"
+			}
+		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
-			"relativeUrl": "Orders"
+			"relativeUrl": {
+				"value": "@dataset().QueryParam",
+				"type": "Expression"
+			}
 		},
 		"schema": []
 	}
