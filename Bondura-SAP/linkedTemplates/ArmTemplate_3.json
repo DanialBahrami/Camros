@@ -2014,7 +2014,7 @@
 										"method": "GET",
 										"headers": {},
 										"url": {
-											"value": "@concat(variables('baseUrl'),variables('nextLink'))",
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
 											"type": "Expression"
 										},
 										"authentication": {
@@ -2050,7 +2050,7 @@
 									"typeProperties": {
 										"variableName": "nextLink",
 										"value": {
-											"value": "@activity('ApiCallPagination').output['@odata.nextLink']\n",
+											"value": "@replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' )",
 											"type": "Expression"
 										}
 									}
@@ -2105,7 +2105,7 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Orders"
+						"defaultValue": "Orders?$skip=0"
 					}
 				},
 				"annotations": []
