@@ -20,7 +20,7 @@
 								{
 									"activity": "ETLDocLines",
 									"dependencyConditions": [
-										"Completed"
+										"Succeeded"
 									]
 								}
 							],
@@ -59,7 +59,7 @@
 								{
 									"activity": "ApiCallPagination",
 									"dependencyConditions": [
-										"Completed"
+										"Succeeded"
 									]
 								}
 							],
