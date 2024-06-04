@@ -79,7 +79,14 @@
 						{
 							"name": "ETLDocLines",
 							"type": "ExecuteDataFlow",
-							"dependsOn": [],
+							"dependsOn": [
+								{
+									"activity": "ETLOrders",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
 							"policy": {
 								"timeout": "0.12:00:00",
 								"retry": 0,
@@ -94,6 +101,38 @@
 									"type": "DataFlowReference",
 									"datasetParameters": {
 										"apiOrders": {
+											"QueryParam": {
+												"value": "@variables('nextLink')",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 16,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "ETLOrders",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "df_bo_orders",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"ApiCall": {
 											"QueryParam": {
 												"value": "@variables('nextLink')",
 												"type": "Expression"
