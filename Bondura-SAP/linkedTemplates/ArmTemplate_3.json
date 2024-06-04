@@ -2265,7 +2265,14 @@
 								{
 									"name": "ETLDocLines",
 									"type": "ExecuteDataFlow",
-									"dependsOn": [],
+									"dependsOn": [
+										{
+											"activity": "ETLOrders",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
 									"policy": {
 										"timeout": "0.12:00:00",
 										"retry": 0,
@@ -2296,6 +2303,42 @@
 										},
 										"traceLevel": "Fine"
 									}
+								},
+								{
+									"name": "ETLOrders",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_orders",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ApiCall": {
+													"QueryParam": {
+														"value": "@variables('nextLink')",
+														"type": "Expression"
+													}
+												},
+												"SinkToSQLTable": {}
+											},
+											"linkedServiceParameters": {}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							],
 							"timeout": "0.12:00:00"
@@ -2318,7 +2361,8 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bo_orders')]"
 			]
 		},
 		{
