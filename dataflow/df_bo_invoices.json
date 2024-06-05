@@ -36,6 +36,7 @@
 				"     ),",
 				"     allowSchemaDrift: true,",
 				"     validateSchema: false,",
+				"     limit: 100,",
 				"     httpMethod: 'GET',",
 				"     timeout: 30,",
 				"     requestInterval: 0,",
