@@ -1,0 +1,24 @@
+{
+	"name": "ds_bo_sap_invoices",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "link_bo_sap",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"QueryParam": {
+				"type": "string",
+				"defaultValue": "Invoices"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().QueryParam",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}
