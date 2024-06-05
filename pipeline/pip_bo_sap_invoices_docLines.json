@@ -9,7 +9,7 @@
 				"userProperties": [],
 				"typeProperties": {
 					"expression": {
-						"value": "@bool(variables('nextLink'))",
+						"value": "@empty(variables('nextLink'))",
 						"type": "Expression"
 					},
 					"activities": [
@@ -184,7 +184,7 @@
 							"typeProperties": {
 								"variableName": "nextLink",
 								"value": {
-									"value": "0",
+									"value": "\"\"",
 									"type": "Expression"
 								}
 							}
