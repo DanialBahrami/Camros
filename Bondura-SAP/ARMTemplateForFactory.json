@@ -245,7 +245,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@empty(variables('nextLink'))",
+								"value": "@bool(variables('nextLink'))",
 								"type": "Expression"
 							},
 							"activities": [
@@ -427,7 +427,7 @@
 									"typeProperties": {
 										"variableName": "nextLink",
 										"value": {
-											"value": "''",
+											"value": "0",
 											"type": "Expression"
 										}
 									}
@@ -447,7 +447,7 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Invoices?$skip=0&$filter=DocDate gt '2024-01-01'"
+						"defaultValue": "Invoices?$skip=0"
 					}
 				},
 				"annotations": []
@@ -6966,7 +6966,6 @@
 						"     timeout: 30,",
 						"     requestInterval: 0,",
 						"     headers: ['m_ds' -> 'Bondura'],",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
 						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
 						"     mapColumn(",
@@ -7046,6 +7045,7 @@
 						"     ),",
 						"     allowSchemaDrift: true,",
 						"     validateSchema: false,",
+						"     limit: 100,",
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
@@ -7058,7 +7058,6 @@
 						"          Address2 = body.value.Address2,",
 						"          AgentCode = body.value.AgentCode,",
 						"          AnnualInvoiceDeclarationReference = body.value.AnnualInvoiceDeclarationReference,",
-						"          ApplyCurrentVATRatesForDownPaymentsToDraw = body.value.ApplyCurrentVATRatesForDownPaymentsToDraw,",
 						"          ApplyTaxOnFirstInstallment = body.value.ApplyTaxOnFirstInstallment,",
 						"          ArchiveNonremovableSalesQuotation = body.value.ArchiveNonremovableSalesQuotation,",
 						"          AssetValueDate = body.value.AssetValueDate,",
@@ -7178,13 +7177,6 @@
 						"          DocumentSubType = body.value.DocumentSubType,",
 						"          DocumentTaxID = body.value.DocumentTaxID,",
 						"          DocumentsOwner = body.value.DocumentsOwner,",
-						"          DownPaymentAmount = body.value.DownPaymentAmount,",
-						"          DownPaymentAmountFC = body.value.DownPaymentAmountFC,",
-						"          DownPaymentAmountSC = body.value.DownPaymentAmountSC,",
-						"          DownPaymentPercentage = body.value.DownPaymentPercentage,",
-						"          DownPaymentStatus = body.value.DownPaymentStatus,",
-						"          DownPaymentType = body.value.DownPaymentType,",
-						"          DownPaymentsToDraw = body.value.DownPaymentsToDraw,",
 						"          ECommerceGSTIN = body.value.ECommerceGSTIN,",
 						"          ECommerceOperator = body.value.ECommerceOperator,",
 						"          EDocErrorCode = body.value.EDocErrorCode,",
