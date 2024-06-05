@@ -81,7 +81,7 @@
 							"type": "ExecuteDataFlow",
 							"dependsOn": [
 								{
-									"activity": "ETLOrders",
+									"activity": "ETLInvoices",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -97,7 +97,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "df_bo_orders_doclines",
+									"referenceName": "df_bo_invoices_doclines",
 									"type": "DataFlowReference",
 									"datasetParameters": {
 										"apiOrders": {
@@ -116,7 +116,7 @@
 							}
 						},
 						{
-							"name": "ETLOrders",
+							"name": "ETLInvoices",
 							"type": "ExecuteDataFlow",
 							"dependsOn": [],
 							"policy": {
@@ -129,7 +129,7 @@
 							"userProperties": [],
 							"typeProperties": {
 								"dataflow": {
-									"referenceName": "df_bo_orders",
+									"referenceName": "df_bo_invoices",
 									"type": "DataFlowReference",
 									"datasetParameters": {
 										"ApiCall": {
@@ -170,7 +170,7 @@
 									]
 								},
 								{
-									"activity": "ETLOrders",
+									"activity": "ETLInvoices",
 									"dependencyConditions": [
 										"Failed"
 									]
@@ -201,7 +201,7 @@
 			},
 			"nextLink": {
 				"type": "String",
-				"defaultValue": "Orders?$skip=0"
+				"defaultValue": "Invoices?$skip=0&$filter=DocDate gt '2024-01-01'"
 			}
 		},
 		"annotations": []
