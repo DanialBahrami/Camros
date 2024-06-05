@@ -2285,6 +2285,7 @@
 						"     timeout: 30,",
 						"     requestInterval: 0,",
 						"     headers: ['m_ds' -> 'Bondura'],",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
 						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
 						"     mapColumn(",
@@ -3706,7 +3707,7 @@
 									"type": "ExecuteDataFlow",
 									"dependsOn": [
 										{
-											"activity": "ETLOrders",
+											"activity": "ETLInvoices",
 											"dependencyConditions": [
 												"Succeeded"
 											]
@@ -3722,7 +3723,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"dataflow": {
-											"referenceName": "df_bo_orders_doclines",
+											"referenceName": "df_bo_invoices_doclines",
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
@@ -3744,7 +3745,7 @@
 									}
 								},
 								{
-									"name": "ETLOrders",
+									"name": "ETLInvoices",
 									"type": "ExecuteDataFlow",
 									"dependsOn": [],
 									"policy": {
@@ -3757,7 +3758,7 @@
 									"userProperties": [],
 									"typeProperties": {
 										"dataflow": {
-											"referenceName": "df_bo_orders",
+											"referenceName": "df_bo_invoices",
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
@@ -3801,7 +3802,7 @@
 											]
 										},
 										{
-											"activity": "ETLOrders",
+											"activity": "ETLInvoices",
 											"dependencyConditions": [
 												"Failed"
 											]
@@ -3835,14 +3836,14 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Orders?$skip=0"
+						"defaultValue": "Invoices?$skip=0&$filter=DocDate gt '2024-01-01'"
 					}
 				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bo_orders')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]"
 			]
 		},
 		{
