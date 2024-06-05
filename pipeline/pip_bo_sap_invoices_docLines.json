@@ -1,5 +1,5 @@
 {
-	"name": "pip_bo_sap_orders_docLines",
+	"name": "pip_bo_sap_invoices_docLines",
 	"properties": {
 		"activities": [
 			{
