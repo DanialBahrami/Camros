@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "Invoices_Lines"
+			"table": "stg_invoices_lines"
 		}
 	}
 }
