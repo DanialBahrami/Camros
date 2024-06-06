@@ -109,8 +109,8 @@
 									}
 								},
 								"compute": {
-									"coreCount": 16,
-									"computeType": "General"
+									"coreCount": 32,
+									"computeType": "MemoryOptimized"
 								},
 								"traceLevel": "Fine"
 							}
@@ -140,9 +140,9 @@
 										}
 									}
 								},
-								"compute": {
-									"coreCount": 16,
-									"computeType": "General"
+								"integrationRuntime": {
+									"referenceName": "integrationRuntimeLarge",
+									"type": "IntegrationRuntimeReference"
 								},
 								"traceLevel": "Fine"
 							}
@@ -171,6 +171,12 @@
 								},
 								{
 									"activity": "ETLInvoices",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "CheckRepeat",
 									"dependencyConditions": [
 										"Failed"
 									]
@@ -225,7 +231,7 @@
 			},
 			"nextLink": {
 				"type": "String",
-				"defaultValue": "Invoices?$skip=8710"
+				"defaultValue": "Invoices?$skip=8000"
 			},
 			"repeat": {
 				"type": "Boolean",
