@@ -477,7 +477,7 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Invoices?$skip=8000"
+						"defaultValue": "Invoices?$skip=0"
 					},
 					"repeat": {
 						"type": "Boolean",
@@ -5704,7 +5704,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Invoices_Master"
+					"table": "stg_invoices_master"
 				}
 			},
 			"dependsOn": [
@@ -5725,7 +5725,7 @@
 				"schema": [],
 				"typeProperties": {
 					"schema": "dbo",
-					"table": "Invoices_Lines"
+					"table": "stg_invoices_lines"
 				}
 			},
 			"dependsOn": [
@@ -6389,27 +6389,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/integrationRuntimeLarge')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "Managed",
-				"typeProperties": {
-					"computeProperties": {
-						"location": "AutoResolve",
-						"dataFlowProperties": {
-							"computeType": "General",
-							"coreCount": 16,
-							"timeToLive": 10,
-							"cleanup": false,
-							"customProperties": []
-						}
-					}
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/Json_Pars')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -6892,7 +6871,6 @@
 						"     timeout: 30,",
 						"     requestInterval: 0,",
 						"     headers: ['m_ds' -> 'Bondura'],",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
 						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
 						"     mapColumn(",
@@ -6976,7 +6954,6 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ApiCall",
 						"ApiCall foldDown(unrollMultiple(body.value,body.value.DocumentAdditionalExpenses),",
 						"     mapColumn(",
@@ -7655,7 +7632,6 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ApiCall",
 						"ApiCall foldDown(unroll(body.value),",
 						"     mapColumn(",
@@ -7973,7 +7949,6 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
-						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> apiOrders",
 						"apiOrders foldDown(unroll(body.value.DocumentLines),",
 						"     mapColumn(",
