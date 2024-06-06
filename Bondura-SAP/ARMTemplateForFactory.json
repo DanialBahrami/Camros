@@ -349,8 +349,8 @@
 										},
 										"staging": {},
 										"compute": {
-											"coreCount": 32,
-											"computeType": "MemoryOptimized"
+											"coreCount": 16,
+											"computeType": "General"
 										},
 										"traceLevel": "Fine"
 									}
@@ -383,9 +383,9 @@
 											}
 										},
 										"staging": {},
-										"integrationRuntime": {
-											"referenceName": "integrationRuntimeLarge",
-											"type": "IntegrationRuntimeReference"
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
 										},
 										"traceLevel": "Fine"
 									}
@@ -489,7 +489,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
-				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntimeLarge')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
 			]
 		},
@@ -6390,16 +6389,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/integrationRuntime-selfhosted')]",
-			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "SelfHosted",
-				"typeProperties": {}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/integrationRuntimeLarge')]",
 			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
 			"apiVersion": "2018-06-01",
@@ -6903,6 +6892,7 @@
 						"     timeout: 30,",
 						"     requestInterval: 0,",
 						"     headers: ['m_ds' -> 'Bondura'],",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
 						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
 						"     mapColumn(",
@@ -6986,6 +6976,7 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ApiCall",
 						"ApiCall foldDown(unrollMultiple(body.value,body.value.DocumentAdditionalExpenses),",
 						"     mapColumn(",
@@ -7664,6 +7655,7 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ApiCall",
 						"ApiCall foldDown(unroll(body.value),",
 						"     mapColumn(",
@@ -7981,6 +7973,7 @@
 						"     httpMethod: 'GET',",
 						"     timeout: 30,",
 						"     requestInterval: 0,",
+						"     paginationRules: ['supportRFC5988' -> 'true'],",
 						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> apiOrders",
 						"apiOrders foldDown(unroll(body.value.DocumentLines),",
 						"     mapColumn(",
