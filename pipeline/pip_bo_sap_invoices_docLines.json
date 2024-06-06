@@ -109,8 +109,8 @@
 									}
 								},
 								"compute": {
-									"coreCount": 32,
-									"computeType": "MemoryOptimized"
+									"coreCount": 16,
+									"computeType": "General"
 								},
 								"traceLevel": "Fine"
 							}
@@ -140,9 +140,9 @@
 										}
 									}
 								},
-								"integrationRuntime": {
-									"referenceName": "integrationRuntimeLarge",
-									"type": "IntegrationRuntimeReference"
+								"compute": {
+									"coreCount": 16,
+									"computeType": "General"
 								},
 								"traceLevel": "Fine"
 							}
