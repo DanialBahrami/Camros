@@ -349,8 +349,8 @@
 										},
 										"staging": {},
 										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
+											"coreCount": 32,
+											"computeType": "MemoryOptimized"
 										},
 										"traceLevel": "Fine"
 									}
@@ -383,9 +383,9 @@
 											}
 										},
 										"staging": {},
-										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
+										"integrationRuntime": {
+											"referenceName": "integrationRuntimeLarge",
+											"type": "IntegrationRuntimeReference"
 										},
 										"traceLevel": "Fine"
 									}
@@ -414,6 +414,12 @@
 										},
 										{
 											"activity": "ETLInvoices",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "CheckRepeat",
 											"dependencyConditions": [
 												"Failed"
 											]
@@ -471,7 +477,7 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Invoices?$skip=8710"
+						"defaultValue": "Invoices?$skip=8000"
 					},
 					"repeat": {
 						"type": "Boolean",
@@ -483,6 +489,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
+				"[concat(variables('factoryId'), '/integrationRuntimes/integrationRuntimeLarge')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
 			]
 		},
@@ -6389,6 +6396,27 @@
 			"properties": {
 				"type": "SelfHosted",
 				"typeProperties": {}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/integrationRuntimeLarge')]",
+			"type": "Microsoft.DataFactory/factories/integrationRuntimes",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "Managed",
+				"typeProperties": {
+					"computeProperties": {
+						"location": "AutoResolve",
+						"dataFlowProperties": {
+							"computeType": "General",
+							"coreCount": 16,
+							"timeToLive": 10,
+							"cleanup": false,
+							"customProperties": []
+						}
+					}
+				}
 			},
 			"dependsOn": []
 		},
