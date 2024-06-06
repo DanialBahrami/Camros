@@ -3616,7 +3616,7 @@
 						"userProperties": [],
 						"typeProperties": {
 							"expression": {
-								"value": "@empty(variables('nextLink'))",
+								"value": "@not(bool(variables('repeat')))",
 								"type": "Expression"
 							},
 							"activities": [
@@ -3679,7 +3679,7 @@
 									"typeProperties": {
 										"variableName": "nextLink",
 										"value": {
-											"value": "@replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' )",
+											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
 											"type": "Expression"
 										}
 									}
@@ -3762,7 +3762,7 @@
 									}
 								},
 								{
-									"name": "setEmpty",
+									"name": "ErrorStop",
 									"type": "SetVariable",
 									"dependsOn": [
 										{
@@ -3796,9 +3796,33 @@
 									},
 									"userProperties": [],
 									"typeProperties": {
-										"variableName": "nextLink",
+										"variableName": "repeat",
 										"value": {
-											"value": "\"\"",
+											"value": "@bool(0)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "CheckRepeat",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
 											"type": "Expression"
 										}
 									}
@@ -3818,7 +3842,11 @@
 					},
 					"nextLink": {
 						"type": "String",
-						"defaultValue": "Invoices?$skip=0"
+						"defaultValue": "Invoices?$skip=8710"
+					},
+					"repeat": {
+						"type": "Boolean",
+						"defaultValue": true
 					}
 				},
 				"annotations": []
