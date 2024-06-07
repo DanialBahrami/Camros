@@ -1,0 +1,201 @@
+{
+	"name": "pip_bo_sap_invoices_master",
+	"properties": {
+		"activities": [
+			{
+				"name": "AllPagesFetched",
+				"type": "Until",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"expression": {
+						"value": "@not(bool(variables('repeat')))",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "ApiCallPagination",
+							"type": "WebActivity",
+							"dependsOn": [
+								{
+									"activity": "ETLInvoices",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"method": "GET",
+								"url": {
+									"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+									"type": "Expression"
+								},
+								"authentication": {
+									"type": "Basic",
+									"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+									"password": {
+										"type": "AzureKeyVaultSecret",
+										"store": {
+											"referenceName": "AzureKeyVault_bo",
+											"type": "LinkedServiceReference"
+										},
+										"secretName": "Bondura"
+									}
+								}
+							}
+						},
+						{
+							"name": "GetNextLink",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "ApiCallPagination",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "nextLink",
+								"value": {
+									"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "ETLInvoices",
+							"type": "ExecuteDataFlow",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"dataflow": {
+									"referenceName": "df_bo_invoices",
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"ApiCall": {
+											"QueryParam": {
+												"value": "@variables('nextLink')",
+												"type": "Expression"
+											}
+										},
+										"SinkToSQLTable": {
+											"tableName": "sample_invoices_master"
+										}
+									}
+								},
+								"compute": {
+									"coreCount": 8,
+									"computeType": "General"
+								},
+								"traceLevel": "Fine"
+							}
+						},
+						{
+							"name": "ErrorStop",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "GetNextLink",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "ApiCallPagination",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "ETLInvoices",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "CheckRepeat",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "repeat",
+								"value": {
+									"value": "@bool(0)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "CheckRepeat",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "GetNextLink",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "repeat",
+								"value": {
+									"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
+									"type": "Expression"
+								}
+							}
+						}
+					],
+					"timeout": "0.12:00:00"
+				}
+			}
+		],
+		"variables": {
+			"baseUrl": {
+				"type": "String",
+				"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+			},
+			"nextLink": {
+				"type": "String",
+				"defaultValue": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+			},
+			"repeat": {
+				"type": "Boolean",
+				"defaultValue": true
+			}
+		},
+		"annotations": []
+	}
+}

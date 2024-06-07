@@ -1,0 +1,40 @@
+{
+	"name": "pipeline_test",
+	"properties": {
+		"activities": [
+			{
+				"name": "Data flow1",
+				"type": "ExecuteDataFlow",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataflow": {
+						"referenceName": "df_bo_invoices",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"ApiCall": {
+								"QueryParam": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+							},
+							"SinkToSQLTable": {
+								"tableName": "test_invoices"
+							}
+						}
+					},
+					"compute": {
+						"coreCount": 8,
+						"computeType": "General"
+					},
+					"traceLevel": "Fine"
+				}
+			}
+		],
+		"annotations": []
+	}
+}
