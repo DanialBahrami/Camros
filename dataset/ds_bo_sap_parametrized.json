@@ -1,0 +1,23 @@
+{
+	"name": "ds_bo_sap_parametrized",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "link_bo_sap",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ResPath": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@dataset().ResPath",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	}
+}

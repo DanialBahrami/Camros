@@ -1,5 +1,5 @@
 {
-	"name": "pip_bo_sap_invoices_master",
+	"name": "pip_api_lake",
 	"properties": {
 		"activities": [
 			{
@@ -14,11 +14,72 @@
 					},
 					"activities": [
 						{
+							"name": "CopyApiToBlob",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "RestSource",
+									"httpRequestTimeout": "00:01:40",
+									"requestInterval": "00.00:00:00.010",
+									"requestMethod": "GET"
+								},
+								"sink": {
+									"type": "JsonSink",
+									"storeSettings": {
+										"type": "AzureBlobStorageWriteSettings"
+									},
+									"formatSettings": {
+										"type": "JsonWriteSettings",
+										"filePattern": "setOfObjects"
+									}
+								},
+								"enableStaging": false
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_bo_sap_parametrized",
+									"type": "DatasetReference",
+									"parameters": {
+										"ResPath": {
+											"value": "@variables('nextLink')",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "ds_blob_bondura",
+									"type": "DatasetReference",
+									"parameters": {
+										"Directory": {
+											"value": "@pipeline().parameters.Stream",
+											"type": "Expression"
+										},
+										"FileName": {
+											"value": "@concat(variables('nextLink'), '.json')",
+											"type": "Expression"
+										}
+									}
+								}
+							]
+						},
+						{
 							"name": "ApiCallPagination",
+							"description": "call api again and get next link",
 							"type": "WebActivity",
 							"dependsOn": [
 								{
-									"activity": "ETLInvoices",
+									"activity": "CopyApiToBlob",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -44,7 +105,7 @@
 									"password": {
 										"type": "AzureKeyVaultSecret",
 										"store": {
-											"referenceName": "AzureKeyVault_bo",
+											"referenceName": "AzureKeyVault_bo_sap",
 											"type": "LinkedServiceReference"
 										},
 										"secretName": "Bondura"
@@ -53,7 +114,7 @@
 							}
 						},
 						{
-							"name": "GetNextLink",
+							"name": "SetNextLink",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
@@ -77,85 +138,11 @@
 							}
 						},
 						{
-							"name": "ETLInvoices",
-							"type": "ExecuteDataFlow",
-							"dependsOn": [],
-							"policy": {
-								"timeout": "0.12:00:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"dataflow": {
-									"referenceName": "df_bo_invoices",
-									"type": "DataFlowReference",
-									"datasetParameters": {
-										"ApiCall": {
-											"resPath": "Invoices?$skip=2622"
-										},
-										"SinkToSQLTable": {
-											"tableName": "sample_invoices_master"
-										}
-									}
-								},
-								"compute": {
-									"coreCount": 8,
-									"computeType": "General"
-								},
-								"traceLevel": "Fine"
-							}
-						},
-						{
-							"name": "ErrorStop",
+							"name": "SetRepeat",
 							"type": "SetVariable",
 							"dependsOn": [
 								{
-									"activity": "GetNextLink",
-									"dependencyConditions": [
-										"Failed"
-									]
-								},
-								{
-									"activity": "ApiCallPagination",
-									"dependencyConditions": [
-										"Failed"
-									]
-								},
-								{
-									"activity": "ETLInvoices",
-									"dependencyConditions": [
-										"Failed"
-									]
-								},
-								{
-									"activity": "CheckRepeat",
-									"dependencyConditions": [
-										"Failed"
-									]
-								}
-							],
-							"policy": {
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "repeat",
-								"value": {
-									"value": "@bool(0)",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "CheckRepeat",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "GetNextLink",
+									"activity": "SetNextLink",
 									"dependencyConditions": [
 										"Succeeded"
 									]
@@ -173,12 +160,60 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "Stop",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "CopyApiToBlob",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "ApiCallPagination",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "SetNextLink",
+									"dependencyConditions": [
+										"Failed"
+									]
+								},
+								{
+									"activity": "SetRepeat",
+									"dependencyConditions": [
+										"Failed"
+									]
+								}
+							],
+							"policy": {
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "repeat",
+								"value": {
+									"value": "@bool(0)",
+									"type": "Expression"
+								}
+							}
 						}
 					],
 					"timeout": "0.12:00:00"
 				}
 			}
 		],
+		"parameters": {
+			"Stream": {
+				"type": "string",
+				"defaultValue": "Invoices"
+			}
+		},
 		"variables": {
 			"baseUrl": {
 				"type": "String",
