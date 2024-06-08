@@ -145,6 +145,43 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_bondura')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Directory": {
+						"type": "string"
+					},
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": "bondura"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_invoices')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -154,16 +191,16 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"QueryParam": {
+					"resPath": {
 						"type": "string",
-						"defaultValue": "Invoices"
+						"defaultValue": "Invoices?$skip=2622"
 					}
 				},
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "@dataset().QueryParam",
+						"value": "@dataset().resPath",
 						"type": "Expression"
 					}
 				},
@@ -191,6 +228,32 @@
 				"typeProperties": {
 					"relativeUrl": {
 						"value": "@dataset().QueryParam",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_parametrized')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ResPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().ResPath",
 						"type": "Expression"
 					}
 				},
@@ -480,504 +543,24 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_bo_budgets')]",
+			"name": "[concat(parameters('factoryName'), '/pip_api_lake')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "api_call_all",
-						"description": "all records in AccountCode=3000",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"additionalColumns": [
-									{
-										"name": "m_ds",
-										"value": "Bondura"
-									}
-								],
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET"
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "linkedService_bo_budgets",
-										"type": "LinkedServiceReference"
-									},
-									"path": "bondura"
-								}
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "[['StartofFiscalYear']"
-										},
-										"sink": {
-											"name": "StartofFiscalYear",
-											"type": "Date"
-										}
-									},
-									{
-										"source": {
-											"path": "[['TotalAnnualBudgetCreditSys']"
-										},
-										"sink": {
-											"name": "TotalAnnualBudgetCreditSys",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "[['TotalAnnualBudgetCreditLoc']"
-										},
-										"sink": {
-											"name": "TotalAnnualBudgetCreditLoc",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "[['BudgetScenario']"
-										},
-										"sink": {
-											"name": "BudgetScenario",
-											"type": "Int16"
-										}
-									},
-									{
-										"source": {
-											"path": "$['m_ds']"
-										},
-										"sink": {
-											"name": "m_ds",
-											"type": "String"
-										}
-									}
-								],
-								"collectionReference": "$['value']"
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResource_bo_budgets",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTable_bo_budgets",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_bo_businessPartners')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "api_call",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"additionalColumns": [
-									{
-										"name": "m_ds",
-										"value": "Bondura"
-									}
-								],
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"QueryParameters.{skip}": "RANGE:0:1960:1"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "linkedService_bo_inc_log_blob",
-										"type": "LinkedServiceReference"
-									}
-								}
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['value'][0]['CardCode']"
-										},
-										"sink": {
-											"name": "CardCode",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardName']"
-										},
-										"sink": {
-											"name": "CardName",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardType']"
-										},
-										"sink": {
-											"name": "CardType",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Currency']"
-										},
-										"sink": {
-											"name": "Currency",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['City']"
-										},
-										"sink": {
-											"name": "City",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Country']"
-										},
-										"sink": {
-											"name": "Country",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PeymentMethodCode']"
-										},
-										"sink": {
-											"name": "PeymentMethodCode",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ContactEmployees'][0]['CardCode']"
-										},
-										"sink": {
-											"name": "ContactEmployees_CardCode",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ContactEmployees'][0]['Name']"
-										},
-										"sink": {
-											"name": "ContactEmployees_Name",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['m_ds']"
-										},
-										"sink": {
-											"name": "m_ds",
-											"type": "String"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResource_bo_businessPartners",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTable_bo_businessPartners",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_bse_businessPartners')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "api_call",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "RestSource",
-								"additionalColumns": [
-									{
-										"name": "m_ds",
-										"value": "Bondura_SE"
-									}
-								],
-								"httpRequestTimeout": "00:01:40",
-								"requestInterval": "00.00:00:00.010",
-								"requestMethod": "GET",
-								"paginationRules": {
-									"QueryParameters.{skip}": "RANGE:0:85:1"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"enableSkipIncompatibleRow": true,
-							"logSettings": {
-								"enableCopyActivityLog": true,
-								"copyActivityLogSettings": {
-									"logLevel": "Warning",
-									"enableReliableLogging": false
-								},
-								"logLocationSettings": {
-									"linkedServiceName": {
-										"referenceName": "linkedService_bo_inc_log_blob",
-										"type": "LinkedServiceReference"
-									}
-								}
-							},
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['value'][0]['CardCode']"
-										},
-										"sink": {
-											"name": "CardCode",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardName']"
-										},
-										"sink": {
-											"name": "CardName",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardType']"
-										},
-										"sink": {
-											"name": "CardType",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Currency']"
-										},
-										"sink": {
-											"name": "Currency",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['City']"
-										},
-										"sink": {
-											"name": "City",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Country']"
-										},
-										"sink": {
-											"name": "Country",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PeymentMethodCode']"
-										},
-										"sink": {
-											"name": "PeymentMethodCode",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ContactEmployees'][0]['CardCode']"
-										},
-										"sink": {
-											"name": "ContactEmployees_CardCode",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ContactEmployees'][0]['Name']"
-										},
-										"sink": {
-											"name": "ContactEmployees_Name",
-											"type": "String"
-										}
-									},
-									{
-										"source": {
-											"path": "$['m_ds']"
-										},
-										"sink": {
-											"name": "m_ds",
-											"type": "String"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "RestResource_bse_businessPartners",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "AzureSqlTable_bo_businessPartners",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_copy_blob')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "ForEach",
-						"type": "ForEach",
+						"name": "AllPagesFetched",
+						"type": "Until",
 						"dependsOn": [],
 						"userProperties": [],
 						"typeProperties": {
-							"items": {
-								"value": "@range(0, 1)",
+							"expression": {
+								"value": "@not(bool(variables('repeat')))",
 								"type": "Expression"
 							},
-							"isSequential": true,
 							"activities": [
 								{
-									"name": "get_all_data_api",
+									"name": "CopyApiToBlob",
 									"type": "Copy",
 									"dependsOn": [],
 									"policy": {
@@ -993,49 +576,302 @@
 											"type": "RestSource",
 											"httpRequestTimeout": "00:01:40",
 											"requestInterval": "00.00:00:00.010",
-											"requestMethod": "GET",
-											"paginationRules": {
-												"QueryParameters.{skip}": "RANGE:0:8676:20"
-											}
+											"requestMethod": "GET"
 										},
 										"sink": {
 											"type": "JsonSink",
 											"storeSettings": {
-												"type": "AzureBlobStorageWriteSettings",
-												"copyBehavior": "PreserveHierarchy"
+												"type": "AzureBlobStorageWriteSettings"
 											},
 											"formatSettings": {
-												"type": "JsonWriteSettings"
+												"type": "JsonWriteSettings",
+												"filePattern": "setOfObjects"
 											}
 										},
 										"enableStaging": false
 									},
 									"inputs": [
 										{
-											"referenceName": "RestResource_invoices",
+											"referenceName": "ds_bo_sap_parametrized",
 											"type": "DatasetReference",
-											"parameters": {}
+											"parameters": {
+												"ResPath": {
+													"value": "@variables('nextLink')",
+													"type": "Expression"
+												}
+											}
 										}
 									],
 									"outputs": [
 										{
-											"referenceName": "Json_output",
+											"referenceName": "ds_blob_bondura",
 											"type": "DatasetReference",
-											"parameters": {}
+											"parameters": {
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@concat(variables('nextLink'), '.json')",
+													"type": "Expression"
+												}
+											}
 										}
 									]
+								},
+								{
+									"name": "ApiCallPagination",
+									"description": "call api again and get next link",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "CopyApiToBlob",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo_sap",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "SetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "SetRepeat",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "SetNextLink",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Stop",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "CopyApiToBlob",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "SetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "SetRepeat",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@bool(0)",
+											"type": "Expression"
+										}
+									}
 								}
-							]
+							],
+							"timeout": "0.12:00:00"
 						}
 					}
 				],
 				"policy": {
 					"elapsedTimeMetric": {}
 				},
-				"annotations": [],
-				"lastPublishTime": "2024-04-25T11:07:39Z"
+				"parameters": {
+					"Stream": {
+						"type": "string",
+						"defaultValue": "Invoices"
+					}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+					},
+					"repeat": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_parametrized')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_lake_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "restToblob",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings",
+									"copyBehavior": "FlattenHierarchy"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "setOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_bo_sap_invoices",
+								"type": "DatasetReference",
+								"parameters": {
+									"resPath": {
+										"value": "@concat(variables('resource'), '?', variables('queryparam'))",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_blob_bondura",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": {
+										"value": "@variables('resource')",
+										"type": "Expression"
+									},
+									"FileName": {
+										"value": "@concat('records_',variables('queryparam'),'.json')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"resource": {
+						"type": "String",
+						"defaultValue": "Invoices"
+					},
+					"queryparam": {
+						"type": "String",
+						"defaultValue": "$skip=2700"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_invoices')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]"
+			]
 		}
 	]
 }

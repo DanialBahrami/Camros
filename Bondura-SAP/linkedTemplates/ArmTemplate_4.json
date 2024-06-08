@@ -13,6 +13,366 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_orders_docLines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AllPagesFetched",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@empty(variables('nextLink'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "ApiCallPagination",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "GetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' )",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ETLDocLines",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "ETLOrders",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_orders_doclines",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"apiOrders": {
+													"QueryParam": {
+														"value": "@variables('nextLink')",
+														"type": "Expression"
+													}
+												},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "ETLOrders",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_orders",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ApiCall": {
+													"QueryParam": {
+														"value": "@variables('nextLink')",
+														"type": "Expression"
+													}
+												},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "setEmpty",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLOrders",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "''",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Orders?$skip=0"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_Json_Sql')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Json_SQL_Invoices",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Json_Pars",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"SapAPI": {},
+									"AzureSQL": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 16,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": [],
+				"lastPublishTime": "2024-04-25T11:07:38Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_bo_budgets_lines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ReadBudgetLine",
+						"description": "Create Dim for Budgets",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "dataflow_budget_lines",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ReadAPI": {},
+									"SqlDimTable": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 16,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pipeline_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bo_invoices",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ApiCall": {
+										"resPath": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27"
+									},
+									"SinkToSQLTable": {
+										"tableName": "test_invoices"
+									}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",

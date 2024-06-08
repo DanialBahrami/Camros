@@ -233,6 +233,250 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/pip_api_lake')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AllPagesFetched",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(bool(variables('repeat')))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "CopyApiToBlob",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "RestSource",
+											"httpRequestTimeout": "00:01:40",
+											"requestInterval": "00.00:00:00.010",
+											"requestMethod": "GET"
+										},
+										"sink": {
+											"type": "JsonSink",
+											"storeSettings": {
+												"type": "AzureBlobStorageWriteSettings"
+											},
+											"formatSettings": {
+												"type": "JsonWriteSettings",
+												"filePattern": "setOfObjects"
+											}
+										},
+										"enableStaging": false
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_bo_sap_parametrized",
+											"type": "DatasetReference",
+											"parameters": {
+												"ResPath": {
+													"value": "@variables('nextLink')",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "ds_blob_bondura",
+											"type": "DatasetReference",
+											"parameters": {
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@concat(variables('nextLink'), '.json')",
+													"type": "Expression"
+												}
+											}
+										}
+									]
+								},
+								{
+									"name": "ApiCallPagination",
+									"description": "call api again and get next link",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "CopyApiToBlob",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo_sap",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "SetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "SetRepeat",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "SetNextLink",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Stop",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "CopyApiToBlob",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "SetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "SetRepeat",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@bool(0)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Stream": {
+						"type": "string",
+						"defaultValue": "Invoices"
+					}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+					},
+					"repeat": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_parametrized')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo_sap')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_docLines')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -338,12 +582,7 @@
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
-												"apiOrders": {
-													"QueryParam": {
-														"value": "@variables('nextLink')",
-														"type": "Expression"
-													}
-												},
+												"apiOrders": {},
 												"SinkToSQLTable": {}
 											}
 										},
@@ -373,12 +612,7 @@
 											"type": "DataFlowReference",
 											"parameters": {},
 											"datasetParameters": {
-												"ApiCall": {
-													"QueryParam": {
-														"value": "@variables('nextLink')",
-														"type": "Expression"
-													}
-												},
+												"ApiCall": {},
 												"SinkToSQLTable": {}
 											}
 										},
@@ -592,10 +826,7 @@
 											"parameters": {},
 											"datasetParameters": {
 												"ApiCall": {
-													"QueryParam": {
-														"value": "@variables('nextLink')",
-														"type": "Expression"
-													}
+													"resPath": "Invoices?$skip=2622"
 												},
 												"SinkToSQLTable": {
 													"tableName": "sample_invoices_master"
@@ -929,6 +1160,94 @@
 				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]",
 				"[concat(variables('factoryId'), '/dataflows/df_bo_orders')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_lake_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "restToblob",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET"
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings",
+									"copyBehavior": "FlattenHierarchy"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings",
+									"filePattern": "setOfObjects"
+								}
+							},
+							"enableStaging": false
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_bo_sap_invoices",
+								"type": "DatasetReference",
+								"parameters": {
+									"resPath": {
+										"value": "@concat(variables('resource'), '?', variables('queryparam'))",
+										"type": "Expression"
+									}
+								}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_blob_bondura",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": {
+										"value": "@variables('resource')",
+										"type": "Expression"
+									},
+									"FileName": {
+										"value": "@concat('records_',variables('queryparam'),'.json')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"resource": {
+						"type": "String",
+						"defaultValue": "Invoices"
+					},
+					"queryparam": {
+						"type": "String",
+						"defaultValue": "$skip=2700"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_invoices')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]"
 			]
 		},
 		{
@@ -3364,7 +3683,7 @@
 								"parameters": {},
 								"datasetParameters": {
 									"ApiCall": {
-										"QueryParam": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+										"resPath": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27"
 									},
 									"SinkToSQLTable": {
 										"tableName": "test_invoices"
@@ -5855,6 +6174,45 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_bondura')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"Directory": {
+						"type": "string"
+					},
+					"FileName": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"fileName": {
+							"value": "@dataset().FileName",
+							"type": "Expression"
+						},
+						"folderPath": {
+							"value": "@dataset().Directory",
+							"type": "Expression"
+						},
+						"container": "bondura"
+					}
+				},
+				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_invoices')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -5864,16 +6222,16 @@
 					"type": "LinkedServiceReference"
 				},
 				"parameters": {
-					"QueryParam": {
+					"resPath": {
 						"type": "string",
-						"defaultValue": "Invoices"
+						"defaultValue": "Invoices?$skip=2622"
 					}
 				},
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {
 					"relativeUrl": {
-						"value": "@dataset().QueryParam",
+						"value": "@dataset().resPath",
 						"type": "Expression"
 					}
 				},
@@ -5903,6 +6261,34 @@
 				"typeProperties": {
 					"relativeUrl": {
 						"value": "@dataset().QueryParam",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_parametrized')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ResPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().ResPath",
 						"type": "Expression"
 					}
 				},
@@ -7220,7 +7606,7 @@
 						"          body as ({@odata.context} as string, {@odata.nextLink} as string, value as ({@odata.etag} as string, ATDocumentType as string, AddLegIn as string, Address as string, Address2 as string, AgentCode as string, AnnualInvoiceDeclarationReference as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ApplyTaxOnFirstInstallment as string, ArchiveNonremovableSalesQuotation as string, AssetValueDate as string, AttachmentEntry as string, AuthorizationCode as string, AuthorizationStatus as string, BPChannelCode as string, BPChannelContact as string, BPLName as string, BPL_IDAssignedToInvoice as string, BaseAmount as double, BaseAmountFC as double, BaseAmountSC as double, BaseEntry as string, BaseType as short, BillOfExchangeReserved as string, BlanketAgreementNumber as string, BlockDunning as string, Box1099 as string, CancelDate as string, CancelStatus as string, Cancelled as string, CardCode as integer, CardName as string, CashDiscountDateOffset as boolean, CentralBankIndicator as string, CertificationNumber as string, Cig as string, ClosingDate as string, ClosingOption as string, ClosingRemarks as string, Comments as string, CommissionTrade as string, CommissionTradeReturn as string, Confirmed as string, ContactPersonCode as short, ControlAccount as short, CreateOnlineQuotation as string, CreateQRCodeFrom as string, CreationDate as date, Cup as string, CustOffice as string, DANFELgTxt as string, DataVersion as boolean, DateOfReportingControlStatementVAT as string, DeferredTax as string, DiscountPercent as double, DocCurrency as string, DocDate as date, DocDueDate as date, DocEntry as short, DocNum as short, DocObjectCode as string, DocRate as double, DocTime as string, DocTotal as double, DocTotalFc as double, DocTotalSys as double, DocType as string, DocumentAdditionalExpenses as (AquisitionTax as string, BaseDocEntry as short, BaseDocLine as string, BaseDocType as string, BaseDocumentReference as string, CUSplit as string, DeductibleTaxSum as double, DeductibleTaxSumFC as double, DeductibleTaxSumSys as double, DistributionMethod as string, DistributionRule as string, DistributionRule2 as string, DistributionRule3 as string, DistributionRule4 as string, DistributionRule5 as string, DocExpenseTaxJurisdictions as string[], DocFreightEBooksDetails as string[], EqualizationTaxFC as double, EqualizationTaxPercent as double, EqualizationTaxSum as double, EqualizationTaxSys as double, ExpenseCode as boolean, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, ExternalCalcTaxRate as string, LastPurchasePrice as string, LineGross as double, LineGrossFC as double, LineGrossSys as double, LineNum as boolean, LineTotal as double, LineTotalFC as double, LineTotalSys as double, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, Project as string, Remarks as string, Status as string, Stock as string, TargetAbsEntry as short, TargetType as string, TaxCode as string, TaxLiable as string, TaxPaid as double, TaxPaidFC as double, TaxPaidSys as double, TaxPercent as double, TaxSum as double, TaxSumFC as double, TaxSumSys as double, TaxTotalSum as double, TaxTotalSumFC as double, TaxTotalSumSys as double, TaxType as string, VatGroup as string, WTLiable as string)[], DocumentDelivery as string, DocumentInstallments as (DueDate as date, DunningLevel as boolean, InstallmentId as boolean, LastDunningDate as date, PaymentOrdered as string, Percentage as double, Total as double, TotalFC as string)[], DocumentLines as (AccountCode as short, ActualBaseEntry as string, ActualBaseLine as string, ActualDeliveryDate as date, Address as string, AgreementNo as string, AgreementRowNumber as string, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, BackOrder as string, BarCode as string, BaseEntry as short, BaseLine as short, BaseOpenQuantity as double, BaseType as short, BatchNumbers as string[], CCDNumbers as string[], CESTCode as string, CFOPCode as string, CNJPMan as string, COGSAccountCode as short, COGSCostingCode as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTCode as string, CSTforCOFINS as string, CSTforIPI as string, CSTforPIS as string, CUSplit as string, ChangeAssemlyBoMWarehouse as boolean, ChangeInventoryQuantityIndependently as string, CommisionPercent as double, CommodityClassification as string, ConsiderQuantity as string, ConsumerSalesForecast as string, CorrInvAmountToDiffAcct as double, CorrInvAmountToStock as double, CorrectionInvoiceItem as string, CostingCode as string, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, CountryOrg as string, CreditOriginCode as string, CtrSealQty as string, Currency as string, DefectAndBreakup as string, DeferredTax as string, DestinationCountryForImport as string, DestinationRegionForImport as string, DiscountPercent as double, DistributeExpense as string, DocEntry as short, DocumentLineAdditionalExpenses as string[], DocumentLinesBinAllocations as string[], EBooksDetails as string[], EqualizationTaxPercent as double, ExLineNo as string, ExciseAmount as double, ExpenseOperationType as string, ExpenseType as string, ExportProcesses as string[], ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, ExternalCalcTaxRate as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, FederalTaxID as string, FreeOfChargeBP as string, FreeText as string, GrossBase as short, GrossBuyPrice as double, GrossPrice as double, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, GrossProfitTotalBasePrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, HSNEntry as string, Height1 as double, Height2 as double, Height2Unit as string, Hight1Unit as string, Incoterms as boolean, IndEscala as string, InventoryQuantity as double, ItemCode as integer, ItemDescription as string, ItemDetails as string, ItemType as string, LastBuyDistributeSum as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyInmPrice as double, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, LineNum as short, LineStatus as string, LineTaxJurisdictions as string[], LineTotal as double, LineType as string, LocationCode as string, MeasureUnit as string, NCMCode as short, NVECode as string, NatureOfTransaction as string, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, OriginCountryForExport as string, OriginRegionForExport as string, OriginalItem as integer, POTargetEntry as string, POTargetNum as string, POTargetRowNum as string, PackageQuantity as double, ParentLineNum as string, PartialRetirement as string, PickListIdNumber as string, PickQuantity as double, PickStatus as string, PickStatusEx as string, PoItmNum as string, PoNum as string, Price as double, PriceAfterVAT as double, PriceSource as string, ProjectCode as string, Quantity as double, Rate as double, ReceiptNumber as string, RemainingOpenInventoryQuantity as double, RemainingOpenQuantity as double, RequiredDate as string, RequiredQuantity as string, RetirementAPC as string, RetirementQuantity as string, ReverseCharge as string, RowTotalFC as double, RowTotalSC as double, SACEntry as string, SWW as string, SalesPersonCode as short, SerialNum as string, SerialNumbers as string[], ShipDate as date, ShipToCode as string, ShipToDescription as string, ShippingMethod as short, Shortages as string, StandardItemIdentification as string, StgDesc as string, StgEntry as string, StgSeqNum as string, StockDistributesum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockInmPrice as double, SupplierCatNum as string, Surpluses as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, TaxCode as string, TaxLiable as string, TaxOnly as string, TaxPerUnit as double, TaxPercentagePerRow as double, TaxTotal as double, TaxType as string, Text as string, ThirdParty as string, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, TotalInclTax as double, TransactionType as string, TransportMode as boolean, TreeType as string, UFFiscalBenefitCode as string, U_AIG_DDate as string, U_AIG_IA as string, U_AIG_ID as string, U_AIG_IN as string, U_AIG_IR as string, U_AIG_PD as string, U_AIG_PDate as string, U_Codebars as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, U_Installasjon as string, U_PItemCode as string, U_ParentItem as string, U_PlannedQty as double, U_U_AIG_DDate as string, UnencumberedReason as string, UnitPrice as double, UnitsOfMeasurment as double, UoMCode as string, UoMEntry as short, Usage as string, UseBaseUnits as string, VatGroup as string, VendorNum as string, VisualOrder as short, Volume as double, VolumeUnit as short, WTLiable as string, WarehouseCode as short, Weight1 as double, Weight1Unit as short, Weight2 as double, Weight2Unit as string, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, WithholdingTaxLines as string[], WithoutInventoryMovement as string)[], DocumentPackages as string[], DocumentReferences as string[], DocumentSpecialLines as string[], DocumentStatus as string, DocumentSubType as string, DocumentTaxID as string, Document_ApprovalRequests as string[], DocumentsOwner as short, DownPayment as double, DownPaymentAmount as double, DownPaymentAmountFC as double, DownPaymentAmountSC as double, DownPaymentPercentage as double, DownPaymentStatus as string, DownPaymentType as string, DownPaymentsToDraw as string[], ECommerceGSTIN as string, ECommerceOperator as string, EDocErrorCode as string, EDocErrorMessage as string, EDocExportFormat as string, EDocGenerationType as string, EDocNum as string, EDocSeries as string, EDocStatus as string, EDocType as string, ETaxNumber as string, ETaxWebSite as string, ElecCommMessage as string, ElecCommStatus as string, ElectronicProtocols as string[], EndDeliveryDate as string, EndDeliveryTime as string, ExcludeFromTaxReportControlStatementVAT as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, ExternalCorrectedDocNum as string, ExtraDays as short, ExtraMonth as boolean, FCEAsPaymentMeans as string, FCI as string, FatherCard as string, FatherType as string, FederalTaxID as string, FinancialPeriod as short, FiscalDocNum as string, FolioNumber as string, FolioNumberFrom as string, FolioNumberTo as string, FolioPrefixString as string, Form1099 as string, GSTTransactionType as string, GTSChecker as string, GTSPayee as string, GroupHandWritten as string, GroupNumber as string, GroupSeries as string, HandWritten as string, ImportFileNum as string, IndFinal as string, Indicator as string, InsuranceOperation347 as string, InterimType as string, InternalCorrectedDocNum as string, InvoicePayment as string, IsAlteration as string, IsPayToBank as string, IssuingReason as boolean, JournalMemo as string, LanguageCode as short, LastPageFolioNumber as string, LegTextF as string, Letter as string, ManualNumber as string, MaximumCashDiscount as string, NTSApproved as string, NTSApprovedNumber as string, NetProcedure as string, NextCorrectingDocument as string, NumAtCard as string, NumberOfInstallments as boolean, OpenForLandedCosts as string, OpeningRemarks as string, OriginalCreditOrDebitDate as string, OriginalCreditOrDebitNo as string, OriginalRefDate as string, OriginalRefNo as string, POSCashierNumber as string, POSDailySummaryNo as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSReceiptNo as string, POS_CashRegister as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, PartialSupply as string, PayToBankAccountNo as string, PayToBankBranch as string, PayToBankCode as string, PayToBankCountry as string, PayToCode as string, PaymentBlock as string, PaymentBlockEntry as string, PaymentGroupCode as boolean, PaymentMethod as string, PaymentReference as long, PeriodIndicator as string, Pick as string, PickRemark as string, PickStatus as string, PointOfIssueCode as string, PriceMode as string, PrintSEPADirect as string, Printed as string, PrivateKeyVersion as string, Project as string, Receiver as string, Reference1 as short, Reference2 as string, RelatedEntry as string, RelatedType as short, Releaser as string, RelevantToGTS as string, ReopenManuallyClosedOrCanceledDocument as string, ReopenOriginalDocument as string, ReportingSectionControlStatementVAT as string, RequriedDate as string, Reserve as string, ReserveInvoice as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, Revision as string, RevisionPo as string, Rounding as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, SAPPassport as string, SalesPersonCode as short, Segment as boolean, SequenceCode as string, SequenceModel as boolean, SequenceSerial as string, Series as short, SeriesString as string, ServiceGrossProfitPercent as string, ShipFrom as string, ShipPlace as string, ShipState as string, ShipToCode as string, ShowSCN as string, SignatureDigest as string, SignatureInputMessage as string, SpecifiedClosingDate as string, StartDeliveryDate as string, StartDeliveryTime as string, StartFrom as string, SubSeriesString as string, Submitted as string, SummeryType as string, Supplier as string, TaxDate as date, TaxExemptionLetterNum as string, TotalDiscount as double, TotalDiscountFC as double, TotalDiscountSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, TrackingNumber as string, TransNum as short, TransportationCode as short, U_AIG_KID as string, U_DSS_EHFBuyersRef as string, U_DSS_SendStatus as short, U_Levbet as string, U_Opperk as string, U_Ordrenummer as string, U_Sted as string, U_esurl as string, U_sluttkunde as string, UpdateDate as date, UpdateTime as string, UseBillToAddrToDetermineTax as string, UseCorrectionVATGroup as string, UseShpdGoodsAct as string, UserSign as short, VATRegNum as string, VatDate as string, VatPercent as double, VatSum as double, VatSumFc as double, VatSumSys as double, VehiclePlate as string, WTAmount as double, WTAmountFC as double, WTAmountSC as double, WTApplied as double, WTAppliedFC as double, WTAppliedSC as double, WTExemptedAmount as double, WTExemptedAmountFC as double, WTExemptedAmountSC as double, WTNonSubjectAmount as double, WTNonSubjectAmountFC as double, WTNonSubjectAmountSC as double, WareHouseUpdateType as string, WithholdingTaxDataCollection as string[], WithholdingTaxDataWTXCollection as string[])[]),",
 						"          headers as [string,string]",
 						"     ),",
-						"     allowSchemaDrift: true,",
+						"     allowSchemaDrift: false,",
 						"     validateSchema: false,",
 						"     limit: 100,",
 						"     httpMethod: 'GET',",
