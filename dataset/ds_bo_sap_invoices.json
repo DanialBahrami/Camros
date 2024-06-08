@@ -6,16 +6,16 @@
 			"type": "LinkedServiceReference"
 		},
 		"parameters": {
-			"QueryParam": {
+			"resPath": {
 				"type": "string",
-				"defaultValue": "Invoices"
+				"defaultValue": "Invoices?$skip=2622"
 			}
 		},
 		"annotations": [],
 		"type": "RestResource",
 		"typeProperties": {
 			"relativeUrl": {
-				"value": "@dataset().QueryParam",
+				"value": "@dataset().resPath",
 				"type": "Expression"
 			}
 		},

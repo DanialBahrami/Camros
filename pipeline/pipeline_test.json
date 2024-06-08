@@ -20,7 +20,7 @@
 						"type": "DataFlowReference",
 						"datasetParameters": {
 							"ApiCall": {
-								"QueryParam": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+								"resPath": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27"
 							},
 							"SinkToSQLTable": {
 								"tableName": "test_invoices"

@@ -93,12 +93,6 @@
 									"referenceName": "df_bo_invoices",
 									"type": "DataFlowReference",
 									"datasetParameters": {
-										"ApiCall": {
-											"QueryParam": {
-												"value": "@variables('nextLink')",
-												"type": "Expression"
-											}
-										},
 										"SinkToSQLTable": {
 											"tableName": "sample_invoices_master"
 										}

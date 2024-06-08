@@ -98,15 +98,7 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "df_bo_invoices_doclines",
-									"type": "DataFlowReference",
-									"datasetParameters": {
-										"apiOrders": {
-											"QueryParam": {
-												"value": "@variables('nextLink')",
-												"type": "Expression"
-											}
-										}
-									}
+									"type": "DataFlowReference"
 								},
 								"compute": {
 									"coreCount": 16,
@@ -130,15 +122,7 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "df_bo_invoices",
-									"type": "DataFlowReference",
-									"datasetParameters": {
-										"ApiCall": {
-											"QueryParam": {
-												"value": "@variables('nextLink')",
-												"type": "Expression"
-											}
-										}
-									}
+									"type": "DataFlowReference"
 								},
 								"compute": {
 									"coreCount": 16,
