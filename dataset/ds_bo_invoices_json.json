@@ -1,0 +1,18 @@
+{
+	"name": "ds_bo_invoices_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "AzureBlobStorage_json",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobStorageLocation",
+				"container": "bondura"
+			}
+		},
+		"schema": {}
+	}
+}
