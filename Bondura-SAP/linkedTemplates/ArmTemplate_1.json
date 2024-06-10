@@ -18,6 +18,14 @@
 		"linkedService_bo_log_budgets_lines_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
+		},
+		"link_DL_Uinvest_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'link_DL_Uinvest'"
+		},
+		"link_DL_Uinvest_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://uinvestlake.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -59,6 +67,23 @@
 				"type": "AzureBlobStorage",
 				"typeProperties": {
 					"connectionString": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/link_DL_Uinvest')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureBlobFS",
+				"typeProperties": {
+					"url": "[parameters('link_DL_Uinvest_properties_typeProperties_url')]",
+					"accountKey": {
+						"type": "SecureString",
+						"value": "[parameters('link_DL_Uinvest_accountKey')]"
+					}
 				}
 			},
 			"dependsOn": []
@@ -2323,22 +2348,6 @@
 			"properties": {
 				"linkedServiceName": {
 					"referenceName": "RestService_bse_businessPartners",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {},
-				"schema": []
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/RestResource_invoices')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "RestService_Bondura_Invoices",
 					"type": "LinkedServiceReference"
 				},
 				"annotations": [],

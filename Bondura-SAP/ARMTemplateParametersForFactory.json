@@ -68,6 +68,9 @@
 		"linkedService_bo_log_budgets_lines_connectionString": {
 			"value": ""
 		},
+		"link_DL_Uinvest_accountKey": {
+			"value": ""
+		},
 		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
 			"value": "https://camrosKeys.vault.azure.net/"
 		},
@@ -169,6 +172,9 @@
 		},
 		"link_bo_sap_properties_typeProperties_userName": {
 			"value": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"link_DL_Uinvest_properties_typeProperties_url": {
+			"value": "https://uinvestlake.dfs.core.windows.net/"
 		}
 	}
 }

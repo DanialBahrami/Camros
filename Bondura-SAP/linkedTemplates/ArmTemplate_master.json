@@ -91,6 +91,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'linkedService_bo_log_budgets_lines'"
 		},
+		"link_DL_Uinvest_accountKey": {
+			"type": "secureString",
+			"metadata": "Secure string for 'accountKey' of 'link_DL_Uinvest'"
+		},
 		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
 			"type": "string",
 			"defaultValue": "https://camrosKeys.vault.azure.net/"
@@ -226,6 +230,10 @@
 		"link_bo_sap_properties_typeProperties_userName": {
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+		},
+		"link_DL_Uinvest_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://uinvestlake.dfs.core.windows.net/"
 		},
 		"containerUri": {
 			"type": "string",
@@ -436,6 +444,12 @@
 					},
 					"linkedService_bo_log_budgets_lines_connectionString": {
 						"value": "[parameters('linkedService_bo_log_budgets_lines_connectionString')]"
+					},
+					"link_DL_Uinvest_accountKey": {
+						"value": "[parameters('link_DL_Uinvest_accountKey')]"
+					},
+					"link_DL_Uinvest_properties_typeProperties_url": {
+						"value": "[parameters('link_DL_Uinvest_properties_typeProperties_url')]"
 					}
 				}
 			},
