@@ -75,9 +75,9 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'password' of 'SapEcc_Bondura'"
 		},
-		"link_bo_sap_password": {
+		"link_DL_Uinvest_accountKey": {
 			"type": "secureString",
-			"metadata": "Secure string for 'password' of 'link_bo_sap'"
+			"metadata": "Secure string for 'accountKey' of 'link_DL_Uinvest'"
 		},
 		"AzureKeyVault_bo_properties_typeProperties_baseUrl": {
 			"type": "string",
@@ -207,13 +207,9 @@
 			"type": "string",
 			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
 		},
-		"link_bo_sap_properties_typeProperties_url": {
+		"link_DL_Uinvest_properties_typeProperties_url": {
 			"type": "string",
-			"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
-		},
-		"link_bo_sap_properties_typeProperties_userName": {
-			"type": "string",
-			"defaultValue": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}"
+			"defaultValue": "https://uinvestlake.dfs.core.windows.net/"
 		}
 	},
 	"variables": {
@@ -569,20 +565,17 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/link_bo_sap')]",
+			"name": "[concat(parameters('factoryName'), '/link_DL_Uinvest')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"type": "RestService",
+				"type": "AzureBlobFS",
 				"typeProperties": {
-					"url": "[parameters('link_bo_sap_properties_typeProperties_url')]",
-					"enableServerCertificateValidation": true,
-					"authenticationType": "Basic",
-					"userName": "[parameters('link_bo_sap_properties_typeProperties_userName')]",
-					"password": {
+					"url": "[parameters('link_DL_Uinvest_properties_typeProperties_url')]",
+					"accountKey": {
 						"type": "SecureString",
-						"value": "[parameters('link_bo_sap_password')]"
+						"value": "[parameters('link_DL_Uinvest_accountKey')]"
 					}
 				}
 			},
