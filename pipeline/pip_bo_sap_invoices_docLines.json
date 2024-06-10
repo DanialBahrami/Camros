@@ -98,7 +98,12 @@
 							"typeProperties": {
 								"dataflow": {
 									"referenceName": "df_bo_invoices_doclines",
-									"type": "DataFlowReference"
+									"type": "DataFlowReference",
+									"datasetParameters": {
+										"apiOrders": {
+											"resPath": "Invoices?$skip=2622"
+										}
+									}
 								},
 								"compute": {
 									"coreCount": 16,

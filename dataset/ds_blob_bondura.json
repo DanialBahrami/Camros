@@ -7,10 +7,12 @@
 		},
 		"parameters": {
 			"Directory": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "Invoices"
 			},
 			"FileName": {
-				"type": "string"
+				"type": "string",
+				"defaultValue": "*"
 			}
 		},
 		"annotations": [],

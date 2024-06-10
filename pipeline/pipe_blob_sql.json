@@ -1,0 +1,2334 @@
+{
+	"name": "pipe_blob_sql",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Metadata1",
+				"type": "GetMetadata",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.12:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"dataset": {
+						"referenceName": "ds_blob_bondura",
+						"type": "DatasetReference",
+						"parameters": {
+							"Directory": "Invoices",
+							"FileName": "*"
+						}
+					},
+					"fieldList": [
+						"childItems"
+					],
+					"storeSettings": {
+						"type": "AzureBlobStorageReadSettings",
+						"enablePartitionDiscovery": false
+					},
+					"formatSettings": {
+						"type": "JsonReadSettings"
+					}
+				}
+			},
+			{
+				"name": "ForEach1",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Metadata1",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Metadata1').output.childItems",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Copy data1",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"additionalColumns": [
+										{
+											"name": "m_ds",
+											"value": "'Bondura'"
+										}
+									],
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "['DocEntry']"
+											},
+											"sink": {
+												"name": "DocEntry",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocNum']"
+											},
+											"sink": {
+												"name": "DocNum",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocType']"
+											},
+											"sink": {
+												"name": "DocType"
+											}
+										},
+										{
+											"source": {
+												"path": "['HandWritten']"
+											},
+											"sink": {
+												"name": "HandWritten"
+											}
+										},
+										{
+											"source": {
+												"path": "['Printed']"
+											},
+											"sink": {
+												"name": "Printed"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocDate']"
+											},
+											"sink": {
+												"name": "DocDate",
+												"type": "Date"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocDueDate']"
+											},
+											"sink": {
+												"name": "DocDueDate",
+												"type": "Date"
+											}
+										},
+										{
+											"source": {
+												"path": "['CardCode']"
+											},
+											"sink": {
+												"name": "CardCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['CardName']"
+											},
+											"sink": {
+												"name": "CardName"
+											}
+										},
+										{
+											"source": {
+												"path": "['Address']"
+											},
+											"sink": {
+												"name": "value'][0]['Address"
+											}
+										},
+										{
+											"source": {
+												"path": "['NumAtCard']"
+											},
+											"sink": {
+												"name": "NumAtCard"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocTotal']"
+											},
+											"sink": {
+												"name": "DocTotal"
+											}
+										},
+										{
+											"source": {
+												"path": "['AttachmentEntry']"
+											},
+											"sink": {
+												"name": "AttachmentEntry"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocCurrency']"
+											},
+											"sink": {
+												"name": "DocCurrency"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocRate']"
+											},
+											"sink": {
+												"name": "DocRate"
+											}
+										},
+										{
+											"source": {
+												"path": "['Reference1']"
+											},
+											"sink": {
+												"name": "Reference1"
+											}
+										},
+										{
+											"source": {
+												"path": "['Reference2']"
+											},
+											"sink": {
+												"name": "Reference2"
+											}
+										},
+										{
+											"source": {
+												"path": "['Comments']"
+											},
+											"sink": {
+												"name": "Comments"
+											}
+										},
+										{
+											"source": {
+												"path": "['JournalMemo']"
+											},
+											"sink": {
+												"name": "JournalMemo"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaymentGroupCode']"
+											},
+											"sink": {
+												"name": "PaymentGroupCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocTime']"
+											},
+											"sink": {
+												"name": "DocTime"
+											}
+										},
+										{
+											"source": {
+												"path": "['SalesPersonCode']"
+											},
+											"sink": {
+												"name": "SalesPersonCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['TransportationCode']"
+											},
+											"sink": {
+												"name": "TransportationCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['Confirmed']"
+											},
+											"sink": {
+												"name": "Confirmed"
+											}
+										},
+										{
+											"source": {
+												"path": "['ImportFileNum']"
+											},
+											"sink": {
+												"name": "ImportFileNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['SummeryType']"
+											},
+											"sink": {
+												"name": "SummeryType"
+											}
+										},
+										{
+											"source": {
+												"path": "['ContactPersonCode']"
+											},
+											"sink": {
+												"name": "ContactPersonCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['ShowSCN']"
+											},
+											"sink": {
+												"name": "ShowSCN"
+											}
+										},
+										{
+											"source": {
+												"path": "['Series']"
+											},
+											"sink": {
+												"name": "Series"
+											}
+										},
+										{
+											"source": {
+												"path": "['TaxDate']"
+											},
+											"sink": {
+												"name": "TaxDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['PartialSupply']"
+											},
+											"sink": {
+												"name": "PartialSupply"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocObjectCode']"
+											},
+											"sink": {
+												"name": "DocObjectCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['ShipToCode']"
+											},
+											"sink": {
+												"name": "ShipToCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['Indicator']"
+											},
+											"sink": {
+												"name": "Indicator"
+											}
+										},
+										{
+											"source": {
+												"path": "['FederalTaxID']"
+											},
+											"sink": {
+												"name": "FederalTaxID"
+											}
+										},
+										{
+											"source": {
+												"path": "['DiscountPercent']"
+											},
+											"sink": {
+												"name": "DiscountPercent"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaymentReference']"
+											},
+											"sink": {
+												"name": "PaymentReference"
+											}
+										},
+										{
+											"source": {
+												"path": "['CreationDate']"
+											},
+											"sink": {
+												"name": "CreationDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['UpdateDate']"
+											},
+											"sink": {
+												"name": "UpdateDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['FinancialPeriod']"
+											},
+											"sink": {
+												"name": "FinancialPeriod"
+											}
+										},
+										{
+											"source": {
+												"path": "['UserSign']"
+											},
+											"sink": {
+												"name": "UserSign"
+											}
+										},
+										{
+											"source": {
+												"path": "['TransNum']"
+											},
+											"sink": {
+												"name": "TransNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['VatSum']"
+											},
+											"sink": {
+												"name": "VatSum"
+											}
+										},
+										{
+											"source": {
+												"path": "['VatSumSys']"
+											},
+											"sink": {
+												"name": "VatSumSys"
+											}
+										},
+										{
+											"source": {
+												"path": "['VatSumFc']"
+											},
+											"sink": {
+												"name": "VatSumFc"
+											}
+										},
+										{
+											"source": {
+												"path": "['NetProcedure']"
+											},
+											"sink": {
+												"name": "NetProcedure"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocTotalFc']"
+											},
+											"sink": {
+												"name": "DocTotalFc"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocTotalSys']"
+											},
+											"sink": {
+												"name": "DocTotalSys"
+											}
+										},
+										{
+											"source": {
+												"path": "['Form1099']"
+											},
+											"sink": {
+												"name": "Form1099"
+											}
+										},
+										{
+											"source": {
+												"path": "['Box1099']"
+											},
+											"sink": {
+												"name": "Box1099"
+											}
+										},
+										{
+											"source": {
+												"path": "['RevisionPo']"
+											},
+											"sink": {
+												"name": "RevisionPo"
+											}
+										},
+										{
+											"source": {
+												"path": "['RequriedDate']"
+											},
+											"sink": {
+												"name": "RequriedDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['CancelDate']"
+											},
+											"sink": {
+												"name": "CancelDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['BlockDunning']"
+											},
+											"sink": {
+												"name": "BlockDunning"
+											}
+										},
+										{
+											"source": {
+												"path": "['Submitted']"
+											},
+											"sink": {
+												"name": "Submitted"
+											}
+										},
+										{
+											"source": {
+												"path": "['Segment']"
+											},
+											"sink": {
+												"name": "Segment"
+											}
+										},
+										{
+											"source": {
+												"path": "['PickStatus']"
+											},
+											"sink": {
+												"name": "PickStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['Pick']"
+											},
+											"sink": {
+												"name": "Pick"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaymentMethod']"
+											},
+											"sink": {
+												"name": "PaymentMethod"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaymentBlock']"
+											},
+											"sink": {
+												"name": "PaymentBlock"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaymentBlockEntry']"
+											},
+											"sink": {
+												"name": "PaymentBlockEntry"
+											}
+										},
+										{
+											"source": {
+												"path": "['CentralBankIndicator']"
+											},
+											"sink": {
+												"name": "CentralBankIndicator"
+											}
+										},
+										{
+											"source": {
+												"path": "['MaximumCashDiscount']"
+											},
+											"sink": {
+												"name": "MaximumCashDiscount"
+											}
+										},
+										{
+											"source": {
+												"path": "['Reserve']"
+											},
+											"sink": {
+												"name": "Reserve"
+											}
+										},
+										{
+											"source": {
+												"path": "['Project']"
+											},
+											"sink": {
+												"name": "Project"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExemptionValidityDateFrom']"
+											},
+											"sink": {
+												"name": "ExemptionValidityDateFrom"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExemptionValidityDateTo']"
+											},
+											"sink": {
+												"name": "ExemptionValidityDateTo"
+											}
+										},
+										{
+											"source": {
+												"path": "['WareHouseUpdateType']"
+											},
+											"sink": {
+												"name": "WareHouseUpdateType"
+											}
+										},
+										{
+											"source": {
+												"path": "['Rounding']"
+											},
+											"sink": {
+												"name": "Rounding"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExternalCorrectedDocNum']"
+											},
+											"sink": {
+												"name": "ExternalCorrectedDocNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['InternalCorrectedDocNum']"
+											},
+											"sink": {
+												"name": "InternalCorrectedDocNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['NextCorrectingDocument']"
+											},
+											"sink": {
+												"name": "NextCorrectingDocument"
+											}
+										},
+										{
+											"source": {
+												"path": "['DeferredTax']"
+											},
+											"sink": {
+												"name": "value'][0]['DeferredTax"
+											}
+										},
+										{
+											"source": {
+												"path": "['TaxExemptionLetterNum']"
+											},
+											"sink": {
+												"name": "TaxExemptionLetterNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTApplied']"
+											},
+											"sink": {
+												"name": "WTApplied"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTAppliedFC']"
+											},
+											"sink": {
+												"name": "WTAppliedFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['BillOfExchangeReserved']"
+											},
+											"sink": {
+												"name": "BillOfExchangeReserved"
+											}
+										},
+										{
+											"source": {
+												"path": "['AgentCode']"
+											},
+											"sink": {
+												"name": "AgentCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTAppliedSC']"
+											},
+											"sink": {
+												"name": "WTAppliedSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalEqualizationTax']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTax"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalEqualizationTaxFC']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTaxFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalEqualizationTaxSC']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTaxSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['NumberOfInstallments']"
+											},
+											"sink": {
+												"name": "NumberOfInstallments"
+											}
+										},
+										{
+											"source": {
+												"path": "['ApplyTaxOnFirstInstallment']"
+											},
+											"sink": {
+												"name": "ApplyTaxOnFirstInstallment"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTNonSubjectAmount']"
+											},
+											"sink": {
+												"name": "WTNonSubjectAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTNonSubjectAmountSC']"
+											},
+											"sink": {
+												"name": "WTNonSubjectAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTNonSubjectAmountFC']"
+											},
+											"sink": {
+												"name": "WTNonSubjectAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTExemptedAmount']"
+											},
+											"sink": {
+												"name": "WTExemptedAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTExemptedAmountSC']"
+											},
+											"sink": {
+												"name": "WTExemptedAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTExemptedAmountFC']"
+											},
+											"sink": {
+												"name": "WTExemptedAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['BaseAmount']"
+											},
+											"sink": {
+												"name": "BaseAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['BaseAmountSC']"
+											},
+											"sink": {
+												"name": "BaseAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['BaseAmountFC']"
+											},
+											"sink": {
+												"name": "BaseAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTAmount']"
+											},
+											"sink": {
+												"name": "WTAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTAmountSC']"
+											},
+											"sink": {
+												"name": "WTAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['WTAmountFC']"
+											},
+											"sink": {
+												"name": "WTAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['VatDate']"
+											},
+											"sink": {
+												"name": "VatDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentsOwner']"
+											},
+											"sink": {
+												"name": "DocumentsOwner"
+											}
+										},
+										{
+											"source": {
+												"path": "['FolioPrefixString']"
+											},
+											"sink": {
+												"name": "FolioPrefixString"
+											}
+										},
+										{
+											"source": {
+												"path": "['FolioNumber']"
+											},
+											"sink": {
+												"name": "FolioNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentSubType']"
+											},
+											"sink": {
+												"name": "DocumentSubType"
+											}
+										},
+										{
+											"source": {
+												"path": "['BPChannelCode']"
+											},
+											"sink": {
+												"name": "BPChannelCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['BPChannelContact']"
+											},
+											"sink": {
+												"name": "BPChannelContact"
+											}
+										},
+										{
+											"source": {
+												"path": "['Address2']"
+											},
+											"sink": {
+												"name": "Address2"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentStatus']"
+											},
+											"sink": {
+												"name": "DocumentStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['PeriodIndicator']"
+											},
+											"sink": {
+												"name": "PeriodIndicator"
+											}
+										},
+										{
+											"source": {
+												"path": "['PayToCode']"
+											},
+											"sink": {
+												"name": "PayToCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['ManualNumber']"
+											},
+											"sink": {
+												"name": "ManualNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['UseShpdGoodsAct']"
+											},
+											"sink": {
+												"name": "UseShpdGoodsAct"
+											}
+										},
+										{
+											"source": {
+												"path": "['IsPayToBank']"
+											},
+											"sink": {
+												"name": "IsPayToBank"
+											}
+										},
+										{
+											"source": {
+												"path": "['PayToBankCountry']"
+											},
+											"sink": {
+												"name": "PayToBankCountry"
+											}
+										},
+										{
+											"source": {
+												"path": "['PayToBankCode']"
+											},
+											"sink": {
+												"name": "PayToBankCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['PayToBankAccountNo']"
+											},
+											"sink": {
+												"name": "PayToBankAccountNo"
+											}
+										},
+										{
+											"source": {
+												"path": "['PayToBankBranch']"
+											},
+											"sink": {
+												"name": "PayToBankBranch"
+											}
+										},
+										{
+											"source": {
+												"path": "['BPL_IDAssignedToInvoice']"
+											},
+											"sink": {
+												"name": "BPL_IDAssignedToInvoice"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPayment']"
+											},
+											"sink": {
+												"name": "DownPayment"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReserveInvoice']"
+											},
+											"sink": {
+												"name": "ReserveInvoice"
+											}
+										},
+										{
+											"source": {
+												"path": "['LanguageCode']"
+											},
+											"sink": {
+												"name": "LanguageCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['TrackingNumber']"
+											},
+											"sink": {
+												"name": "TrackingNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['PickRemark']"
+											},
+											"sink": {
+												"name": "PickRemark"
+											}
+										},
+										{
+											"source": {
+												"path": "['ClosingDate']"
+											},
+											"sink": {
+												"name": "ClosingDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['SequenceCode']"
+											},
+											"sink": {
+												"name": "SequenceCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['SequenceSerial']"
+											},
+											"sink": {
+												"name": "SequenceSerial"
+											}
+										},
+										{
+											"source": {
+												"path": "['SeriesString']"
+											},
+											"sink": {
+												"name": "SeriesString"
+											}
+										},
+										{
+											"source": {
+												"path": "['SubSeriesString']"
+											},
+											"sink": {
+												"name": "SubSeriesString"
+											}
+										},
+										{
+											"source": {
+												"path": "['SequenceModel']"
+											},
+											"sink": {
+												"name": "SequenceModel"
+											}
+										},
+										{
+											"source": {
+												"path": "['UseCorrectionVATGroup']"
+											},
+											"sink": {
+												"name": "UseCorrectionVATGroup"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalDiscount']"
+											},
+											"sink": {
+												"name": "TotalDiscount"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentAmount']"
+											},
+											"sink": {
+												"name": "DownPaymentAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentPercentage']"
+											},
+											"sink": {
+												"name": "DownPaymentPercentage"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentType']"
+											},
+											"sink": {
+												"name": "DownPaymentType"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentAmountSC']"
+											},
+											"sink": {
+												"name": "DownPaymentAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentAmountFC']"
+											},
+											"sink": {
+												"name": "DownPaymentAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['VatPercent']"
+											},
+											"sink": {
+												"name": "VatPercent"
+											}
+										},
+										{
+											"source": {
+												"path": "['ServiceGrossProfitPercent']"
+											},
+											"sink": {
+												"name": "ServiceGrossProfitPercent"
+											}
+										},
+										{
+											"source": {
+												"path": "['OpeningRemarks']"
+											},
+											"sink": {
+												"name": "OpeningRemarks"
+											}
+										},
+										{
+											"source": {
+												"path": "['ClosingRemarks']"
+											},
+											"sink": {
+												"name": "ClosingRemarks"
+											}
+										},
+										{
+											"source": {
+												"path": "['RoundingDiffAmount']"
+											},
+											"sink": {
+												"name": "RoundingDiffAmount"
+											}
+										},
+										{
+											"source": {
+												"path": "['RoundingDiffAmountFC']"
+											},
+											"sink": {
+												"name": "RoundingDiffAmountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['RoundingDiffAmountSC']"
+											},
+											"sink": {
+												"name": "RoundingDiffAmountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['Cancelled']"
+											},
+											"sink": {
+												"name": "Cancelled"
+											}
+										},
+										{
+											"source": {
+												"path": "['SignatureInputMessage']"
+											},
+											"sink": {
+												"name": "SignatureInputMessage"
+											}
+										},
+										{
+											"source": {
+												"path": "['SignatureDigest']"
+											},
+											"sink": {
+												"name": "SignatureDigest"
+											}
+										},
+										{
+											"source": {
+												"path": "['CertificationNumber']"
+											},
+											"sink": {
+												"name": "CertificationNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['PrivateKeyVersion']"
+											},
+											"sink": {
+												"name": "PrivateKeyVersion"
+											}
+										},
+										{
+											"source": {
+												"path": "['ControlAccount']"
+											},
+											"sink": {
+												"name": "ControlAccount"
+											}
+										},
+										{
+											"source": {
+												"path": "['InsuranceOperation347']"
+											},
+											"sink": {
+												"name": "InsuranceOperation347"
+											}
+										},
+										{
+											"source": {
+												"path": "['ArchiveNonremovableSalesQuotation']"
+											},
+											"sink": {
+												"name": "ArchiveNonremovableSalesQuotation"
+											}
+										},
+										{
+											"source": {
+												"path": "['GTSChecker']"
+											},
+											"sink": {
+												"name": "GTSChecker"
+											}
+										},
+										{
+											"source": {
+												"path": "['GTSPayee']"
+											},
+											"sink": {
+												"name": "GTSPayee"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExtraMonth']"
+											},
+											"sink": {
+												"name": "ExtraMonth"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExtraDays']"
+											},
+											"sink": {
+												"name": "ExtraDays"
+											}
+										},
+										{
+											"source": {
+												"path": "['CashDiscountDateOffset']"
+											},
+											"sink": {
+												"name": "CashDiscountDateOffset"
+											}
+										},
+										{
+											"source": {
+												"path": "['StartFrom']"
+											},
+											"sink": {
+												"name": "StartFrom"
+											}
+										},
+										{
+											"source": {
+												"path": "['NTSApproved']"
+											},
+											"sink": {
+												"name": "NTSApproved"
+											}
+										},
+										{
+											"source": {
+												"path": "['ETaxWebSite']"
+											},
+											"sink": {
+												"name": "ETaxWebSite"
+											}
+										},
+										{
+											"source": {
+												"path": "['ETaxNumber']"
+											},
+											"sink": {
+												"name": "ETaxNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['NTSApprovedNumber']"
+											},
+											"sink": {
+												"name": "NTSApprovedNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocGenerationType']"
+											},
+											"sink": {
+												"name": "EDocGenerationType"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocSeries']"
+											},
+											"sink": {
+												"name": "EDocSeries"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocNum']"
+											},
+											"sink": {
+												"name": "EDocNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocExportFormat']"
+											},
+											"sink": {
+												"name": "EDocExportFormat"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocStatus']"
+											},
+											"sink": {
+												"name": "EDocStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocErrorCode']"
+											},
+											"sink": {
+												"name": "EDocErrorCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocErrorMessage']"
+											},
+											"sink": {
+												"name": "EDocErrorMessage"
+											}
+										},
+										{
+											"source": {
+												"path": "['DownPaymentStatus']"
+											},
+											"sink": {
+												"name": "DownPaymentStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['GroupSeries']"
+											},
+											"sink": {
+												"name": "GroupSeries"
+											}
+										},
+										{
+											"source": {
+												"path": "['GroupNumber']"
+											},
+											"sink": {
+												"name": "GroupNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['GroupHandWritten']"
+											},
+											"sink": {
+												"name": "GroupHandWritten"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReopenOriginalDocument']"
+											},
+											"sink": {
+												"name": "ReopenOriginalDocument"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReopenManuallyClosedOrCanceledDocument']"
+											},
+											"sink": {
+												"name": "ReopenManuallyClosedOrCanceledDocument"
+											}
+										},
+										{
+											"source": {
+												"path": "['CreateOnlineQuotation']"
+											},
+											"sink": {
+												"name": "CreateOnlineQuotation"
+											}
+										},
+										{
+											"source": {
+												"path": "['POSEquipmentNumber']"
+											},
+											"sink": {
+												"name": "POSEquipmentNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['POSManufacturerSerialNumber']"
+											},
+											"sink": {
+												"name": "POSManufacturerSerialNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['POSCashierNumber']"
+											},
+											"sink": {
+												"name": "POSCashierNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['ApplyCurrentVATRatesForDownPaymentsToDraw']"
+											},
+											"sink": {
+												"name": "ApplyCurrentVATRatesForDownPaymentsToDraw"
+											}
+										},
+										{
+											"source": {
+												"path": "['ClosingOption']"
+											},
+											"sink": {
+												"name": "ClosingOption"
+											}
+										},
+										{
+											"source": {
+												"path": "['SpecifiedClosingDate']"
+											},
+											"sink": {
+												"name": "SpecifiedClosingDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['OpenForLandedCosts']"
+											},
+											"sink": {
+												"name": "OpenForLandedCosts"
+											}
+										},
+										{
+											"source": {
+												"path": "['AuthorizationStatus']"
+											},
+											"sink": {
+												"name": "AuthorizationStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalDiscountFC']"
+											},
+											"sink": {
+												"name": "TotalDiscountFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['TotalDiscountSC']"
+											},
+											"sink": {
+												"name": "TotalDiscountSC"
+											}
+										},
+										{
+											"source": {
+												"path": "['RelevantToGTS']"
+											},
+											"sink": {
+												"name": "RelevantToGTS"
+											}
+										},
+										{
+											"source": {
+												"path": "['BPLName']"
+											},
+											"sink": {
+												"name": "BPLName"
+											}
+										},
+										{
+											"source": {
+												"path": "['VATRegNum']"
+											},
+											"sink": {
+												"name": "VATRegNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['AnnualInvoiceDeclarationReference']"
+											},
+											"sink": {
+												"name": "AnnualInvoiceDeclarationReference"
+											}
+										},
+										{
+											"source": {
+												"path": "['Supplier']"
+											},
+											"sink": {
+												"name": "Supplier"
+											}
+										},
+										{
+											"source": {
+												"path": "['Releaser']"
+											},
+											"sink": {
+												"name": "Releaser"
+											}
+										},
+										{
+											"source": {
+												"path": "['Receiver']"
+											},
+											"sink": {
+												"name": "Receiver"
+											}
+										},
+										{
+											"source": {
+												"path": "['BlanketAgreementNumber']"
+											},
+											"sink": {
+												"name": "BlanketAgreementNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['IsAlteration']"
+											},
+											"sink": {
+												"name": "IsAlteration"
+											}
+										},
+										{
+											"source": {
+												"path": "['CancelStatus']"
+											},
+											"sink": {
+												"name": "CancelStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['AssetValueDate']"
+											},
+											"sink": {
+												"name": "AssetValueDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['InvoicePayment']"
+											},
+											"sink": {
+												"name": "InvoicePayment"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentDelivery']"
+											},
+											"sink": {
+												"name": "DocumentDelivery"
+											}
+										},
+										{
+											"source": {
+												"path": "['AuthorizationCode']"
+											},
+											"sink": {
+												"name": "AuthorizationCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['StartDeliveryDate']"
+											},
+											"sink": {
+												"name": "StartDeliveryDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['StartDeliveryTime']"
+											},
+											"sink": {
+												"name": "StartDeliveryTime"
+											}
+										},
+										{
+											"source": {
+												"path": "['EndDeliveryDate']"
+											},
+											"sink": {
+												"name": "EndDeliveryDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['EndDeliveryTime']"
+											},
+											"sink": {
+												"name": "EndDeliveryTime"
+											}
+										},
+										{
+											"source": {
+												"path": "['VehiclePlate']"
+											},
+											"sink": {
+												"name": "VehiclePlate"
+											}
+										},
+										{
+											"source": {
+												"path": "['ATDocumentType']"
+											},
+											"sink": {
+												"name": "ATDocumentType"
+											}
+										},
+										{
+											"source": {
+												"path": "['ElecCommStatus']"
+											},
+											"sink": {
+												"name": "ElecCommStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['ElecCommMessage']"
+											},
+											"sink": {
+												"name": "ElecCommMessage"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReuseDocumentNum']"
+											},
+											"sink": {
+												"name": "ReuseDocumentNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReuseNotaFiscalNum']"
+											},
+											"sink": {
+												"name": "ReuseNotaFiscalNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['PrintSEPADirect']"
+											},
+											"sink": {
+												"name": "PrintSEPADirect"
+											}
+										},
+										{
+											"source": {
+												"path": "['FiscalDocNum']"
+											},
+											"sink": {
+												"name": "FiscalDocNum"
+											}
+										},
+										{
+											"source": {
+												"path": "['POSDailySummaryNo']"
+											},
+											"sink": {
+												"name": "POSDailySummaryNo"
+											}
+										},
+										{
+											"source": {
+												"path": "['POSReceiptNo']"
+											},
+											"sink": {
+												"name": "POSReceiptNo"
+											}
+										},
+										{
+											"source": {
+												"path": "['PointOfIssueCode']"
+											},
+											"sink": {
+												"name": "PointOfIssueCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['Letter']"
+											},
+											"sink": {
+												"name": "Letter"
+											}
+										},
+										{
+											"source": {
+												"path": "['FolioNumberFrom']"
+											},
+											"sink": {
+												"name": "FolioNumberFrom"
+											}
+										},
+										{
+											"source": {
+												"path": "['FolioNumberTo']"
+											},
+											"sink": {
+												"name": "FolioNumberTo"
+											}
+										},
+										{
+											"source": {
+												"path": "['InterimType']"
+											},
+											"sink": {
+												"name": "InterimType"
+											}
+										},
+										{
+											"source": {
+												"path": "['RelatedType']"
+											},
+											"sink": {
+												"name": "RelatedType"
+											}
+										},
+										{
+											"source": {
+												"path": "['RelatedEntry']"
+											},
+											"sink": {
+												"name": "RelatedEntry"
+											}
+										},
+										{
+											"source": {
+												"path": "['SAPPassport']"
+											},
+											"sink": {
+												"name": "SAPPassport"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentTaxID']"
+											},
+											"sink": {
+												"name": "DocumentTaxID"
+											}
+										},
+										{
+											"source": {
+												"path": "['DateOfReportingControlStatementVAT']"
+											},
+											"sink": {
+												"name": "DateOfReportingControlStatementVAT"
+											}
+										},
+										{
+											"source": {
+												"path": "['ReportingSectionControlStatementVAT']"
+											},
+											"sink": {
+												"name": "ReportingSectionControlStatementVAT"
+											}
+										},
+										{
+											"source": {
+												"path": "['ExcludeFromTaxReportControlStatementVAT']"
+											},
+											"sink": {
+												"name": "ExcludeFromTaxReportControlStatementVAT"
+											}
+										},
+										{
+											"source": {
+												"path": "['POS_CashRegister']"
+											},
+											"sink": {
+												"name": "POS_CashRegister"
+											}
+										},
+										{
+											"source": {
+												"path": "['UpdateTime']"
+											},
+											"sink": {
+												"name": "UpdateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "['CreateQRCodeFrom']"
+											},
+											"sink": {
+												"name": "CreateQRCodeFrom"
+											}
+										},
+										{
+											"source": {
+												"path": "['PriceMode']"
+											},
+											"sink": {
+												"name": "PriceMode"
+											}
+										},
+										{
+											"source": {
+												"path": "['Revision']"
+											},
+											"sink": {
+												"name": "Revision"
+											}
+										},
+										{
+											"source": {
+												"path": "['OriginalRefNo']"
+											},
+											"sink": {
+												"name": "OriginalRefNo"
+											}
+										},
+										{
+											"source": {
+												"path": "['OriginalRefDate']"
+											},
+											"sink": {
+												"name": "OriginalRefDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['GSTTransactionType']"
+											},
+											"sink": {
+												"name": "GSTTransactionType"
+											}
+										},
+										{
+											"source": {
+												"path": "['OriginalCreditOrDebitNo']"
+											},
+											"sink": {
+												"name": "OriginalCreditOrDebitNo"
+											}
+										},
+										{
+											"source": {
+												"path": "['OriginalCreditOrDebitDate']"
+											},
+											"sink": {
+												"name": "OriginalCreditOrDebitDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['ECommerceOperator']"
+											},
+											"sink": {
+												"name": "ECommerceOperator"
+											}
+										},
+										{
+											"source": {
+												"path": "['ECommerceGSTIN']"
+											},
+											"sink": {
+												"name": "ECommerceGSTIN"
+											}
+										},
+										{
+											"source": {
+												"path": "['ShipFrom']"
+											},
+											"sink": {
+												"name": "ShipFrom"
+											}
+										},
+										{
+											"source": {
+												"path": "['CommissionTrade']"
+											},
+											"sink": {
+												"name": "CommissionTrade"
+											}
+										},
+										{
+											"source": {
+												"path": "['CommissionTradeReturn']"
+											},
+											"sink": {
+												"name": "CommissionTradeReturn"
+											}
+										},
+										{
+											"source": {
+												"path": "['UseBillToAddrToDetermineTax']"
+											},
+											"sink": {
+												"name": "UseBillToAddrToDetermineTax"
+											}
+										},
+										{
+											"source": {
+												"path": "['IssuingReason']"
+											},
+											"sink": {
+												"name": "IssuingReason"
+											}
+										},
+										{
+											"source": {
+												"path": "['Cig']"
+											},
+											"sink": {
+												"name": "Cig"
+											}
+										},
+										{
+											"source": {
+												"path": "['Cup']"
+											},
+											"sink": {
+												"name": "Cup"
+											}
+										},
+										{
+											"source": {
+												"path": "['EDocType']"
+											},
+											"sink": {
+												"name": "EDocType"
+											}
+										},
+										{
+											"source": {
+												"path": "['FCEAsPaymentMeans']"
+											},
+											"sink": {
+												"name": "FCEAsPaymentMeans"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaidToDate']"
+											},
+											"sink": {
+												"name": "PaidToDate"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaidToDateFC']"
+											},
+											"sink": {
+												"name": "PaidToDateFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['PaidToDateSys']"
+											},
+											"sink": {
+												"name": "PaidToDateSys"
+											}
+										},
+										{
+											"source": {
+												"path": "['BaseType']"
+											},
+											"sink": {
+												"name": "BaseType"
+											}
+										},
+										{
+											"source": {
+												"path": "['BaseEntry']"
+											},
+											"sink": {
+												"name": "BaseEntry"
+											}
+										},
+										{
+											"source": {
+												"path": "['FatherCard']"
+											},
+											"sink": {
+												"name": "FatherCard"
+											}
+										},
+										{
+											"source": {
+												"path": "['FatherType']"
+											},
+											"sink": {
+												"name": "FatherType"
+											}
+										},
+										{
+											"source": {
+												"path": "['ShipState']"
+											},
+											"sink": {
+												"name": "ShipState"
+											}
+										},
+										{
+											"source": {
+												"path": "['ShipPlace']"
+											},
+											"sink": {
+												"name": "ShipPlace"
+											}
+										},
+										{
+											"source": {
+												"path": "['CustOffice']"
+											},
+											"sink": {
+												"name": "CustOffice"
+											}
+										},
+										{
+											"source": {
+												"path": "['FCI']"
+											},
+											"sink": {
+												"name": "FCI"
+											}
+										},
+										{
+											"source": {
+												"path": "['AddLegIn']"
+											},
+											"sink": {
+												"name": "AddLegIn"
+											}
+										},
+										{
+											"source": {
+												"path": "['LegTextF']"
+											},
+											"sink": {
+												"name": "LegTextF"
+											}
+										},
+										{
+											"source": {
+												"path": "['DANFELgTxt']"
+											},
+											"sink": {
+												"name": "DANFELgTxt"
+											}
+										},
+										{
+											"source": {
+												"path": "['IndFinal']"
+											},
+											"sink": {
+												"name": "IndFinal"
+											}
+										},
+										{
+											"source": {
+												"path": "['DataVersion']"
+											},
+											"sink": {
+												"name": "DataVersion"
+											}
+										},
+										{
+											"source": {
+												"path": "['LastPageFolioNumber']"
+											},
+											"sink": {
+												"name": "LastPageFolioNumber"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_AIG_KID']"
+											},
+											"sink": {
+												"name": "U_AIG_KID"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_Ordrenummer']"
+											},
+											"sink": {
+												"name": "U_Ordrenummer"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_esurl']"
+											},
+											"sink": {
+												"name": "U_esurl"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_sluttkunde']"
+											},
+											"sink": {
+												"name": "U_sluttkunde"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_Levbet']"
+											},
+											"sink": {
+												"name": "U_Levbet"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_Sted']"
+											},
+											"sink": {
+												"name": "U_Sted"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_Opperk']"
+											},
+											"sink": {
+												"name": "U_Opperk"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_DSS_SendStatus']"
+											},
+											"sink": {
+												"name": "U_DSS_SendStatus"
+											}
+										},
+										{
+											"source": {
+												"path": "['U_DSS_EHFBuyersRef']"
+											},
+											"sink": {
+												"name": "U_DSS_EHFBuyersRef"
+											}
+										},
+										{
+											"source": {
+												"path": "['EWayBillDetails']"
+											},
+											"sink": {
+												"name": "EWayBillDetails"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentAdditionalExpenses'][0]['ExpenseCode']"
+											},
+											"sink": {
+												"name": "AdditionalExpenses_ExpenseCode"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentAdditionalExpenses'][0]['LineTotal']"
+											},
+											"sink": {
+												"name": "AdditionalExpenses_LineTotal"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentAdditionalExpenses'][0]['LineTotalFC']"
+											},
+											"sink": {
+												"name": "AdditionalExpenses_LineTotalFC"
+											}
+										},
+										{
+											"source": {
+												"path": "['DocumentAdditionalExpenses'][0]['LineTotalSys']"
+											},
+											"sink": {
+												"name": "AdditionalExpenses_LineTotalSys"
+											}
+										},
+										{
+											"source": {
+												"path": "m_ds"
+											},
+											"sink": {
+												"name": "m_ds"
+											}
+										}
+									],
+									"collectionReference": "$['value']"
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_blob_bondura",
+									"type": "DatasetReference",
+									"parameters": {
+										"Directory": "Invoices",
+										"FileName": {
+											"value": "@concat('*',item())",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sql_bo_sap_invoices",
+									"type": "DatasetReference",
+									"parameters": {
+										"tableName": "invoices_test_blob"
+									}
+								}
+							]
+						}
+					]
+				}
+			}
+		],
+		"annotations": []
+	}
+}
