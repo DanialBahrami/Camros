@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "copyJsonSql",
+				"name": "JsonSqlInsert",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -20,12 +20,12 @@
 						"additionalColumns": [
 							{
 								"name": "m_ds",
-								"value": "Bondura"
+								"value": "'Bondura'"
 							}
 						],
 						"storeSettings": {
 							"type": "AzureBlobFSReadSettings",
-							"recursive": true,
+							"recursive": false,
 							"enablePartitionDiscovery": false
 						},
 						"formatSettings": {
@@ -2252,7 +2252,7 @@
 						"referenceName": "sql_bo_sap_invoices",
 						"type": "DatasetReference",
 						"parameters": {
-							"tableName": "stg_invoices_new"
+							"tableName": "stg_invoices_master"
 						}
 					}
 				]

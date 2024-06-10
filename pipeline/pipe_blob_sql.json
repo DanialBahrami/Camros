@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Get Metadata1",
+				"name": "ListFiles",
 				"type": "GetMetadata",
 				"dependsOn": [],
 				"policy": {
@@ -28,6 +28,7 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
+						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -40,7 +41,7 @@
 				"type": "ForEach",
 				"dependsOn": [
 					{
-						"activity": "Get Metadata1",
+						"activity": "ListFiles",
 						"dependencyConditions": [
 							"Succeeded"
 						]
@@ -49,12 +50,12 @@
 				"userProperties": [],
 				"typeProperties": {
 					"items": {
-						"value": "@activity('Get Metadata1').output.childItems",
+						"value": "@activity('ListFiles').output.childItems",
 						"type": "Expression"
 					},
 					"activities": [
 						{
-							"name": "Copy data1",
+							"name": "JsonToSql",
 							"type": "Copy",
 							"dependsOn": [],
 							"policy": {
@@ -91,6 +92,21 @@
 									"disableMetricsCollection": false
 								},
 								"enableStaging": false,
+								"enableSkipIncompatibleRow": true,
+								"logSettings": {
+									"enableCopyActivityLog": true,
+									"copyActivityLogSettings": {
+										"logLevel": "Warning",
+										"enableReliableLogging": false
+									},
+									"logLocationSettings": {
+										"linkedServiceName": {
+											"referenceName": "AzureBlobStorage_json",
+											"type": "LinkedServiceReference"
+										},
+										"path": "copyactivity-logs"
+									}
+								},
 								"translator": {
 									"type": "TabularTranslator",
 									"mappings": [
@@ -117,7 +133,8 @@
 												"path": "['DocType']"
 											},
 											"sink": {
-												"name": "DocType"
+												"name": "DocType",
+												"type": "String"
 											}
 										},
 										{
@@ -125,7 +142,8 @@
 												"path": "['HandWritten']"
 											},
 											"sink": {
-												"name": "HandWritten"
+												"name": "HandWritten",
+												"type": "String"
 											}
 										},
 										{
@@ -133,7 +151,8 @@
 												"path": "['Printed']"
 											},
 											"sink": {
-												"name": "Printed"
+												"name": "Printed",
+												"type": "String"
 											}
 										},
 										{
@@ -159,7 +178,8 @@
 												"path": "['CardCode']"
 											},
 											"sink": {
-												"name": "CardCode"
+												"name": "CardCode",
+												"type": "Int32"
 											}
 										},
 										{
@@ -167,7 +187,8 @@
 												"path": "['CardName']"
 											},
 											"sink": {
-												"name": "CardName"
+												"name": "CardName",
+												"type": "String"
 											}
 										},
 										{
@@ -175,7 +196,8 @@
 												"path": "['Address']"
 											},
 											"sink": {
-												"name": "value'][0]['Address"
+												"name": "Address",
+												"type": "String"
 											}
 										},
 										{
@@ -183,7 +205,8 @@
 												"path": "['NumAtCard']"
 											},
 											"sink": {
-												"name": "NumAtCard"
+												"name": "NumAtCard",
+												"type": "String"
 											}
 										},
 										{
@@ -191,7 +214,8 @@
 												"path": "['DocTotal']"
 											},
 											"sink": {
-												"name": "DocTotal"
+												"name": "DocTotal",
+												"type": "Double"
 											}
 										},
 										{
@@ -199,7 +223,8 @@
 												"path": "['AttachmentEntry']"
 											},
 											"sink": {
-												"name": "AttachmentEntry"
+												"name": "AttachmentEntry",
+												"type": "String"
 											}
 										},
 										{
@@ -207,7 +232,8 @@
 												"path": "['DocCurrency']"
 											},
 											"sink": {
-												"name": "DocCurrency"
+												"name": "DocCurrency",
+												"type": "String"
 											}
 										},
 										{
@@ -215,7 +241,8 @@
 												"path": "['DocRate']"
 											},
 											"sink": {
-												"name": "DocRate"
+												"name": "DocRate",
+												"type": "String"
 											}
 										},
 										{
@@ -223,7 +250,8 @@
 												"path": "['Reference1']"
 											},
 											"sink": {
-												"name": "Reference1"
+												"name": "Reference1",
+												"type": "String"
 											}
 										},
 										{
@@ -231,7 +259,8 @@
 												"path": "['Reference2']"
 											},
 											"sink": {
-												"name": "Reference2"
+												"name": "Reference2",
+												"type": "String"
 											}
 										},
 										{
@@ -239,7 +268,8 @@
 												"path": "['Comments']"
 											},
 											"sink": {
-												"name": "Comments"
+												"name": "Comments",
+												"type": "String"
 											}
 										},
 										{
@@ -247,7 +277,8 @@
 												"path": "['JournalMemo']"
 											},
 											"sink": {
-												"name": "JournalMemo"
+												"name": "JournalMemo",
+												"type": "String"
 											}
 										},
 										{
@@ -255,7 +286,8 @@
 												"path": "['PaymentGroupCode']"
 											},
 											"sink": {
-												"name": "PaymentGroupCode"
+												"name": "PaymentGroupCode",
+												"type": "String"
 											}
 										},
 										{
@@ -263,7 +295,8 @@
 												"path": "['DocTime']"
 											},
 											"sink": {
-												"name": "DocTime"
+												"name": "DocTime",
+												"type": "String"
 											}
 										},
 										{
@@ -271,7 +304,8 @@
 												"path": "['SalesPersonCode']"
 											},
 											"sink": {
-												"name": "SalesPersonCode"
+												"name": "SalesPersonCode",
+												"type": "Int16"
 											}
 										},
 										{
@@ -279,7 +313,8 @@
 												"path": "['TransportationCode']"
 											},
 											"sink": {
-												"name": "TransportationCode"
+												"name": "TransportationCode",
+												"type": "String"
 											}
 										},
 										{
@@ -287,7 +322,8 @@
 												"path": "['Confirmed']"
 											},
 											"sink": {
-												"name": "Confirmed"
+												"name": "Confirmed",
+												"type": "String"
 											}
 										},
 										{
@@ -295,7 +331,8 @@
 												"path": "['ImportFileNum']"
 											},
 											"sink": {
-												"name": "ImportFileNum"
+												"name": "ImportFileNum",
+												"type": "String"
 											}
 										},
 										{
@@ -303,7 +340,8 @@
 												"path": "['SummeryType']"
 											},
 											"sink": {
-												"name": "SummeryType"
+												"name": "SummeryType",
+												"type": "String"
 											}
 										},
 										{
@@ -311,7 +349,8 @@
 												"path": "['ContactPersonCode']"
 											},
 											"sink": {
-												"name": "ContactPersonCode"
+												"name": "ContactPersonCode",
+												"type": "String"
 											}
 										},
 										{
@@ -319,7 +358,8 @@
 												"path": "['ShowSCN']"
 											},
 											"sink": {
-												"name": "ShowSCN"
+												"name": "ShowSCN",
+												"type": "String"
 											}
 										},
 										{
@@ -327,7 +367,8 @@
 												"path": "['Series']"
 											},
 											"sink": {
-												"name": "Series"
+												"name": "Series",
+												"type": "String"
 											}
 										},
 										{
@@ -335,7 +376,8 @@
 												"path": "['TaxDate']"
 											},
 											"sink": {
-												"name": "TaxDate"
+												"name": "TaxDate",
+												"type": "String"
 											}
 										},
 										{
@@ -343,7 +385,8 @@
 												"path": "['PartialSupply']"
 											},
 											"sink": {
-												"name": "PartialSupply"
+												"name": "PartialSupply",
+												"type": "String"
 											}
 										},
 										{
@@ -351,7 +394,8 @@
 												"path": "['DocObjectCode']"
 											},
 											"sink": {
-												"name": "DocObjectCode"
+												"name": "DocObjectCode",
+												"type": "String"
 											}
 										},
 										{
@@ -367,7 +411,8 @@
 												"path": "['Indicator']"
 											},
 											"sink": {
-												"name": "Indicator"
+												"name": "Indicator",
+												"type": "String"
 											}
 										},
 										{
@@ -375,7 +420,8 @@
 												"path": "['FederalTaxID']"
 											},
 											"sink": {
-												"name": "FederalTaxID"
+												"name": "FederalTaxID",
+												"type": "String"
 											}
 										},
 										{
@@ -383,7 +429,8 @@
 												"path": "['DiscountPercent']"
 											},
 											"sink": {
-												"name": "DiscountPercent"
+												"name": "DiscountPercent",
+												"type": "String"
 											}
 										},
 										{
@@ -391,7 +438,8 @@
 												"path": "['PaymentReference']"
 											},
 											"sink": {
-												"name": "PaymentReference"
+												"name": "PaymentReference",
+												"type": "String"
 											}
 										},
 										{
@@ -399,7 +447,8 @@
 												"path": "['CreationDate']"
 											},
 											"sink": {
-												"name": "CreationDate"
+												"name": "CreationDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -407,7 +456,8 @@
 												"path": "['UpdateDate']"
 											},
 											"sink": {
-												"name": "UpdateDate"
+												"name": "UpdateDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -415,7 +465,8 @@
 												"path": "['FinancialPeriod']"
 											},
 											"sink": {
-												"name": "FinancialPeriod"
+												"name": "FinancialPeriod",
+												"type": "String"
 											}
 										},
 										{
@@ -423,7 +474,8 @@
 												"path": "['UserSign']"
 											},
 											"sink": {
-												"name": "UserSign"
+												"name": "UserSign",
+												"type": "String"
 											}
 										},
 										{
@@ -431,7 +483,8 @@
 												"path": "['TransNum']"
 											},
 											"sink": {
-												"name": "TransNum"
+												"name": "TransNum",
+												"type": "String"
 											}
 										},
 										{
@@ -439,7 +492,8 @@
 												"path": "['VatSum']"
 											},
 											"sink": {
-												"name": "VatSum"
+												"name": "VatSum",
+												"type": "Double"
 											}
 										},
 										{
@@ -447,7 +501,8 @@
 												"path": "['VatSumSys']"
 											},
 											"sink": {
-												"name": "VatSumSys"
+												"name": "VatSumSys",
+												"type": "Double"
 											}
 										},
 										{
@@ -455,7 +510,8 @@
 												"path": "['VatSumFc']"
 											},
 											"sink": {
-												"name": "VatSumFc"
+												"name": "VatSumFc",
+												"type": "Double"
 											}
 										},
 										{
@@ -463,7 +519,8 @@
 												"path": "['NetProcedure']"
 											},
 											"sink": {
-												"name": "NetProcedure"
+												"name": "NetProcedure",
+												"type": "String"
 											}
 										},
 										{
@@ -471,7 +528,8 @@
 												"path": "['DocTotalFc']"
 											},
 											"sink": {
-												"name": "DocTotalFc"
+												"name": "DocTotalFc",
+												"type": "Double"
 											}
 										},
 										{
@@ -479,7 +537,8 @@
 												"path": "['DocTotalSys']"
 											},
 											"sink": {
-												"name": "DocTotalSys"
+												"name": "DocTotalSys",
+												"type": "Double"
 											}
 										},
 										{
@@ -487,7 +546,8 @@
 												"path": "['Form1099']"
 											},
 											"sink": {
-												"name": "Form1099"
+												"name": "Form1099",
+												"type": "String"
 											}
 										},
 										{
@@ -495,7 +555,8 @@
 												"path": "['Box1099']"
 											},
 											"sink": {
-												"name": "Box1099"
+												"name": "Box1099",
+												"type": "String"
 											}
 										},
 										{
@@ -503,7 +564,8 @@
 												"path": "['RevisionPo']"
 											},
 											"sink": {
-												"name": "RevisionPo"
+												"name": "RevisionPo",
+												"type": "String"
 											}
 										},
 										{
@@ -511,7 +573,8 @@
 												"path": "['RequriedDate']"
 											},
 											"sink": {
-												"name": "RequriedDate"
+												"name": "RequriedDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -519,7 +582,8 @@
 												"path": "['CancelDate']"
 											},
 											"sink": {
-												"name": "CancelDate"
+												"name": "CancelDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -527,7 +591,8 @@
 												"path": "['BlockDunning']"
 											},
 											"sink": {
-												"name": "BlockDunning"
+												"name": "BlockDunning",
+												"type": "String"
 											}
 										},
 										{
@@ -535,7 +600,8 @@
 												"path": "['Submitted']"
 											},
 											"sink": {
-												"name": "Submitted"
+												"name": "Submitted",
+												"type": "String"
 											}
 										},
 										{
@@ -543,7 +609,8 @@
 												"path": "['Segment']"
 											},
 											"sink": {
-												"name": "Segment"
+												"name": "Segment",
+												"type": "String"
 											}
 										},
 										{
@@ -551,7 +618,8 @@
 												"path": "['PickStatus']"
 											},
 											"sink": {
-												"name": "PickStatus"
+												"name": "PickStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -559,7 +627,8 @@
 												"path": "['Pick']"
 											},
 											"sink": {
-												"name": "Pick"
+												"name": "Pick",
+												"type": "String"
 											}
 										},
 										{
@@ -567,7 +636,8 @@
 												"path": "['PaymentMethod']"
 											},
 											"sink": {
-												"name": "PaymentMethod"
+												"name": "PaymentMethod",
+												"type": "String"
 											}
 										},
 										{
@@ -575,7 +645,8 @@
 												"path": "['PaymentBlock']"
 											},
 											"sink": {
-												"name": "PaymentBlock"
+												"name": "PaymentBlock",
+												"type": "String"
 											}
 										},
 										{
@@ -583,7 +654,8 @@
 												"path": "['PaymentBlockEntry']"
 											},
 											"sink": {
-												"name": "PaymentBlockEntry"
+												"name": "PaymentBlockEntry",
+												"type": "String"
 											}
 										},
 										{
@@ -591,7 +663,8 @@
 												"path": "['CentralBankIndicator']"
 											},
 											"sink": {
-												"name": "CentralBankIndicator"
+												"name": "CentralBankIndicator",
+												"type": "Single"
 											}
 										},
 										{
@@ -599,7 +672,8 @@
 												"path": "['MaximumCashDiscount']"
 											},
 											"sink": {
-												"name": "MaximumCashDiscount"
+												"name": "MaximumCashDiscount",
+												"type": "String"
 											}
 										},
 										{
@@ -607,7 +681,8 @@
 												"path": "['Reserve']"
 											},
 											"sink": {
-												"name": "Reserve"
+												"name": "Reserve",
+												"type": "String"
 											}
 										},
 										{
@@ -615,7 +690,8 @@
 												"path": "['Project']"
 											},
 											"sink": {
-												"name": "Project"
+												"name": "Project",
+												"type": "String"
 											}
 										},
 										{
@@ -623,7 +699,8 @@
 												"path": "['ExemptionValidityDateFrom']"
 											},
 											"sink": {
-												"name": "ExemptionValidityDateFrom"
+												"name": "ExemptionValidityDateFrom",
+												"type": "String"
 											}
 										},
 										{
@@ -631,7 +708,8 @@
 												"path": "['ExemptionValidityDateTo']"
 											},
 											"sink": {
-												"name": "ExemptionValidityDateTo"
+												"name": "ExemptionValidityDateTo",
+												"type": "String"
 											}
 										},
 										{
@@ -639,7 +717,8 @@
 												"path": "['WareHouseUpdateType']"
 											},
 											"sink": {
-												"name": "WareHouseUpdateType"
+												"name": "WareHouseUpdateType",
+												"type": "String"
 											}
 										},
 										{
@@ -647,7 +726,8 @@
 												"path": "['Rounding']"
 											},
 											"sink": {
-												"name": "Rounding"
+												"name": "Rounding",
+												"type": "String"
 											}
 										},
 										{
@@ -655,7 +735,8 @@
 												"path": "['ExternalCorrectedDocNum']"
 											},
 											"sink": {
-												"name": "ExternalCorrectedDocNum"
+												"name": "ExternalCorrectedDocNum",
+												"type": "String"
 											}
 										},
 										{
@@ -663,7 +744,8 @@
 												"path": "['InternalCorrectedDocNum']"
 											},
 											"sink": {
-												"name": "InternalCorrectedDocNum"
+												"name": "InternalCorrectedDocNum",
+												"type": "String"
 											}
 										},
 										{
@@ -671,7 +753,8 @@
 												"path": "['NextCorrectingDocument']"
 											},
 											"sink": {
-												"name": "NextCorrectingDocument"
+												"name": "NextCorrectingDocument",
+												"type": "String"
 											}
 										},
 										{
@@ -679,7 +762,8 @@
 												"path": "['DeferredTax']"
 											},
 											"sink": {
-												"name": "value'][0]['DeferredTax"
+												"name": "value'][0]['DeferredTax",
+												"type": "String"
 											}
 										},
 										{
@@ -687,7 +771,8 @@
 												"path": "['TaxExemptionLetterNum']"
 											},
 											"sink": {
-												"name": "TaxExemptionLetterNum"
+												"name": "TaxExemptionLetterNum",
+												"type": "String"
 											}
 										},
 										{
@@ -695,7 +780,8 @@
 												"path": "['WTApplied']"
 											},
 											"sink": {
-												"name": "WTApplied"
+												"name": "WTApplied",
+												"type": "String"
 											}
 										},
 										{
@@ -703,7 +789,8 @@
 												"path": "['WTAppliedFC']"
 											},
 											"sink": {
-												"name": "WTAppliedFC"
+												"name": "WTAppliedFC",
+												"type": "String"
 											}
 										},
 										{
@@ -711,7 +798,8 @@
 												"path": "['BillOfExchangeReserved']"
 											},
 											"sink": {
-												"name": "BillOfExchangeReserved"
+												"name": "BillOfExchangeReserved",
+												"type": "String"
 											}
 										},
 										{
@@ -719,7 +807,8 @@
 												"path": "['AgentCode']"
 											},
 											"sink": {
-												"name": "AgentCode"
+												"name": "AgentCode",
+												"type": "Int16"
 											}
 										},
 										{
@@ -727,7 +816,8 @@
 												"path": "['WTAppliedSC']"
 											},
 											"sink": {
-												"name": "WTAppliedSC"
+												"name": "WTAppliedSC",
+												"type": "String"
 											}
 										},
 										{
@@ -735,7 +825,8 @@
 												"path": "['TotalEqualizationTax']"
 											},
 											"sink": {
-												"name": "TotalEqualizationTax"
+												"name": "TotalEqualizationTax",
+												"type": "Double"
 											}
 										},
 										{
@@ -743,7 +834,8 @@
 												"path": "['TotalEqualizationTaxFC']"
 											},
 											"sink": {
-												"name": "TotalEqualizationTaxFC"
+												"name": "TotalEqualizationTaxFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -751,7 +843,8 @@
 												"path": "['TotalEqualizationTaxSC']"
 											},
 											"sink": {
-												"name": "TotalEqualizationTaxSC"
+												"name": "TotalEqualizationTaxSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -759,7 +852,8 @@
 												"path": "['NumberOfInstallments']"
 											},
 											"sink": {
-												"name": "NumberOfInstallments"
+												"name": "NumberOfInstallments",
+												"type": "Int16"
 											}
 										},
 										{
@@ -767,7 +861,8 @@
 												"path": "['ApplyTaxOnFirstInstallment']"
 											},
 											"sink": {
-												"name": "ApplyTaxOnFirstInstallment"
+												"name": "ApplyTaxOnFirstInstallment",
+												"type": "String"
 											}
 										},
 										{
@@ -775,7 +870,8 @@
 												"path": "['WTNonSubjectAmount']"
 											},
 											"sink": {
-												"name": "WTNonSubjectAmount"
+												"name": "WTNonSubjectAmount",
+												"type": "Double"
 											}
 										},
 										{
@@ -783,7 +879,8 @@
 												"path": "['WTNonSubjectAmountSC']"
 											},
 											"sink": {
-												"name": "WTNonSubjectAmountSC"
+												"name": "WTNonSubjectAmountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -791,7 +888,8 @@
 												"path": "['WTNonSubjectAmountFC']"
 											},
 											"sink": {
-												"name": "WTNonSubjectAmountFC"
+												"name": "WTNonSubjectAmountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -799,7 +897,8 @@
 												"path": "['WTExemptedAmount']"
 											},
 											"sink": {
-												"name": "WTExemptedAmount"
+												"name": "WTExemptedAmount",
+												"type": "Double"
 											}
 										},
 										{
@@ -807,7 +906,8 @@
 												"path": "['WTExemptedAmountSC']"
 											},
 											"sink": {
-												"name": "WTExemptedAmountSC"
+												"name": "WTExemptedAmountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -815,7 +915,8 @@
 												"path": "['WTExemptedAmountFC']"
 											},
 											"sink": {
-												"name": "WTExemptedAmountFC"
+												"name": "WTExemptedAmountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -823,7 +924,8 @@
 												"path": "['BaseAmount']"
 											},
 											"sink": {
-												"name": "BaseAmount"
+												"name": "BaseAmount",
+												"type": "Double"
 											}
 										},
 										{
@@ -831,7 +933,8 @@
 												"path": "['BaseAmountSC']"
 											},
 											"sink": {
-												"name": "BaseAmountSC"
+												"name": "BaseAmountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -839,7 +942,8 @@
 												"path": "['BaseAmountFC']"
 											},
 											"sink": {
-												"name": "BaseAmountFC"
+												"name": "BaseAmountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -847,7 +951,8 @@
 												"path": "['WTAmount']"
 											},
 											"sink": {
-												"name": "WTAmount"
+												"name": "WTAmount",
+												"type": "Double"
 											}
 										},
 										{
@@ -855,7 +960,8 @@
 												"path": "['WTAmountSC']"
 											},
 											"sink": {
-												"name": "WTAmountSC"
+												"name": "WTAmountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -863,7 +969,8 @@
 												"path": "['WTAmountFC']"
 											},
 											"sink": {
-												"name": "WTAmountFC"
+												"name": "WTAmountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -871,7 +978,8 @@
 												"path": "['VatDate']"
 											},
 											"sink": {
-												"name": "VatDate"
+												"name": "VatDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -879,7 +987,8 @@
 												"path": "['DocumentsOwner']"
 											},
 											"sink": {
-												"name": "DocumentsOwner"
+												"name": "DocumentsOwner",
+												"type": "String"
 											}
 										},
 										{
@@ -887,7 +996,8 @@
 												"path": "['FolioPrefixString']"
 											},
 											"sink": {
-												"name": "FolioPrefixString"
+												"name": "FolioPrefixString",
+												"type": "String"
 											}
 										},
 										{
@@ -895,7 +1005,8 @@
 												"path": "['FolioNumber']"
 											},
 											"sink": {
-												"name": "FolioNumber"
+												"name": "FolioNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -903,7 +1014,8 @@
 												"path": "['DocumentSubType']"
 											},
 											"sink": {
-												"name": "DocumentSubType"
+												"name": "DocumentSubType",
+												"type": "String"
 											}
 										},
 										{
@@ -911,7 +1023,8 @@
 												"path": "['BPChannelCode']"
 											},
 											"sink": {
-												"name": "BPChannelCode"
+												"name": "BPChannelCode",
+												"type": "String"
 											}
 										},
 										{
@@ -919,7 +1032,8 @@
 												"path": "['BPChannelContact']"
 											},
 											"sink": {
-												"name": "BPChannelContact"
+												"name": "BPChannelContact",
+												"type": "String"
 											}
 										},
 										{
@@ -927,7 +1041,8 @@
 												"path": "['Address2']"
 											},
 											"sink": {
-												"name": "Address2"
+												"name": "Address2",
+												"type": "String"
 											}
 										},
 										{
@@ -935,7 +1050,8 @@
 												"path": "['DocumentStatus']"
 											},
 											"sink": {
-												"name": "DocumentStatus"
+												"name": "DocumentStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -943,7 +1059,8 @@
 												"path": "['PeriodIndicator']"
 											},
 											"sink": {
-												"name": "PeriodIndicator"
+												"name": "PeriodIndicator",
+												"type": "String"
 											}
 										},
 										{
@@ -951,7 +1068,8 @@
 												"path": "['PayToCode']"
 											},
 											"sink": {
-												"name": "PayToCode"
+												"name": "PayToCode",
+												"type": "String"
 											}
 										},
 										{
@@ -959,7 +1077,8 @@
 												"path": "['ManualNumber']"
 											},
 											"sink": {
-												"name": "ManualNumber"
+												"name": "ManualNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -967,7 +1086,8 @@
 												"path": "['UseShpdGoodsAct']"
 											},
 											"sink": {
-												"name": "UseShpdGoodsAct"
+												"name": "UseShpdGoodsAct",
+												"type": "String"
 											}
 										},
 										{
@@ -975,7 +1095,8 @@
 												"path": "['IsPayToBank']"
 											},
 											"sink": {
-												"name": "IsPayToBank"
+												"name": "IsPayToBank",
+												"type": "String"
 											}
 										},
 										{
@@ -983,7 +1104,8 @@
 												"path": "['PayToBankCountry']"
 											},
 											"sink": {
-												"name": "PayToBankCountry"
+												"name": "PayToBankCountry",
+												"type": "String"
 											}
 										},
 										{
@@ -991,7 +1113,8 @@
 												"path": "['PayToBankCode']"
 											},
 											"sink": {
-												"name": "PayToBankCode"
+												"name": "PayToBankCode",
+												"type": "String"
 											}
 										},
 										{
@@ -999,7 +1122,8 @@
 												"path": "['PayToBankAccountNo']"
 											},
 											"sink": {
-												"name": "PayToBankAccountNo"
+												"name": "PayToBankAccountNo",
+												"type": "String"
 											}
 										},
 										{
@@ -1007,7 +1131,8 @@
 												"path": "['PayToBankBranch']"
 											},
 											"sink": {
-												"name": "PayToBankBranch"
+												"name": "PayToBankBranch",
+												"type": "String"
 											}
 										},
 										{
@@ -1015,7 +1140,8 @@
 												"path": "['BPL_IDAssignedToInvoice']"
 											},
 											"sink": {
-												"name": "BPL_IDAssignedToInvoice"
+												"name": "BPL_IDAssignedToInvoice",
+												"type": "String"
 											}
 										},
 										{
@@ -1023,7 +1149,8 @@
 												"path": "['DownPayment']"
 											},
 											"sink": {
-												"name": "DownPayment"
+												"name": "DownPayment",
+												"type": "Double"
 											}
 										},
 										{
@@ -1031,7 +1158,8 @@
 												"path": "['ReserveInvoice']"
 											},
 											"sink": {
-												"name": "ReserveInvoice"
+												"name": "ReserveInvoice",
+												"type": "String"
 											}
 										},
 										{
@@ -1039,7 +1167,8 @@
 												"path": "['LanguageCode']"
 											},
 											"sink": {
-												"name": "LanguageCode"
+												"name": "LanguageCode",
+												"type": "String"
 											}
 										},
 										{
@@ -1047,7 +1176,8 @@
 												"path": "['TrackingNumber']"
 											},
 											"sink": {
-												"name": "TrackingNumber"
+												"name": "TrackingNumber",
+												"type": "Single"
 											}
 										},
 										{
@@ -1055,7 +1185,8 @@
 												"path": "['PickRemark']"
 											},
 											"sink": {
-												"name": "PickRemark"
+												"name": "PickRemark",
+												"type": "String"
 											}
 										},
 										{
@@ -1063,7 +1194,8 @@
 												"path": "['ClosingDate']"
 											},
 											"sink": {
-												"name": "ClosingDate"
+												"name": "ClosingDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -1071,7 +1203,8 @@
 												"path": "['SequenceCode']"
 											},
 											"sink": {
-												"name": "SequenceCode"
+												"name": "SequenceCode",
+												"type": "String"
 											}
 										},
 										{
@@ -1079,7 +1212,8 @@
 												"path": "['SequenceSerial']"
 											},
 											"sink": {
-												"name": "SequenceSerial"
+												"name": "SequenceSerial",
+												"type": "String"
 											}
 										},
 										{
@@ -1087,7 +1221,8 @@
 												"path": "['SeriesString']"
 											},
 											"sink": {
-												"name": "SeriesString"
+												"name": "SeriesString",
+												"type": "String"
 											}
 										},
 										{
@@ -1095,7 +1230,8 @@
 												"path": "['SubSeriesString']"
 											},
 											"sink": {
-												"name": "SubSeriesString"
+												"name": "SubSeriesString",
+												"type": "String"
 											}
 										},
 										{
@@ -1103,7 +1239,8 @@
 												"path": "['SequenceModel']"
 											},
 											"sink": {
-												"name": "SequenceModel"
+												"name": "SequenceModel",
+												"type": "String"
 											}
 										},
 										{
@@ -1111,7 +1248,8 @@
 												"path": "['UseCorrectionVATGroup']"
 											},
 											"sink": {
-												"name": "UseCorrectionVATGroup"
+												"name": "UseCorrectionVATGroup",
+												"type": "String"
 											}
 										},
 										{
@@ -1119,7 +1257,8 @@
 												"path": "['TotalDiscount']"
 											},
 											"sink": {
-												"name": "TotalDiscount"
+												"name": "TotalDiscount",
+												"type": "Double"
 											}
 										},
 										{
@@ -1127,7 +1266,8 @@
 												"path": "['DownPaymentAmount']"
 											},
 											"sink": {
-												"name": "DownPaymentAmount"
+												"name": "DownPaymentAmount",
+												"type": "Double"
 											}
 										},
 										{
@@ -1135,7 +1275,8 @@
 												"path": "['DownPaymentPercentage']"
 											},
 											"sink": {
-												"name": "DownPaymentPercentage"
+												"name": "DownPaymentPercentage",
+												"type": "Double"
 											}
 										},
 										{
@@ -1143,7 +1284,8 @@
 												"path": "['DownPaymentType']"
 											},
 											"sink": {
-												"name": "DownPaymentType"
+												"name": "DownPaymentType",
+												"type": "String"
 											}
 										},
 										{
@@ -1151,7 +1293,8 @@
 												"path": "['DownPaymentAmountSC']"
 											},
 											"sink": {
-												"name": "DownPaymentAmountSC"
+												"name": "DownPaymentAmountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -1159,7 +1302,8 @@
 												"path": "['DownPaymentAmountFC']"
 											},
 											"sink": {
-												"name": "DownPaymentAmountFC"
+												"name": "DownPaymentAmountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -1167,7 +1311,8 @@
 												"path": "['VatPercent']"
 											},
 											"sink": {
-												"name": "VatPercent"
+												"name": "VatPercent",
+												"type": "Double"
 											}
 										},
 										{
@@ -1175,7 +1320,8 @@
 												"path": "['ServiceGrossProfitPercent']"
 											},
 											"sink": {
-												"name": "ServiceGrossProfitPercent"
+												"name": "ServiceGrossProfitPercent",
+												"type": "String"
 											}
 										},
 										{
@@ -1183,7 +1329,8 @@
 												"path": "['OpeningRemarks']"
 											},
 											"sink": {
-												"name": "OpeningRemarks"
+												"name": "OpeningRemarks",
+												"type": "String"
 											}
 										},
 										{
@@ -1191,7 +1338,8 @@
 												"path": "['ClosingRemarks']"
 											},
 											"sink": {
-												"name": "ClosingRemarks"
+												"name": "ClosingRemarks",
+												"type": "String"
 											}
 										},
 										{
@@ -1199,7 +1347,8 @@
 												"path": "['RoundingDiffAmount']"
 											},
 											"sink": {
-												"name": "RoundingDiffAmount"
+												"name": "RoundingDiffAmount",
+												"type": "String"
 											}
 										},
 										{
@@ -1207,7 +1356,8 @@
 												"path": "['RoundingDiffAmountFC']"
 											},
 											"sink": {
-												"name": "RoundingDiffAmountFC"
+												"name": "RoundingDiffAmountFC",
+												"type": "String"
 											}
 										},
 										{
@@ -1215,7 +1365,8 @@
 												"path": "['RoundingDiffAmountSC']"
 											},
 											"sink": {
-												"name": "RoundingDiffAmountSC"
+												"name": "RoundingDiffAmountSC",
+												"type": "String"
 											}
 										},
 										{
@@ -1223,7 +1374,8 @@
 												"path": "['Cancelled']"
 											},
 											"sink": {
-												"name": "Cancelled"
+												"name": "Cancelled",
+												"type": "String"
 											}
 										},
 										{
@@ -1231,7 +1383,8 @@
 												"path": "['SignatureInputMessage']"
 											},
 											"sink": {
-												"name": "SignatureInputMessage"
+												"name": "SignatureInputMessage",
+												"type": "String"
 											}
 										},
 										{
@@ -1239,7 +1392,8 @@
 												"path": "['SignatureDigest']"
 											},
 											"sink": {
-												"name": "SignatureDigest"
+												"name": "SignatureDigest",
+												"type": "String"
 											}
 										},
 										{
@@ -1247,7 +1401,8 @@
 												"path": "['CertificationNumber']"
 											},
 											"sink": {
-												"name": "CertificationNumber"
+												"name": "CertificationNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1255,7 +1410,8 @@
 												"path": "['PrivateKeyVersion']"
 											},
 											"sink": {
-												"name": "PrivateKeyVersion"
+												"name": "PrivateKeyVersion",
+												"type": "String"
 											}
 										},
 										{
@@ -1263,7 +1419,8 @@
 												"path": "['ControlAccount']"
 											},
 											"sink": {
-												"name": "ControlAccount"
+												"name": "ControlAccount",
+												"type": "String"
 											}
 										},
 										{
@@ -1271,7 +1428,8 @@
 												"path": "['InsuranceOperation347']"
 											},
 											"sink": {
-												"name": "InsuranceOperation347"
+												"name": "InsuranceOperation347",
+												"type": "String"
 											}
 										},
 										{
@@ -1279,7 +1437,8 @@
 												"path": "['ArchiveNonremovableSalesQuotation']"
 											},
 											"sink": {
-												"name": "ArchiveNonremovableSalesQuotation"
+												"name": "ArchiveNonremovableSalesQuotation",
+												"type": "String"
 											}
 										},
 										{
@@ -1287,7 +1446,8 @@
 												"path": "['GTSChecker']"
 											},
 											"sink": {
-												"name": "GTSChecker"
+												"name": "GTSChecker",
+												"type": "String"
 											}
 										},
 										{
@@ -1295,7 +1455,8 @@
 												"path": "['GTSPayee']"
 											},
 											"sink": {
-												"name": "GTSPayee"
+												"name": "GTSPayee",
+												"type": "String"
 											}
 										},
 										{
@@ -1303,7 +1464,8 @@
 												"path": "['ExtraMonth']"
 											},
 											"sink": {
-												"name": "ExtraMonth"
+												"name": "ExtraMonth",
+												"type": "String"
 											}
 										},
 										{
@@ -1311,7 +1473,8 @@
 												"path": "['ExtraDays']"
 											},
 											"sink": {
-												"name": "ExtraDays"
+												"name": "ExtraDays",
+												"type": "String"
 											}
 										},
 										{
@@ -1319,7 +1482,8 @@
 												"path": "['CashDiscountDateOffset']"
 											},
 											"sink": {
-												"name": "CashDiscountDateOffset"
+												"name": "CashDiscountDateOffset",
+												"type": "String"
 											}
 										},
 										{
@@ -1327,7 +1491,8 @@
 												"path": "['StartFrom']"
 											},
 											"sink": {
-												"name": "StartFrom"
+												"name": "StartFrom",
+												"type": "String"
 											}
 										},
 										{
@@ -1335,7 +1500,8 @@
 												"path": "['NTSApproved']"
 											},
 											"sink": {
-												"name": "NTSApproved"
+												"name": "NTSApproved",
+												"type": "String"
 											}
 										},
 										{
@@ -1343,7 +1509,8 @@
 												"path": "['ETaxWebSite']"
 											},
 											"sink": {
-												"name": "ETaxWebSite"
+												"name": "ETaxWebSite",
+												"type": "String"
 											}
 										},
 										{
@@ -1351,7 +1518,8 @@
 												"path": "['ETaxNumber']"
 											},
 											"sink": {
-												"name": "ETaxNumber"
+												"name": "ETaxNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1359,7 +1527,8 @@
 												"path": "['NTSApprovedNumber']"
 											},
 											"sink": {
-												"name": "NTSApprovedNumber"
+												"name": "NTSApprovedNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1367,7 +1536,8 @@
 												"path": "['EDocGenerationType']"
 											},
 											"sink": {
-												"name": "EDocGenerationType"
+												"name": "EDocGenerationType",
+												"type": "String"
 											}
 										},
 										{
@@ -1375,7 +1545,8 @@
 												"path": "['EDocSeries']"
 											},
 											"sink": {
-												"name": "EDocSeries"
+												"name": "EDocSeries",
+												"type": "String"
 											}
 										},
 										{
@@ -1383,7 +1554,8 @@
 												"path": "['EDocNum']"
 											},
 											"sink": {
-												"name": "EDocNum"
+												"name": "EDocNum",
+												"type": "String"
 											}
 										},
 										{
@@ -1391,7 +1563,8 @@
 												"path": "['EDocExportFormat']"
 											},
 											"sink": {
-												"name": "EDocExportFormat"
+												"name": "EDocExportFormat",
+												"type": "String"
 											}
 										},
 										{
@@ -1399,7 +1572,8 @@
 												"path": "['EDocStatus']"
 											},
 											"sink": {
-												"name": "EDocStatus"
+												"name": "EDocStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -1407,7 +1581,8 @@
 												"path": "['EDocErrorCode']"
 											},
 											"sink": {
-												"name": "EDocErrorCode"
+												"name": "EDocErrorCode",
+												"type": "String"
 											}
 										},
 										{
@@ -1415,7 +1590,8 @@
 												"path": "['EDocErrorMessage']"
 											},
 											"sink": {
-												"name": "EDocErrorMessage"
+												"name": "EDocErrorMessage",
+												"type": "String"
 											}
 										},
 										{
@@ -1423,7 +1599,8 @@
 												"path": "['DownPaymentStatus']"
 											},
 											"sink": {
-												"name": "DownPaymentStatus"
+												"name": "DownPaymentStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -1431,7 +1608,8 @@
 												"path": "['GroupSeries']"
 											},
 											"sink": {
-												"name": "GroupSeries"
+												"name": "GroupSeries",
+												"type": "String"
 											}
 										},
 										{
@@ -1439,7 +1617,8 @@
 												"path": "['GroupNumber']"
 											},
 											"sink": {
-												"name": "GroupNumber"
+												"name": "GroupNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1447,7 +1626,8 @@
 												"path": "['GroupHandWritten']"
 											},
 											"sink": {
-												"name": "GroupHandWritten"
+												"name": "GroupHandWritten",
+												"type": "String"
 											}
 										},
 										{
@@ -1455,7 +1635,8 @@
 												"path": "['ReopenOriginalDocument']"
 											},
 											"sink": {
-												"name": "ReopenOriginalDocument"
+												"name": "ReopenOriginalDocument",
+												"type": "String"
 											}
 										},
 										{
@@ -1463,7 +1644,8 @@
 												"path": "['ReopenManuallyClosedOrCanceledDocument']"
 											},
 											"sink": {
-												"name": "ReopenManuallyClosedOrCanceledDocument"
+												"name": "ReopenManuallyClosedOrCanceledDocument",
+												"type": "String"
 											}
 										},
 										{
@@ -1471,7 +1653,8 @@
 												"path": "['CreateOnlineQuotation']"
 											},
 											"sink": {
-												"name": "CreateOnlineQuotation"
+												"name": "CreateOnlineQuotation",
+												"type": "String"
 											}
 										},
 										{
@@ -1479,7 +1662,8 @@
 												"path": "['POSEquipmentNumber']"
 											},
 											"sink": {
-												"name": "POSEquipmentNumber"
+												"name": "POSEquipmentNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1487,7 +1671,8 @@
 												"path": "['POSManufacturerSerialNumber']"
 											},
 											"sink": {
-												"name": "POSManufacturerSerialNumber"
+												"name": "POSManufacturerSerialNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1495,7 +1680,8 @@
 												"path": "['POSCashierNumber']"
 											},
 											"sink": {
-												"name": "POSCashierNumber"
+												"name": "POSCashierNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1503,7 +1689,8 @@
 												"path": "['ApplyCurrentVATRatesForDownPaymentsToDraw']"
 											},
 											"sink": {
-												"name": "ApplyCurrentVATRatesForDownPaymentsToDraw"
+												"name": "ApplyCurrentVATRatesForDownPaymentsToDraw",
+												"type": "String"
 											}
 										},
 										{
@@ -1511,7 +1698,8 @@
 												"path": "['ClosingOption']"
 											},
 											"sink": {
-												"name": "ClosingOption"
+												"name": "ClosingOption",
+												"type": "String"
 											}
 										},
 										{
@@ -1519,7 +1707,8 @@
 												"path": "['SpecifiedClosingDate']"
 											},
 											"sink": {
-												"name": "SpecifiedClosingDate"
+												"name": "SpecifiedClosingDate",
+												"type": "String"
 											}
 										},
 										{
@@ -1527,7 +1716,8 @@
 												"path": "['OpenForLandedCosts']"
 											},
 											"sink": {
-												"name": "OpenForLandedCosts"
+												"name": "OpenForLandedCosts",
+												"type": "String"
 											}
 										},
 										{
@@ -1535,7 +1725,8 @@
 												"path": "['AuthorizationStatus']"
 											},
 											"sink": {
-												"name": "AuthorizationStatus"
+												"name": "AuthorizationStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -1543,7 +1734,8 @@
 												"path": "['TotalDiscountFC']"
 											},
 											"sink": {
-												"name": "TotalDiscountFC"
+												"name": "TotalDiscountFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -1551,7 +1743,8 @@
 												"path": "['TotalDiscountSC']"
 											},
 											"sink": {
-												"name": "TotalDiscountSC"
+												"name": "TotalDiscountSC",
+												"type": "Double"
 											}
 										},
 										{
@@ -1559,7 +1752,8 @@
 												"path": "['RelevantToGTS']"
 											},
 											"sink": {
-												"name": "RelevantToGTS"
+												"name": "RelevantToGTS",
+												"type": "String"
 											}
 										},
 										{
@@ -1567,7 +1761,8 @@
 												"path": "['BPLName']"
 											},
 											"sink": {
-												"name": "BPLName"
+												"name": "BPLName",
+												"type": "String"
 											}
 										},
 										{
@@ -1575,7 +1770,8 @@
 												"path": "['VATRegNum']"
 											},
 											"sink": {
-												"name": "VATRegNum"
+												"name": "VATRegNum",
+												"type": "String"
 											}
 										},
 										{
@@ -1583,7 +1779,8 @@
 												"path": "['AnnualInvoiceDeclarationReference']"
 											},
 											"sink": {
-												"name": "AnnualInvoiceDeclarationReference"
+												"name": "AnnualInvoiceDeclarationReference",
+												"type": "String"
 											}
 										},
 										{
@@ -1591,7 +1788,8 @@
 												"path": "['Supplier']"
 											},
 											"sink": {
-												"name": "Supplier"
+												"name": "Supplier",
+												"type": "String"
 											}
 										},
 										{
@@ -1599,7 +1797,8 @@
 												"path": "['Releaser']"
 											},
 											"sink": {
-												"name": "Releaser"
+												"name": "Releaser",
+												"type": "String"
 											}
 										},
 										{
@@ -1607,7 +1806,8 @@
 												"path": "['Receiver']"
 											},
 											"sink": {
-												"name": "Receiver"
+												"name": "Receiver",
+												"type": "String"
 											}
 										},
 										{
@@ -1615,7 +1815,8 @@
 												"path": "['BlanketAgreementNumber']"
 											},
 											"sink": {
-												"name": "BlanketAgreementNumber"
+												"name": "BlanketAgreementNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -1623,7 +1824,8 @@
 												"path": "['IsAlteration']"
 											},
 											"sink": {
-												"name": "IsAlteration"
+												"name": "IsAlteration",
+												"type": "String"
 											}
 										},
 										{
@@ -1631,7 +1833,8 @@
 												"path": "['CancelStatus']"
 											},
 											"sink": {
-												"name": "CancelStatus"
+												"name": "CancelStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -1639,7 +1842,8 @@
 												"path": "['AssetValueDate']"
 											},
 											"sink": {
-												"name": "AssetValueDate"
+												"name": "AssetValueDate",
+												"type": "String"
 											}
 										},
 										{
@@ -1647,7 +1851,8 @@
 												"path": "['InvoicePayment']"
 											},
 											"sink": {
-												"name": "InvoicePayment"
+												"name": "InvoicePayment",
+												"type": "String"
 											}
 										},
 										{
@@ -1655,7 +1860,8 @@
 												"path": "['DocumentDelivery']"
 											},
 											"sink": {
-												"name": "DocumentDelivery"
+												"name": "DocumentDelivery",
+												"type": "String"
 											}
 										},
 										{
@@ -1663,7 +1869,8 @@
 												"path": "['AuthorizationCode']"
 											},
 											"sink": {
-												"name": "AuthorizationCode"
+												"name": "AuthorizationCode",
+												"type": "String"
 											}
 										},
 										{
@@ -1671,7 +1878,8 @@
 												"path": "['StartDeliveryDate']"
 											},
 											"sink": {
-												"name": "StartDeliveryDate"
+												"name": "StartDeliveryDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -1679,7 +1887,8 @@
 												"path": "['StartDeliveryTime']"
 											},
 											"sink": {
-												"name": "StartDeliveryTime"
+												"name": "StartDeliveryTime",
+												"type": "String"
 											}
 										},
 										{
@@ -1687,7 +1896,8 @@
 												"path": "['EndDeliveryDate']"
 											},
 											"sink": {
-												"name": "EndDeliveryDate"
+												"name": "EndDeliveryDate",
+												"type": "Date"
 											}
 										},
 										{
@@ -1695,7 +1905,8 @@
 												"path": "['EndDeliveryTime']"
 											},
 											"sink": {
-												"name": "EndDeliveryTime"
+												"name": "EndDeliveryTime",
+												"type": "String"
 											}
 										},
 										{
@@ -1703,7 +1914,8 @@
 												"path": "['VehiclePlate']"
 											},
 											"sink": {
-												"name": "VehiclePlate"
+												"name": "VehiclePlate",
+												"type": "String"
 											}
 										},
 										{
@@ -1711,7 +1923,8 @@
 												"path": "['ATDocumentType']"
 											},
 											"sink": {
-												"name": "ATDocumentType"
+												"name": "ATDocumentType",
+												"type": "String"
 											}
 										},
 										{
@@ -1719,7 +1932,8 @@
 												"path": "['ElecCommStatus']"
 											},
 											"sink": {
-												"name": "ElecCommStatus"
+												"name": "ElecCommStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -1727,7 +1941,8 @@
 												"path": "['ElecCommMessage']"
 											},
 											"sink": {
-												"name": "ElecCommMessage"
+												"name": "ElecCommMessage",
+												"type": "String"
 											}
 										},
 										{
@@ -1735,7 +1950,8 @@
 												"path": "['ReuseDocumentNum']"
 											},
 											"sink": {
-												"name": "ReuseDocumentNum"
+												"name": "ReuseDocumentNum",
+												"type": "String"
 											}
 										},
 										{
@@ -1743,7 +1959,8 @@
 												"path": "['ReuseNotaFiscalNum']"
 											},
 											"sink": {
-												"name": "ReuseNotaFiscalNum"
+												"name": "ReuseNotaFiscalNum",
+												"type": "String"
 											}
 										},
 										{
@@ -1751,7 +1968,8 @@
 												"path": "['PrintSEPADirect']"
 											},
 											"sink": {
-												"name": "PrintSEPADirect"
+												"name": "PrintSEPADirect",
+												"type": "String"
 											}
 										},
 										{
@@ -1759,7 +1977,8 @@
 												"path": "['FiscalDocNum']"
 											},
 											"sink": {
-												"name": "FiscalDocNum"
+												"name": "FiscalDocNum",
+												"type": "Int32"
 											}
 										},
 										{
@@ -1767,7 +1986,8 @@
 												"path": "['POSDailySummaryNo']"
 											},
 											"sink": {
-												"name": "POSDailySummaryNo"
+												"name": "POSDailySummaryNo",
+												"type": "String"
 											}
 										},
 										{
@@ -1775,7 +1995,8 @@
 												"path": "['POSReceiptNo']"
 											},
 											"sink": {
-												"name": "POSReceiptNo"
+												"name": "POSReceiptNo",
+												"type": "String"
 											}
 										},
 										{
@@ -1783,7 +2004,8 @@
 												"path": "['PointOfIssueCode']"
 											},
 											"sink": {
-												"name": "PointOfIssueCode"
+												"name": "PointOfIssueCode",
+												"type": "String"
 											}
 										},
 										{
@@ -1791,7 +2013,8 @@
 												"path": "['Letter']"
 											},
 											"sink": {
-												"name": "Letter"
+												"name": "Letter",
+												"type": "String"
 											}
 										},
 										{
@@ -1799,7 +2022,8 @@
 												"path": "['FolioNumberFrom']"
 											},
 											"sink": {
-												"name": "FolioNumberFrom"
+												"name": "FolioNumberFrom",
+												"type": "String"
 											}
 										},
 										{
@@ -1807,7 +2031,8 @@
 												"path": "['FolioNumberTo']"
 											},
 											"sink": {
-												"name": "FolioNumberTo"
+												"name": "FolioNumberTo",
+												"type": "String"
 											}
 										},
 										{
@@ -1815,7 +2040,8 @@
 												"path": "['InterimType']"
 											},
 											"sink": {
-												"name": "InterimType"
+												"name": "InterimType",
+												"type": "String"
 											}
 										},
 										{
@@ -1823,7 +2049,8 @@
 												"path": "['RelatedType']"
 											},
 											"sink": {
-												"name": "RelatedType"
+												"name": "RelatedType",
+												"type": "String"
 											}
 										},
 										{
@@ -1831,7 +2058,8 @@
 												"path": "['RelatedEntry']"
 											},
 											"sink": {
-												"name": "RelatedEntry"
+												"name": "RelatedEntry",
+												"type": "String"
 											}
 										},
 										{
@@ -1839,7 +2067,8 @@
 												"path": "['SAPPassport']"
 											},
 											"sink": {
-												"name": "SAPPassport"
+												"name": "SAPPassport",
+												"type": "String"
 											}
 										},
 										{
@@ -1847,7 +2076,8 @@
 												"path": "['DocumentTaxID']"
 											},
 											"sink": {
-												"name": "DocumentTaxID"
+												"name": "DocumentTaxID",
+												"type": "String"
 											}
 										},
 										{
@@ -1855,7 +2085,8 @@
 												"path": "['DateOfReportingControlStatementVAT']"
 											},
 											"sink": {
-												"name": "DateOfReportingControlStatementVAT"
+												"name": "DateOfReportingControlStatementVAT",
+												"type": "String"
 											}
 										},
 										{
@@ -1863,7 +2094,8 @@
 												"path": "['ReportingSectionControlStatementVAT']"
 											},
 											"sink": {
-												"name": "ReportingSectionControlStatementVAT"
+												"name": "ReportingSectionControlStatementVAT",
+												"type": "String"
 											}
 										},
 										{
@@ -1871,7 +2103,8 @@
 												"path": "['ExcludeFromTaxReportControlStatementVAT']"
 											},
 											"sink": {
-												"name": "ExcludeFromTaxReportControlStatementVAT"
+												"name": "ExcludeFromTaxReportControlStatementVAT",
+												"type": "String"
 											}
 										},
 										{
@@ -1879,7 +2112,8 @@
 												"path": "['POS_CashRegister']"
 											},
 											"sink": {
-												"name": "POS_CashRegister"
+												"name": "POS_CashRegister",
+												"type": "String"
 											}
 										},
 										{
@@ -1887,7 +2121,8 @@
 												"path": "['UpdateTime']"
 											},
 											"sink": {
-												"name": "UpdateTime"
+												"name": "UpdateTime",
+												"type": "String"
 											}
 										},
 										{
@@ -1895,7 +2130,8 @@
 												"path": "['CreateQRCodeFrom']"
 											},
 											"sink": {
-												"name": "CreateQRCodeFrom"
+												"name": "CreateQRCodeFrom",
+												"type": "String"
 											}
 										},
 										{
@@ -1903,7 +2139,8 @@
 												"path": "['PriceMode']"
 											},
 											"sink": {
-												"name": "PriceMode"
+												"name": "PriceMode",
+												"type": "String"
 											}
 										},
 										{
@@ -1911,7 +2148,8 @@
 												"path": "['Revision']"
 											},
 											"sink": {
-												"name": "Revision"
+												"name": "Revision",
+												"type": "String"
 											}
 										},
 										{
@@ -1919,7 +2157,8 @@
 												"path": "['OriginalRefNo']"
 											},
 											"sink": {
-												"name": "OriginalRefNo"
+												"name": "OriginalRefNo",
+												"type": "String"
 											}
 										},
 										{
@@ -1927,7 +2166,8 @@
 												"path": "['OriginalRefDate']"
 											},
 											"sink": {
-												"name": "OriginalRefDate"
+												"name": "OriginalRefDate",
+												"type": "String"
 											}
 										},
 										{
@@ -1935,7 +2175,8 @@
 												"path": "['GSTTransactionType']"
 											},
 											"sink": {
-												"name": "GSTTransactionType"
+												"name": "GSTTransactionType",
+												"type": "String"
 											}
 										},
 										{
@@ -1943,7 +2184,8 @@
 												"path": "['OriginalCreditOrDebitNo']"
 											},
 											"sink": {
-												"name": "OriginalCreditOrDebitNo"
+												"name": "OriginalCreditOrDebitNo",
+												"type": "String"
 											}
 										},
 										{
@@ -1951,7 +2193,8 @@
 												"path": "['OriginalCreditOrDebitDate']"
 											},
 											"sink": {
-												"name": "OriginalCreditOrDebitDate"
+												"name": "OriginalCreditOrDebitDate",
+												"type": "String"
 											}
 										},
 										{
@@ -1959,7 +2202,8 @@
 												"path": "['ECommerceOperator']"
 											},
 											"sink": {
-												"name": "ECommerceOperator"
+												"name": "ECommerceOperator",
+												"type": "String"
 											}
 										},
 										{
@@ -1967,7 +2211,8 @@
 												"path": "['ECommerceGSTIN']"
 											},
 											"sink": {
-												"name": "ECommerceGSTIN"
+												"name": "ECommerceGSTIN",
+												"type": "String"
 											}
 										},
 										{
@@ -1975,7 +2220,8 @@
 												"path": "['ShipFrom']"
 											},
 											"sink": {
-												"name": "ShipFrom"
+												"name": "ShipFrom",
+												"type": "String"
 											}
 										},
 										{
@@ -1983,7 +2229,8 @@
 												"path": "['CommissionTrade']"
 											},
 											"sink": {
-												"name": "CommissionTrade"
+												"name": "CommissionTrade",
+												"type": "String"
 											}
 										},
 										{
@@ -1991,7 +2238,8 @@
 												"path": "['CommissionTradeReturn']"
 											},
 											"sink": {
-												"name": "CommissionTradeReturn"
+												"name": "CommissionTradeReturn",
+												"type": "String"
 											}
 										},
 										{
@@ -1999,7 +2247,8 @@
 												"path": "['UseBillToAddrToDetermineTax']"
 											},
 											"sink": {
-												"name": "UseBillToAddrToDetermineTax"
+												"name": "UseBillToAddrToDetermineTax",
+												"type": "String"
 											}
 										},
 										{
@@ -2007,7 +2256,8 @@
 												"path": "['IssuingReason']"
 											},
 											"sink": {
-												"name": "IssuingReason"
+												"name": "IssuingReason",
+												"type": "String"
 											}
 										},
 										{
@@ -2015,7 +2265,8 @@
 												"path": "['Cig']"
 											},
 											"sink": {
-												"name": "Cig"
+												"name": "Cig",
+												"type": "String"
 											}
 										},
 										{
@@ -2023,7 +2274,8 @@
 												"path": "['Cup']"
 											},
 											"sink": {
-												"name": "Cup"
+												"name": "Cup",
+												"type": "String"
 											}
 										},
 										{
@@ -2031,7 +2283,8 @@
 												"path": "['EDocType']"
 											},
 											"sink": {
-												"name": "EDocType"
+												"name": "EDocType",
+												"type": "String"
 											}
 										},
 										{
@@ -2039,7 +2292,8 @@
 												"path": "['FCEAsPaymentMeans']"
 											},
 											"sink": {
-												"name": "FCEAsPaymentMeans"
+												"name": "FCEAsPaymentMeans",
+												"type": "String"
 											}
 										},
 										{
@@ -2047,7 +2301,8 @@
 												"path": "['PaidToDate']"
 											},
 											"sink": {
-												"name": "PaidToDate"
+												"name": "PaidToDate",
+												"type": "String"
 											}
 										},
 										{
@@ -2055,7 +2310,8 @@
 												"path": "['PaidToDateFC']"
 											},
 											"sink": {
-												"name": "PaidToDateFC"
+												"name": "PaidToDateFC",
+												"type": "String"
 											}
 										},
 										{
@@ -2063,7 +2319,8 @@
 												"path": "['PaidToDateSys']"
 											},
 											"sink": {
-												"name": "PaidToDateSys"
+												"name": "PaidToDateSys",
+												"type": "String"
 											}
 										},
 										{
@@ -2071,7 +2328,8 @@
 												"path": "['BaseType']"
 											},
 											"sink": {
-												"name": "BaseType"
+												"name": "BaseType",
+												"type": "String"
 											}
 										},
 										{
@@ -2079,7 +2337,8 @@
 												"path": "['BaseEntry']"
 											},
 											"sink": {
-												"name": "BaseEntry"
+												"name": "BaseEntry",
+												"type": "String"
 											}
 										},
 										{
@@ -2087,7 +2346,8 @@
 												"path": "['FatherCard']"
 											},
 											"sink": {
-												"name": "FatherCard"
+												"name": "FatherCard",
+												"type": "String"
 											}
 										},
 										{
@@ -2095,7 +2355,8 @@
 												"path": "['FatherType']"
 											},
 											"sink": {
-												"name": "FatherType"
+												"name": "FatherType",
+												"type": "String"
 											}
 										},
 										{
@@ -2103,7 +2364,8 @@
 												"path": "['ShipState']"
 											},
 											"sink": {
-												"name": "ShipState"
+												"name": "ShipState",
+												"type": "String"
 											}
 										},
 										{
@@ -2111,7 +2373,8 @@
 												"path": "['ShipPlace']"
 											},
 											"sink": {
-												"name": "ShipPlace"
+												"name": "ShipPlace",
+												"type": "String"
 											}
 										},
 										{
@@ -2119,7 +2382,8 @@
 												"path": "['CustOffice']"
 											},
 											"sink": {
-												"name": "CustOffice"
+												"name": "CustOffice",
+												"type": "String"
 											}
 										},
 										{
@@ -2127,7 +2391,8 @@
 												"path": "['FCI']"
 											},
 											"sink": {
-												"name": "FCI"
+												"name": "FCI",
+												"type": "String"
 											}
 										},
 										{
@@ -2135,7 +2400,8 @@
 												"path": "['AddLegIn']"
 											},
 											"sink": {
-												"name": "AddLegIn"
+												"name": "AddLegIn",
+												"type": "String"
 											}
 										},
 										{
@@ -2143,7 +2409,8 @@
 												"path": "['LegTextF']"
 											},
 											"sink": {
-												"name": "LegTextF"
+												"name": "LegTextF",
+												"type": "String"
 											}
 										},
 										{
@@ -2151,7 +2418,8 @@
 												"path": "['DANFELgTxt']"
 											},
 											"sink": {
-												"name": "DANFELgTxt"
+												"name": "DANFELgTxt",
+												"type": "String"
 											}
 										},
 										{
@@ -2159,7 +2427,8 @@
 												"path": "['IndFinal']"
 											},
 											"sink": {
-												"name": "IndFinal"
+												"name": "IndFinal",
+												"type": "String"
 											}
 										},
 										{
@@ -2167,7 +2436,8 @@
 												"path": "['DataVersion']"
 											},
 											"sink": {
-												"name": "DataVersion"
+												"name": "DataVersion",
+												"type": "String"
 											}
 										},
 										{
@@ -2175,7 +2445,8 @@
 												"path": "['LastPageFolioNumber']"
 											},
 											"sink": {
-												"name": "LastPageFolioNumber"
+												"name": "LastPageFolioNumber",
+												"type": "String"
 											}
 										},
 										{
@@ -2183,7 +2454,8 @@
 												"path": "['U_AIG_KID']"
 											},
 											"sink": {
-												"name": "U_AIG_KID"
+												"name": "U_AIG_KID",
+												"type": "String"
 											}
 										},
 										{
@@ -2191,7 +2463,8 @@
 												"path": "['U_Ordrenummer']"
 											},
 											"sink": {
-												"name": "U_Ordrenummer"
+												"name": "U_Ordrenummer",
+												"type": "String"
 											}
 										},
 										{
@@ -2199,7 +2472,8 @@
 												"path": "['U_esurl']"
 											},
 											"sink": {
-												"name": "U_esurl"
+												"name": "U_esurl",
+												"type": "String"
 											}
 										},
 										{
@@ -2207,7 +2481,8 @@
 												"path": "['U_sluttkunde']"
 											},
 											"sink": {
-												"name": "U_sluttkunde"
+												"name": "U_sluttkunde",
+												"type": "String"
 											}
 										},
 										{
@@ -2215,7 +2490,8 @@
 												"path": "['U_Levbet']"
 											},
 											"sink": {
-												"name": "U_Levbet"
+												"name": "U_Levbet",
+												"type": "String"
 											}
 										},
 										{
@@ -2223,7 +2499,8 @@
 												"path": "['U_Sted']"
 											},
 											"sink": {
-												"name": "U_Sted"
+												"name": "U_Sted",
+												"type": "String"
 											}
 										},
 										{
@@ -2231,7 +2508,8 @@
 												"path": "['U_Opperk']"
 											},
 											"sink": {
-												"name": "U_Opperk"
+												"name": "U_Opperk",
+												"type": "String"
 											}
 										},
 										{
@@ -2239,7 +2517,8 @@
 												"path": "['U_DSS_SendStatus']"
 											},
 											"sink": {
-												"name": "U_DSS_SendStatus"
+												"name": "U_DSS_SendStatus",
+												"type": "String"
 											}
 										},
 										{
@@ -2247,15 +2526,17 @@
 												"path": "['U_DSS_EHFBuyersRef']"
 											},
 											"sink": {
-												"name": "U_DSS_EHFBuyersRef"
+												"name": "U_DSS_EHFBuyersRef",
+												"type": "String"
 											}
 										},
 										{
 											"source": {
-												"path": "['EWayBillDetails']"
+												"path": "['m_ds']"
 											},
 											"sink": {
-												"name": "EWayBillDetails"
+												"name": "m_ds",
+												"type": "String"
 											}
 										},
 										{
@@ -2263,7 +2544,8 @@
 												"path": "['DocumentAdditionalExpenses'][0]['ExpenseCode']"
 											},
 											"sink": {
-												"name": "AdditionalExpenses_ExpenseCode"
+												"name": "AdditionalExpenses_ExpenseCode",
+												"type": "Int16"
 											}
 										},
 										{
@@ -2271,7 +2553,8 @@
 												"path": "['DocumentAdditionalExpenses'][0]['LineTotal']"
 											},
 											"sink": {
-												"name": "AdditionalExpenses_LineTotal"
+												"name": "AdditionalExpenses_LineTotal",
+												"type": "Double"
 											}
 										},
 										{
@@ -2279,7 +2562,8 @@
 												"path": "['DocumentAdditionalExpenses'][0]['LineTotalFC']"
 											},
 											"sink": {
-												"name": "AdditionalExpenses_LineTotalFC"
+												"name": "AdditionalExpenses_LineTotalFC",
+												"type": "Double"
 											}
 										},
 										{
@@ -2287,15 +2571,8 @@
 												"path": "['DocumentAdditionalExpenses'][0]['LineTotalSys']"
 											},
 											"sink": {
-												"name": "AdditionalExpenses_LineTotalSys"
-											}
-										},
-										{
-											"source": {
-												"path": "m_ds"
-											},
-											"sink": {
-												"name": "m_ds"
+												"name": "AdditionalExpenses_LineTotalSys",
+												"type": "Double"
 											}
 										}
 									],
@@ -2309,7 +2586,7 @@
 									"parameters": {
 										"Directory": "Invoices",
 										"FileName": {
-											"value": "@concat('*',item())",
+											"value": "@item().name",
 											"type": "Expression"
 										}
 									}
@@ -2320,7 +2597,7 @@
 									"referenceName": "sql_bo_sap_invoices",
 									"type": "DatasetReference",
 									"parameters": {
-										"tableName": "invoices_test_blob"
+										"tableName": "stg_invoices_mast"
 									}
 								}
 							]
