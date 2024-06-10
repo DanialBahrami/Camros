@@ -485,2968 +485,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_docLines')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "AllPagesFetched",
-						"type": "Until",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@not(bool(variables('repeat')))",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "ApiCallPagination",
-									"type": "WebActivity",
-									"dependsOn": [
-										{
-											"activity": "ETLDocLines",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"method": "GET",
-										"headers": {},
-										"url": {
-											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
-											"type": "Expression"
-										},
-										"authentication": {
-											"type": "Basic",
-											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
-											"password": {
-												"type": "AzureKeyVaultSecret",
-												"store": {
-													"referenceName": "AzureKeyVault_bo",
-													"type": "LinkedServiceReference"
-												},
-												"secretName": "Bondura"
-											}
-										}
-									}
-								},
-								{
-									"name": "GetNextLink",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "nextLink",
-										"value": {
-											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "ETLDocLines",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [
-										{
-											"activity": "ETLInvoices",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "df_bo_invoices_doclines",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"apiOrders": {
-													"resPath": "Invoices?$skip=2622"
-												},
-												"SinkToSQLTable": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "ETLInvoices",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "df_bo_invoices",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"ApiCall": {},
-												"SinkToSQLTable": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "ErrorStop",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "GetNextLink",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ETLDocLines",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ETLInvoices",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "CheckRepeat",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "repeat",
-										"value": {
-											"value": "@bool(0)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "CheckRepeat",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "GetNextLink",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "repeat",
-										"value": {
-											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"timeout": "0.12:00:00"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"baseUrl": {
-						"type": "String",
-						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
-					},
-					"nextLink": {
-						"type": "String",
-						"defaultValue": "Invoices?$skip=0"
-					},
-					"repeat": {
-						"type": "Boolean",
-						"defaultValue": true
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_master')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "AllPagesFetched",
-						"type": "Until",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@not(bool(variables('repeat')))",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "ApiCallPagination",
-									"type": "WebActivity",
-									"dependsOn": [
-										{
-											"activity": "ETLInvoices",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"method": "GET",
-										"headers": {},
-										"url": {
-											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
-											"type": "Expression"
-										},
-										"authentication": {
-											"type": "Basic",
-											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
-											"password": {
-												"type": "AzureKeyVaultSecret",
-												"store": {
-													"referenceName": "AzureKeyVault_bo",
-													"type": "LinkedServiceReference"
-												},
-												"secretName": "Bondura"
-											}
-										}
-									}
-								},
-								{
-									"name": "GetNextLink",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "nextLink",
-										"value": {
-											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "ETLInvoices",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "df_bo_invoices",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"ApiCall": {
-													"resPath": "Invoices?$skip=2622"
-												},
-												"SinkToSQLTable": {
-													"tableName": "sample_invoices_master"
-												}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "ErrorStop",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "GetNextLink",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ETLInvoices",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "CheckRepeat",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "repeat",
-										"value": {
-											"value": "@bool(0)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "CheckRepeat",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "GetNextLink",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "repeat",
-										"value": {
-											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"timeout": "0.12:00:00"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"baseUrl": {
-						"type": "String",
-						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
-					},
-					"nextLink": {
-						"type": "String",
-						"defaultValue": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
-					},
-					"repeat": {
-						"type": "Boolean",
-						"defaultValue": true
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_orders_docLines')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "AllPagesFetched",
-						"type": "Until",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"expression": {
-								"value": "@empty(variables('nextLink'))",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "ApiCallPagination",
-									"type": "WebActivity",
-									"dependsOn": [
-										{
-											"activity": "ETLDocLines",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"method": "GET",
-										"headers": {},
-										"url": {
-											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
-											"type": "Expression"
-										},
-										"authentication": {
-											"type": "Basic",
-											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
-											"password": {
-												"type": "AzureKeyVaultSecret",
-												"store": {
-													"referenceName": "AzureKeyVault_bo",
-													"type": "LinkedServiceReference"
-												},
-												"secretName": "Bondura"
-											}
-										}
-									}
-								},
-								{
-									"name": "GetNextLink",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "nextLink",
-										"value": {
-											"value": "@replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' )",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "ETLDocLines",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [
-										{
-											"activity": "ETLOrders",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "df_bo_orders_doclines",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"apiOrders": {
-													"QueryParam": {
-														"value": "@variables('nextLink')",
-														"type": "Expression"
-													}
-												},
-												"SinkToSQLTable": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "ETLOrders",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.12:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "df_bo_orders",
-											"type": "DataFlowReference",
-											"parameters": {},
-											"datasetParameters": {
-												"ApiCall": {
-													"QueryParam": {
-														"value": "@variables('nextLink')",
-														"type": "Expression"
-													}
-												},
-												"SinkToSQLTable": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 16,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "setEmpty",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "GetNextLink",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ApiCallPagination",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ETLDocLines",
-											"dependencyConditions": [
-												"Failed"
-											]
-										},
-										{
-											"activity": "ETLOrders",
-											"dependencyConditions": [
-												"Failed"
-											]
-										}
-									],
-									"policy": {
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "nextLink",
-										"value": {
-											"value": "''",
-											"type": "Expression"
-										}
-									}
-								}
-							],
-							"timeout": "0.12:00:00"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"variables": {
-					"baseUrl": {
-						"type": "String",
-						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
-					},
-					"nextLink": {
-						"type": "String",
-						"defaultValue": "Orders?$skip=0"
-					}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]",
-				"[concat(variables('factoryId'), '/dataflows/df_bo_orders')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pip_lake_sql')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "JsonSqlInsert",
-						"type": "Copy",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "JsonSource",
-								"additionalColumns": [
-									{
-										"name": "m_ds",
-										"value": "'Bondura'"
-									}
-								],
-								"storeSettings": {
-									"type": "AzureBlobFSReadSettings",
-									"recursive": false,
-									"enablePartitionDiscovery": false
-								},
-								"formatSettings": {
-									"type": "JsonReadSettings"
-								}
-							},
-							"sink": {
-								"type": "AzureSqlSink",
-								"writeBehavior": "insert",
-								"sqlWriterUseTableLock": false,
-								"tableOption": "autoCreate",
-								"disableMetricsCollection": false
-							},
-							"enableStaging": false,
-							"translator": {
-								"type": "TabularTranslator",
-								"mappings": [
-									{
-										"source": {
-											"path": "$['value'][0]['DocEntry']"
-										},
-										"sink": {
-											"name": "DocEntry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocNum']"
-										},
-										"sink": {
-											"name": "DocNum",
-											"type": "Int32"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocType']"
-										},
-										"sink": {
-											"name": "DocType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['HandWritten']"
-										},
-										"sink": {
-											"name": "HandWritten"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Printed']"
-										},
-										"sink": {
-											"name": "Printed"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocDate']"
-										},
-										"sink": {
-											"name": "DocDate",
-											"type": "Date"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocDueDate']"
-										},
-										"sink": {
-											"name": "DocDueDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardCode']"
-										},
-										"sink": {
-											"name": "CardCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CardName']"
-										},
-										"sink": {
-											"name": "CardName"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Address']"
-										},
-										"sink": {
-											"name": "Address"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NumAtCard']"
-										},
-										"sink": {
-											"name": "NumAtCard"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocTotal']"
-										},
-										"sink": {
-											"name": "DocTotal",
-											"type": "Double"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AttachmentEntry']"
-										},
-										"sink": {
-											"name": "AttachmentEntry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocCurrency']"
-										},
-										"sink": {
-											"name": "DocCurrency"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocRate']"
-										},
-										"sink": {
-											"name": "DocRate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Reference1']"
-										},
-										"sink": {
-											"name": "Reference1"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Reference2']"
-										},
-										"sink": {
-											"name": "Reference2"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Comments']"
-										},
-										"sink": {
-											"name": "Comments"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['JournalMemo']"
-										},
-										"sink": {
-											"name": "JournalMemo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaymentGroupCode']"
-										},
-										"sink": {
-											"name": "PaymentGroupCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocTime']"
-										},
-										"sink": {
-											"name": "DocTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SalesPersonCode']"
-										},
-										"sink": {
-											"name": "SalesPersonCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TransportationCode']"
-										},
-										"sink": {
-											"name": "TransportationCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Confirmed']"
-										},
-										"sink": {
-											"name": "Confirmed"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ImportFileNum']"
-										},
-										"sink": {
-											"name": "ImportFileNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SummeryType']"
-										},
-										"sink": {
-											"name": "SummeryType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ContactPersonCode']"
-										},
-										"sink": {
-											"name": "ContactPersonCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ShowSCN']"
-										},
-										"sink": {
-											"name": "ShowSCN"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Series']"
-										},
-										"sink": {
-											"name": "Series"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TaxDate']"
-										},
-										"sink": {
-											"name": "TaxDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PartialSupply']"
-										},
-										"sink": {
-											"name": "PartialSupply"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocObjectCode']"
-										},
-										"sink": {
-											"name": "DocObjectCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ShipToCode']"
-										},
-										"sink": {
-											"name": "ShipToCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Indicator']"
-										},
-										"sink": {
-											"name": "Indicator"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FederalTaxID']"
-										},
-										"sink": {
-											"name": "FederalTaxID"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DiscountPercent']"
-										},
-										"sink": {
-											"name": "DiscountPercent"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaymentReference']"
-										},
-										"sink": {
-											"name": "PaymentReference"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CreationDate']"
-										},
-										"sink": {
-											"name": "CreationDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UpdateDate']"
-										},
-										"sink": {
-											"name": "UpdateDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FinancialPeriod']"
-										},
-										"sink": {
-											"name": "FinancialPeriod"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UserSign']"
-										},
-										"sink": {
-											"name": "UserSign"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TransNum']"
-										},
-										"sink": {
-											"name": "TransNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VatSum']"
-										},
-										"sink": {
-											"name": "VatSum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VatSumSys']"
-										},
-										"sink": {
-											"name": "VatSumSys"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VatSumFc']"
-										},
-										"sink": {
-											"name": "VatSumFc"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NetProcedure']"
-										},
-										"sink": {
-											"name": "NetProcedure"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocTotalFc']"
-										},
-										"sink": {
-											"name": "DocTotalFc"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocTotalSys']"
-										},
-										"sink": {
-											"name": "DocTotalSys"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Form1099']"
-										},
-										"sink": {
-											"name": "Form1099"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Box1099']"
-										},
-										"sink": {
-											"name": "Box1099"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RevisionPo']"
-										},
-										"sink": {
-											"name": "RevisionPo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RequriedDate']"
-										},
-										"sink": {
-											"name": "RequriedDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CancelDate']"
-										},
-										"sink": {
-											"name": "CancelDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BlockDunning']"
-										},
-										"sink": {
-											"name": "BlockDunning"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Submitted']"
-										},
-										"sink": {
-											"name": "Submitted"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Segment']"
-										},
-										"sink": {
-											"name": "Segment"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PickStatus']"
-										},
-										"sink": {
-											"name": "PickStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Pick']"
-										},
-										"sink": {
-											"name": "Pick"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaymentMethod']"
-										},
-										"sink": {
-											"name": "PaymentMethod"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaymentBlock']"
-										},
-										"sink": {
-											"name": "PaymentBlock"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaymentBlockEntry']"
-										},
-										"sink": {
-											"name": "PaymentBlockEntry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CentralBankIndicator']"
-										},
-										"sink": {
-											"name": "CentralBankIndicator"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['MaximumCashDiscount']"
-										},
-										"sink": {
-											"name": "MaximumCashDiscount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Reserve']"
-										},
-										"sink": {
-											"name": "Reserve"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Project']"
-										},
-										"sink": {
-											"name": "Project"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExemptionValidityDateFrom']"
-										},
-										"sink": {
-											"name": "ExemptionValidityDateFrom"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExemptionValidityDateTo']"
-										},
-										"sink": {
-											"name": "ExemptionValidityDateTo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WareHouseUpdateType']"
-										},
-										"sink": {
-											"name": "WareHouseUpdateType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Rounding']"
-										},
-										"sink": {
-											"name": "Rounding"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExternalCorrectedDocNum']"
-										},
-										"sink": {
-											"name": "ExternalCorrectedDocNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['InternalCorrectedDocNum']"
-										},
-										"sink": {
-											"name": "InternalCorrectedDocNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NextCorrectingDocument']"
-										},
-										"sink": {
-											"name": "NextCorrectingDocument"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DeferredTax']"
-										},
-										"sink": {
-											"name": "DeferredTax"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TaxExemptionLetterNum']"
-										},
-										"sink": {
-											"name": "TaxExemptionLetterNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTApplied']"
-										},
-										"sink": {
-											"name": "WTApplied"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTAppliedFC']"
-										},
-										"sink": {
-											"name": "WTAppliedFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BillOfExchangeReserved']"
-										},
-										"sink": {
-											"name": "BillOfExchangeReserved"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AgentCode']"
-										},
-										"sink": {
-											"name": "AgentCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTAppliedSC']"
-										},
-										"sink": {
-											"name": "WTAppliedSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalEqualizationTax']"
-										},
-										"sink": {
-											"name": "TotalEqualizationTax"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalEqualizationTaxFC']"
-										},
-										"sink": {
-											"name": "TotalEqualizationTaxFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalEqualizationTaxSC']"
-										},
-										"sink": {
-											"name": "TotalEqualizationTaxSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NumberOfInstallments']"
-										},
-										"sink": {
-											"name": "NumberOfInstallments"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ApplyTaxOnFirstInstallment']"
-										},
-										"sink": {
-											"name": "ApplyTaxOnFirstInstallment"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTNonSubjectAmount']"
-										},
-										"sink": {
-											"name": "WTNonSubjectAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTNonSubjectAmountSC']"
-										},
-										"sink": {
-											"name": "WTNonSubjectAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTNonSubjectAmountFC']"
-										},
-										"sink": {
-											"name": "WTNonSubjectAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTExemptedAmount']"
-										},
-										"sink": {
-											"name": "WTExemptedAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTExemptedAmountSC']"
-										},
-										"sink": {
-											"name": "WTExemptedAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTExemptedAmountFC']"
-										},
-										"sink": {
-											"name": "WTExemptedAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BaseAmount']"
-										},
-										"sink": {
-											"name": "BaseAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BaseAmountSC']"
-										},
-										"sink": {
-											"name": "BaseAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BaseAmountFC']"
-										},
-										"sink": {
-											"name": "BaseAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTAmount']"
-										},
-										"sink": {
-											"name": "WTAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTAmountSC']"
-										},
-										"sink": {
-											"name": "WTAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['WTAmountFC']"
-										},
-										"sink": {
-											"name": "WTAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VatDate']"
-										},
-										"sink": {
-											"name": "VatDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentsOwner']"
-										},
-										"sink": {
-											"name": "DocumentsOwner"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FolioPrefixString']"
-										},
-										"sink": {
-											"name": "FolioPrefixString"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FolioNumber']"
-										},
-										"sink": {
-											"name": "FolioNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentSubType']"
-										},
-										"sink": {
-											"name": "DocumentSubType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BPChannelCode']"
-										},
-										"sink": {
-											"name": "BPChannelCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BPChannelContact']"
-										},
-										"sink": {
-											"name": "BPChannelContact"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Address2']"
-										},
-										"sink": {
-											"name": "Address2"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentStatus']"
-										},
-										"sink": {
-											"name": "DocumentStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PeriodIndicator']"
-										},
-										"sink": {
-											"name": "PeriodIndicator"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PayToCode']"
-										},
-										"sink": {
-											"name": "PayToCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ManualNumber']"
-										},
-										"sink": {
-											"name": "ManualNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UseShpdGoodsAct']"
-										},
-										"sink": {
-											"name": "UseShpdGoodsAct"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['IsPayToBank']"
-										},
-										"sink": {
-											"name": "IsPayToBank"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PayToBankCountry']"
-										},
-										"sink": {
-											"name": "PayToBankCountry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PayToBankCode']"
-										},
-										"sink": {
-											"name": "PayToBankCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PayToBankAccountNo']"
-										},
-										"sink": {
-											"name": "PayToBankAccountNo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PayToBankBranch']"
-										},
-										"sink": {
-											"name": "PayToBankBranch"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BPL_IDAssignedToInvoice']"
-										},
-										"sink": {
-											"name": "BPL_IDAssignedToInvoice"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPayment']"
-										},
-										"sink": {
-											"name": "DownPayment"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReserveInvoice']"
-										},
-										"sink": {
-											"name": "ReserveInvoice"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['LanguageCode']"
-										},
-										"sink": {
-											"name": "LanguageCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TrackingNumber']"
-										},
-										"sink": {
-											"name": "TrackingNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PickRemark']"
-										},
-										"sink": {
-											"name": "PickRemark"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ClosingDate']"
-										},
-										"sink": {
-											"name": "ClosingDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SequenceCode']"
-										},
-										"sink": {
-											"name": "SequenceCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SequenceSerial']"
-										},
-										"sink": {
-											"name": "SequenceSerial"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SeriesString']"
-										},
-										"sink": {
-											"name": "SeriesString"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SubSeriesString']"
-										},
-										"sink": {
-											"name": "SubSeriesString"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SequenceModel']"
-										},
-										"sink": {
-											"name": "SequenceModel"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UseCorrectionVATGroup']"
-										},
-										"sink": {
-											"name": "UseCorrectionVATGroup"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalDiscount']"
-										},
-										"sink": {
-											"name": "TotalDiscount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentAmount']"
-										},
-										"sink": {
-											"name": "DownPaymentAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentPercentage']"
-										},
-										"sink": {
-											"name": "DownPaymentPercentage"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentType']"
-										},
-										"sink": {
-											"name": "DownPaymentType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentAmountSC']"
-										},
-										"sink": {
-											"name": "DownPaymentAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentAmountFC']"
-										},
-										"sink": {
-											"name": "DownPaymentAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VatPercent']"
-										},
-										"sink": {
-											"name": "VatPercent"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ServiceGrossProfitPercent']"
-										},
-										"sink": {
-											"name": "ServiceGrossProfitPercent"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OpeningRemarks']"
-										},
-										"sink": {
-											"name": "OpeningRemarks"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ClosingRemarks']"
-										},
-										"sink": {
-											"name": "ClosingRemarks"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RoundingDiffAmount']"
-										},
-										"sink": {
-											"name": "RoundingDiffAmount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RoundingDiffAmountFC']"
-										},
-										"sink": {
-											"name": "RoundingDiffAmountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RoundingDiffAmountSC']"
-										},
-										"sink": {
-											"name": "RoundingDiffAmountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Cancelled']"
-										},
-										"sink": {
-											"name": "Cancelled"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SignatureInputMessage']"
-										},
-										"sink": {
-											"name": "SignatureInputMessage"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SignatureDigest']"
-										},
-										"sink": {
-											"name": "SignatureDigest"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CertificationNumber']"
-										},
-										"sink": {
-											"name": "CertificationNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PrivateKeyVersion']"
-										},
-										"sink": {
-											"name": "PrivateKeyVersion"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ControlAccount']"
-										},
-										"sink": {
-											"name": "ControlAccount"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['InsuranceOperation347']"
-										},
-										"sink": {
-											"name": "InsuranceOperation347"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ArchiveNonremovableSalesQuotation']"
-										},
-										"sink": {
-											"name": "ArchiveNonremovableSalesQuotation"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GTSChecker']"
-										},
-										"sink": {
-											"name": "GTSChecker"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GTSPayee']"
-										},
-										"sink": {
-											"name": "GTSPayee"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExtraMonth']"
-										},
-										"sink": {
-											"name": "ExtraMonth"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExtraDays']"
-										},
-										"sink": {
-											"name": "ExtraDays"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CashDiscountDateOffset']"
-										},
-										"sink": {
-											"name": "CashDiscountDateOffset"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['StartFrom']"
-										},
-										"sink": {
-											"name": "StartFrom"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NTSApproved']"
-										},
-										"sink": {
-											"name": "NTSApproved"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ETaxWebSite']"
-										},
-										"sink": {
-											"name": "ETaxWebSite"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ETaxNumber']"
-										},
-										"sink": {
-											"name": "ETaxNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['NTSApprovedNumber']"
-										},
-										"sink": {
-											"name": "NTSApprovedNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocGenerationType']"
-										},
-										"sink": {
-											"name": "EDocGenerationType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocSeries']"
-										},
-										"sink": {
-											"name": "EDocSeries"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocNum']"
-										},
-										"sink": {
-											"name": "EDocNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocExportFormat']"
-										},
-										"sink": {
-											"name": "EDocExportFormat"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocStatus']"
-										},
-										"sink": {
-											"name": "EDocStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocErrorCode']"
-										},
-										"sink": {
-											"name": "EDocErrorCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocErrorMessage']"
-										},
-										"sink": {
-											"name": "EDocErrorMessage"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DownPaymentStatus']"
-										},
-										"sink": {
-											"name": "DownPaymentStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GroupSeries']"
-										},
-										"sink": {
-											"name": "GroupSeries"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GroupNumber']"
-										},
-										"sink": {
-											"name": "GroupNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GroupHandWritten']"
-										},
-										"sink": {
-											"name": "GroupHandWritten"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReopenOriginalDocument']"
-										},
-										"sink": {
-											"name": "ReopenOriginalDocument"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReopenManuallyClosedOrCanceledDocument']"
-										},
-										"sink": {
-											"name": "ReopenManuallyClosedOrCanceledDocument"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CreateOnlineQuotation']"
-										},
-										"sink": {
-											"name": "CreateOnlineQuotation"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POSEquipmentNumber']"
-										},
-										"sink": {
-											"name": "POSEquipmentNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POSManufacturerSerialNumber']"
-										},
-										"sink": {
-											"name": "POSManufacturerSerialNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POSCashierNumber']"
-										},
-										"sink": {
-											"name": "POSCashierNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ApplyCurrentVATRatesForDownPaymentsToDraw']"
-										},
-										"sink": {
-											"name": "ApplyCurrentVATRatesForDownPaymentsToDraw"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ClosingOption']"
-										},
-										"sink": {
-											"name": "ClosingOption"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SpecifiedClosingDate']"
-										},
-										"sink": {
-											"name": "SpecifiedClosingDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OpenForLandedCosts']"
-										},
-										"sink": {
-											"name": "OpenForLandedCosts"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AuthorizationStatus']"
-										},
-										"sink": {
-											"name": "AuthorizationStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalDiscountFC']"
-										},
-										"sink": {
-											"name": "TotalDiscountFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['TotalDiscountSC']"
-										},
-										"sink": {
-											"name": "TotalDiscountSC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RelevantToGTS']"
-										},
-										"sink": {
-											"name": "RelevantToGTS"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BPLName']"
-										},
-										"sink": {
-											"name": "BPLName"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VATRegNum']"
-										},
-										"sink": {
-											"name": "VATRegNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AnnualInvoiceDeclarationReference']"
-										},
-										"sink": {
-											"name": "AnnualInvoiceDeclarationReference"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Supplier']"
-										},
-										"sink": {
-											"name": "Supplier"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Releaser']"
-										},
-										"sink": {
-											"name": "Releaser"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Receiver']"
-										},
-										"sink": {
-											"name": "Receiver"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BlanketAgreementNumber']"
-										},
-										"sink": {
-											"name": "BlanketAgreementNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['IsAlteration']"
-										},
-										"sink": {
-											"name": "IsAlteration"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CancelStatus']"
-										},
-										"sink": {
-											"name": "CancelStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AssetValueDate']"
-										},
-										"sink": {
-											"name": "AssetValueDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['InvoicePayment']"
-										},
-										"sink": {
-											"name": "InvoicePayment"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentDelivery']"
-										},
-										"sink": {
-											"name": "DocumentDelivery"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AuthorizationCode']"
-										},
-										"sink": {
-											"name": "AuthorizationCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['StartDeliveryDate']"
-										},
-										"sink": {
-											"name": "StartDeliveryDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['StartDeliveryTime']"
-										},
-										"sink": {
-											"name": "StartDeliveryTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EndDeliveryDate']"
-										},
-										"sink": {
-											"name": "EndDeliveryDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EndDeliveryTime']"
-										},
-										"sink": {
-											"name": "EndDeliveryTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['VehiclePlate']"
-										},
-										"sink": {
-											"name": "VehiclePlate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ATDocumentType']"
-										},
-										"sink": {
-											"name": "ATDocumentType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ElecCommStatus']"
-										},
-										"sink": {
-											"name": "ElecCommStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ElecCommMessage']"
-										},
-										"sink": {
-											"name": "ElecCommMessage"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReuseDocumentNum']"
-										},
-										"sink": {
-											"name": "ReuseDocumentNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReuseNotaFiscalNum']"
-										},
-										"sink": {
-											"name": "ReuseNotaFiscalNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PrintSEPADirect']"
-										},
-										"sink": {
-											"name": "PrintSEPADirect"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FiscalDocNum']"
-										},
-										"sink": {
-											"name": "FiscalDocNum"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POSDailySummaryNo']"
-										},
-										"sink": {
-											"name": "POSDailySummaryNo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POSReceiptNo']"
-										},
-										"sink": {
-											"name": "POSReceiptNo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PointOfIssueCode']"
-										},
-										"sink": {
-											"name": "PointOfIssueCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Letter']"
-										},
-										"sink": {
-											"name": "Letter"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FolioNumberFrom']"
-										},
-										"sink": {
-											"name": "FolioNumberFrom"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FolioNumberTo']"
-										},
-										"sink": {
-											"name": "FolioNumberTo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['InterimType']"
-										},
-										"sink": {
-											"name": "InterimType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RelatedType']"
-										},
-										"sink": {
-											"name": "RelatedType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['RelatedEntry']"
-										},
-										"sink": {
-											"name": "RelatedEntry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['SAPPassport']"
-										},
-										"sink": {
-											"name": "SAPPassport"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentTaxID']"
-										},
-										"sink": {
-											"name": "DocumentTaxID"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DateOfReportingControlStatementVAT']"
-										},
-										"sink": {
-											"name": "DateOfReportingControlStatementVAT"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ReportingSectionControlStatementVAT']"
-										},
-										"sink": {
-											"name": "ReportingSectionControlStatementVAT"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ExcludeFromTaxReportControlStatementVAT']"
-										},
-										"sink": {
-											"name": "ExcludeFromTaxReportControlStatementVAT"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['POS_CashRegister']"
-										},
-										"sink": {
-											"name": "POS_CashRegister"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UpdateTime']"
-										},
-										"sink": {
-											"name": "UpdateTime"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CreateQRCodeFrom']"
-										},
-										"sink": {
-											"name": "CreateQRCodeFrom"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PriceMode']"
-										},
-										"sink": {
-											"name": "PriceMode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Revision']"
-										},
-										"sink": {
-											"name": "Revision"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OriginalRefNo']"
-										},
-										"sink": {
-											"name": "OriginalRefNo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OriginalRefDate']"
-										},
-										"sink": {
-											"name": "OriginalRefDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['GSTTransactionType']"
-										},
-										"sink": {
-											"name": "GSTTransactionType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OriginalCreditOrDebitNo']"
-										},
-										"sink": {
-											"name": "OriginalCreditOrDebitNo"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['OriginalCreditOrDebitDate']"
-										},
-										"sink": {
-											"name": "OriginalCreditOrDebitDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ECommerceOperator']"
-										},
-										"sink": {
-											"name": "ECommerceOperator"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ECommerceGSTIN']"
-										},
-										"sink": {
-											"name": "ECommerceGSTIN"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ShipFrom']"
-										},
-										"sink": {
-											"name": "ShipFrom"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CommissionTrade']"
-										},
-										"sink": {
-											"name": "CommissionTrade"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CommissionTradeReturn']"
-										},
-										"sink": {
-											"name": "CommissionTradeReturn"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['UseBillToAddrToDetermineTax']"
-										},
-										"sink": {
-											"name": "UseBillToAddrToDetermineTax"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['IssuingReason']"
-										},
-										"sink": {
-											"name": "IssuingReason"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Cig']"
-										},
-										"sink": {
-											"name": "Cig"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['Cup']"
-										},
-										"sink": {
-											"name": "Cup"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['EDocType']"
-										},
-										"sink": {
-											"name": "EDocType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FCEAsPaymentMeans']"
-										},
-										"sink": {
-											"name": "FCEAsPaymentMeans"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaidToDate']"
-										},
-										"sink": {
-											"name": "PaidToDate"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaidToDateFC']"
-										},
-										"sink": {
-											"name": "PaidToDateFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['PaidToDateSys']"
-										},
-										"sink": {
-											"name": "PaidToDateSys"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BaseType']"
-										},
-										"sink": {
-											"name": "BaseType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['BaseEntry']"
-										},
-										"sink": {
-											"name": "BaseEntry"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FatherCard']"
-										},
-										"sink": {
-											"name": "FatherCard"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FatherType']"
-										},
-										"sink": {
-											"name": "FatherType"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ShipState']"
-										},
-										"sink": {
-											"name": "ShipState"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['ShipPlace']"
-										},
-										"sink": {
-											"name": "ShipPlace"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['CustOffice']"
-										},
-										"sink": {
-											"name": "CustOffice"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['FCI']"
-										},
-										"sink": {
-											"name": "FCI"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['AddLegIn']"
-										},
-										"sink": {
-											"name": "AddLegIn"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['LegTextF']"
-										},
-										"sink": {
-											"name": "LegTextF"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DANFELgTxt']"
-										},
-										"sink": {
-											"name": "DANFELgTxt"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['IndFinal']"
-										},
-										"sink": {
-											"name": "IndFinal"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DataVersion']"
-										},
-										"sink": {
-											"name": "DataVersion"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['LastPageFolioNumber']"
-										},
-										"sink": {
-											"name": "LastPageFolioNumber"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_AIG_KID']"
-										},
-										"sink": {
-											"name": "U_AIG_KID"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_Ordrenummer']"
-										},
-										"sink": {
-											"name": "U_Ordrenummer"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_esurl']"
-										},
-										"sink": {
-											"name": "U_esurl"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_sluttkunde']"
-										},
-										"sink": {
-											"name": "U_sluttkunde"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_Levbet']"
-										},
-										"sink": {
-											"name": "U_Levbet"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_Sted']"
-										},
-										"sink": {
-											"name": "U_Sted"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_Opperk']"
-										},
-										"sink": {
-											"name": "U_Opperk"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_DSS_SendStatus']"
-										},
-										"sink": {
-											"name": "U_DSS_SendStatus"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['U_DSS_EHFBuyersRef']"
-										},
-										"sink": {
-											"name": "U_DSS_EHFBuyersRef"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['ExpenseCode']"
-										},
-										"sink": {
-											"name": "AdditionalExpenses_ExpenseCode"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotal']"
-										},
-										"sink": {
-											"name": "AdditionalExpenses_LineTotal"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotalFC']"
-										},
-										"sink": {
-											"name": "AdditionalExpenses_LineTotalFC"
-										}
-									},
-									{
-										"source": {
-											"path": "$['value'][0]['DocumentAdditionalExpenses'][0]['LineTotalSys']"
-										},
-										"sink": {
-											"name": "AdditionalExpenses_LineTotalSys"
-										}
-									},
-									{
-										"source": {
-											"path": "$['m_ds']"
-										},
-										"sink": {
-											"name": "m_ds"
-										}
-									}
-								]
-							}
-						},
-						"inputs": [
-							{
-								"referenceName": "ds_bo_json_invoices",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						],
-						"outputs": [
-							{
-								"referenceName": "sql_bo_sap_invoices",
-								"type": "DatasetReference",
-								"parameters": {
-									"tableName": "stg_invoices_master"
-								}
-							}
-						]
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_bo_json_invoices')]",
-				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pipe_blob_sql')]",
+			"name": "[concat(parameters('factoryName'), '/pip_blob_sql')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -3468,8 +507,14 @@
 								"referenceName": "ds_blob_bondura",
 								"type": "DatasetReference",
 								"parameters": {
-									"Directory": "Invoices",
-									"FileName": "*"
+									"Directory": {
+										"value": "@pipeline().parameters.Stream",
+										"type": "Expression"
+									},
+									"FileName": {
+										"value": "@pipeline().parameters.WildCard",
+										"type": "Expression"
+									}
 								}
 							},
 							"fieldList": [
@@ -3486,7 +531,7 @@
 						}
 					},
 					{
-						"name": "ForEach1",
+						"name": "ForEachFile",
 						"type": "ForEach",
 						"dependsOn": [
 							{
@@ -3504,8 +549,10 @@
 							},
 							"activities": [
 								{
-									"name": "JsonToSql",
+									"name": "JsonToSqlMast",
 									"type": "Copy",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
 									"dependsOn": [],
 									"policy": {
 										"timeout": "0.12:00:00",
@@ -6033,7 +3080,10 @@
 											"referenceName": "ds_blob_bondura",
 											"type": "DatasetReference",
 											"parameters": {
-												"Directory": "Invoices",
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
 												"FileName": {
 													"value": "@item().name",
 													"type": "Expression"
@@ -6050,8 +3100,2873 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "JsonToSqlDet",
+									"type": "Copy",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "$['value'][0]['DocNum']"
+													},
+													"sink": {
+														"name": "DocNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDate']"
+													},
+													"sink": {
+														"name": "DocDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDueDate']"
+													},
+													"sink": {
+														"name": "DocDueDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardCode']"
+													},
+													"sink": {
+														"name": "CardCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardName']"
+													},
+													"sink": {
+														"name": "CardName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineNum']"
+													},
+													"sink": {
+														"name": "LineNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemCode']"
+													},
+													"sink": {
+														"name": "ItemCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemDescription']"
+													},
+													"sink": {
+														"name": "ItemDescription",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Quantity']"
+													},
+													"sink": {
+														"name": "Quantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipDate']"
+													},
+													"sink": {
+														"name": "ShipDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Price']"
+													},
+													"sink": {
+														"name": "Price",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PriceAfterVAT']"
+													},
+													"sink": {
+														"name": "PriceAfterVAT",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Currency']"
+													},
+													"sink": {
+														"name": "Currency",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Rate']"
+													},
+													"sink": {
+														"name": "Rate",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DiscountPercent']"
+													},
+													"sink": {
+														"name": "DiscountPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VendorNum']"
+													},
+													"sink": {
+														"name": "VendorNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SerialNum']"
+													},
+													"sink": {
+														"name": "SerialNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WarehouseCode']"
+													},
+													"sink": {
+														"name": "WarehouseCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SalesPersonCode']"
+													},
+													"sink": {
+														"name": "SalesPersonCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CommisionPercent']"
+													},
+													"sink": {
+														"name": "CommisionPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TreeType']"
+													},
+													"sink": {
+														"name": "TreeType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AccountCode']"
+													},
+													"sink": {
+														"name": "AccountCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UseBaseUnits']"
+													},
+													"sink": {
+														"name": "UseBaseUnits",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SupplierCatNum']"
+													},
+													"sink": {
+														"name": "SupplierCatNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode']"
+													},
+													"sink": {
+														"name": "CostingCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ProjectCode']"
+													},
+													"sink": {
+														"name": "ProjectCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BarCode']"
+													},
+													"sink": {
+														"name": "BarCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VatGroup']"
+													},
+													"sink": {
+														"name": "VatGroup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height1']"
+													},
+													"sink": {
+														"name": "Height1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Hight1Unit']"
+													},
+													"sink": {
+														"name": "Hight1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height2']"
+													},
+													"sink": {
+														"name": "Height2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height2Unit']"
+													},
+													"sink": {
+														"name": "Height2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh1']"
+													},
+													"sink": {
+														"name": "Lengh1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh1Unit']"
+													},
+													"sink": {
+														"name": "Lengh1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh2']"
+													},
+													"sink": {
+														"name": "Lengh2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh2Unit']"
+													},
+													"sink": {
+														"name": "Lengh2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight1']"
+													},
+													"sink": {
+														"name": "Weight1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight1Unit']"
+													},
+													"sink": {
+														"name": "Weight1Unit",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight2']"
+													},
+													"sink": {
+														"name": "Weight2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight2Unit']"
+													},
+													"sink": {
+														"name": "Weight2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor1']"
+													},
+													"sink": {
+														"name": "Factor1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor2']"
+													},
+													"sink": {
+														"name": "Factor2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor3']"
+													},
+													"sink": {
+														"name": "Factor3",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor4']"
+													},
+													"sink": {
+														"name": "Factor4",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseType']"
+													},
+													"sink": {
+														"name": "BaseType",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseEntry']"
+													},
+													"sink": {
+														"name": "BaseEntry",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseLine']"
+													},
+													"sink": {
+														"name": "BaseLine",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Volume']"
+													},
+													"sink": {
+														"name": "Volume",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VolumeUnit']"
+													},
+													"sink": {
+														"name": "VolumeUnit",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width1']"
+													},
+													"sink": {
+														"name": "Width1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width1Unit']"
+													},
+													"sink": {
+														"name": "Width1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width2']"
+													},
+													"sink": {
+														"name": "Width2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width2Unit']"
+													},
+													"sink": {
+														"name": "Width2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Address']"
+													},
+													"sink": {
+														"name": "Address",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxCode']"
+													},
+													"sink": {
+														"name": "TaxCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxType']"
+													},
+													"sink": {
+														"name": "TaxType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxLiable']"
+													},
+													"sink": {
+														"name": "TaxLiable",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickStatus']"
+													},
+													"sink": {
+														"name": "PickStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickQuantity']"
+													},
+													"sink": {
+														"name": "PickQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickListIdNumber']"
+													},
+													"sink": {
+														"name": "PickListIdNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginalItem']"
+													},
+													"sink": {
+														"name": "OriginalItem",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BackOrder']"
+													},
+													"sink": {
+														"name": "BackOrder",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FreeText']"
+													},
+													"sink": {
+														"name": "FreeText",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShippingMethod']"
+													},
+													"sink": {
+														"name": "ShippingMethod",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetNum']"
+													},
+													"sink": {
+														"name": "POTargetNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetEntry']"
+													},
+													"sink": {
+														"name": "POTargetEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetRowNum']"
+													},
+													"sink": {
+														"name": "POTargetRowNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrectionInvoiceItem']"
+													},
+													"sink": {
+														"name": "CorrectionInvoiceItem",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToStock']"
+													},
+													"sink": {
+														"name": "CorrInvAmountToStock",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToDiffAcct']"
+													},
+													"sink": {
+														"name": "CorrInvAmountToDiffAcct",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTax']"
+													},
+													"sink": {
+														"name": "AppliedTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxFC']"
+													},
+													"sink": {
+														"name": "AppliedTaxFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxSC']"
+													},
+													"sink": {
+														"name": "AppliedTaxSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WTLiable']"
+													},
+													"sink": {
+														"name": "WTLiable",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DeferredTax']"
+													},
+													"sink": {
+														"name": "DeferredTax",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['EqualizationTaxPercent']"
+													},
+													"sink": {
+														"name": "EqualizationTaxPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTax']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxFC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxSC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmount']"
+													},
+													"sink": {
+														"name": "NetTaxAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountFC']"
+													},
+													"sink": {
+														"name": "NetTaxAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountSC']"
+													},
+													"sink": {
+														"name": "NetTaxAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['MeasureUnit']"
+													},
+													"sink": {
+														"name": "MeasureUnit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnitsOfMeasurment']"
+													},
+													"sink": {
+														"name": "UnitsOfMeasurment",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineTotal']"
+													},
+													"sink": {
+														"name": "LineTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxPercentagePerRow']"
+													},
+													"sink": {
+														"name": "TaxPercentagePerRow",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxTotal']"
+													},
+													"sink": {
+														"name": "TaxTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ConsumerSalesForecast']"
+													},
+													"sink": {
+														"name": "ConsumerSalesForecast",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExciseAmount']"
+													},
+													"sink": {
+														"name": "ExciseAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxPerUnit']"
+													},
+													"sink": {
+														"name": "TaxPerUnit",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalInclTax']"
+													},
+													"sink": {
+														"name": "TotalInclTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CountryOrg']"
+													},
+													"sink": {
+														"name": "CountryOrg",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SWW']"
+													},
+													"sink": {
+														"name": "SWW",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TransactionType']"
+													},
+													"sink": {
+														"name": "TransactionType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DistributeExpense']"
+													},
+													"sink": {
+														"name": "DistributeExpense",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RowTotalFC']"
+													},
+													"sink": {
+														"name": "RowTotalFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RowTotalSC']"
+													},
+													"sink": {
+														"name": "RowTotalSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyInmPrice']"
+													},
+													"sink": {
+														"name": "LastBuyInmPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumFc']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSumFc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumSc']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSumSc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSum']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSum",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumForeign']"
+													},
+													"sink": {
+														"name": "StockDistributesumForeign",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumSystem']"
+													},
+													"sink": {
+														"name": "StockDistributesumSystem",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesum']"
+													},
+													"sink": {
+														"name": "StockDistributesum",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockInmPrice']"
+													},
+													"sink": {
+														"name": "StockInmPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickStatusEx']"
+													},
+													"sink": {
+														"name": "PickStatusEx",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPM']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPM",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMFC']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPMFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMSC']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPMSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CFOPCode']"
+													},
+													"sink": {
+														"name": "CFOPCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTCode']"
+													},
+													"sink": {
+														"name": "CSTCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Usage']"
+													},
+													"sink": {
+														"name": "Usage",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxOnly']"
+													},
+													"sink": {
+														"name": "TaxOnly",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VisualOrder']"
+													},
+													"sink": {
+														"name": "VisualOrder",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseOpenQuantity']"
+													},
+													"sink": {
+														"name": "BaseOpenQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnitPrice']"
+													},
+													"sink": {
+														"name": "UnitPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineStatus']"
+													},
+													"sink": {
+														"name": "LineStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PackageQuantity']"
+													},
+													"sink": {
+														"name": "PackageQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Text']"
+													},
+													"sink": {
+														"name": "Text",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineType']"
+													},
+													"sink": {
+														"name": "LineType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode']"
+													},
+													"sink": {
+														"name": "COGSCostingCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSAccountCode']"
+													},
+													"sink": {
+														"name": "COGSAccountCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ChangeAssemlyBoMWarehouse']"
+													},
+													"sink": {
+														"name": "ChangeAssemlyBoMWarehouse",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossBuyPrice']"
+													},
+													"sink": {
+														"name": "GrossBuyPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossBase']"
+													},
+													"sink": {
+														"name": "GrossBase",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitTotalBasePrice']"
+													},
+													"sink": {
+														"name": "GrossProfitTotalBasePrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode2']"
+													},
+													"sink": {
+														"name": "CostingCode2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode3']"
+													},
+													"sink": {
+														"name": "CostingCode3",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode4']"
+													},
+													"sink": {
+														"name": "CostingCode4",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode5']"
+													},
+													"sink": {
+														"name": "CostingCode5",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemDetails']"
+													},
+													"sink": {
+														"name": "ItemDetails",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LocationCode']"
+													},
+													"sink": {
+														"name": "LocationCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualDeliveryDate']"
+													},
+													"sink": {
+														"name": "ActualDeliveryDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenQuantity']"
+													},
+													"sink": {
+														"name": "RemainingOpenQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmount']"
+													},
+													"sink": {
+														"name": "OpenAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmountFC']"
+													},
+													"sink": {
+														"name": "OpenAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmountSC']"
+													},
+													"sink": {
+														"name": "OpenAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExLineNo']"
+													},
+													"sink": {
+														"name": "ExLineNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RequiredDate']"
+													},
+													"sink": {
+														"name": "RequiredDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RequiredQuantity']"
+													},
+													"sink": {
+														"name": "RequiredQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode2']"
+													},
+													"sink": {
+														"name": "COGSCostingCode2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode3']"
+													},
+													"sink": {
+														"name": "COGSCostingCode3",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode4']"
+													},
+													"sink": {
+														"name": "COGSCostingCode4",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode5']"
+													},
+													"sink": {
+														"name": "COGSCostingCode5",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforIPI']"
+													},
+													"sink": {
+														"name": "CSTforIPI",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforPIS']"
+													},
+													"sink": {
+														"name": "CSTforPIS",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforCOFINS']"
+													},
+													"sink": {
+														"name": "CSTforCOFINS",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CreditOriginCode']"
+													},
+													"sink": {
+														"name": "CreditOriginCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WithoutInventoryMovement']"
+													},
+													"sink": {
+														"name": "WithoutInventoryMovement",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AgreementNo']"
+													},
+													"sink": {
+														"name": "AgreementNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AgreementRowNumber']"
+													},
+													"sink": {
+														"name": "AgreementRowNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualBaseEntry']"
+													},
+													"sink": {
+														"name": "ActualBaseEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualBaseLine']"
+													},
+													"sink": {
+														"name": "ActualBaseLine",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DocEntry']"
+													},
+													"sink": {
+														"name": "DocEntry",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Surpluses']"
+													},
+													"sink": {
+														"name": "Surpluses",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DefectAndBreakup']"
+													},
+													"sink": {
+														"name": "DefectAndBreakup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Shortages']"
+													},
+													"sink": {
+														"name": "Shortages",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ConsiderQuantity']"
+													},
+													"sink": {
+														"name": "ConsiderQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PartialRetirement']"
+													},
+													"sink": {
+														"name": "PartialRetirement",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RetirementQuantity']"
+													},
+													"sink": {
+														"name": "RetirementQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RetirementAPC']"
+													},
+													"sink": {
+														"name": "RetirementAPC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ThirdParty']"
+													},
+													"sink": {
+														"name": "ThirdParty",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PoNum']"
+													},
+													"sink": {
+														"name": "PoNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PoItmNum']"
+													},
+													"sink": {
+														"name": "PoItmNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExpenseType']"
+													},
+													"sink": {
+														"name": "ExpenseType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ReceiptNumber']"
+													},
+													"sink": {
+														"name": "ReceiptNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExpenseOperationType']"
+													},
+													"sink": {
+														"name": "ExpenseOperationType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FederalTaxID']"
+													},
+													"sink": {
+														"name": "FederalTaxID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfit']"
+													},
+													"sink": {
+														"name": "GrossProfit",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitFC']"
+													},
+													"sink": {
+														"name": "GrossProfitFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitSC']"
+													},
+													"sink": {
+														"name": "GrossProfitSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PriceSource']"
+													},
+													"sink": {
+														"name": "PriceSource",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgSeqNum']"
+													},
+													"sink": {
+														"name": "StgSeqNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgEntry']"
+													},
+													"sink": {
+														"name": "StgEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgDesc']"
+													},
+													"sink": {
+														"name": "StgDesc",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UoMEntry']"
+													},
+													"sink": {
+														"name": "UoMEntry",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UoMCode']"
+													},
+													"sink": {
+														"name": "UoMCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['InventoryQuantity']"
+													},
+													"sink": {
+														"name": "InventoryQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenInventoryQuantity']"
+													},
+													"sink": {
+														"name": "RemainingOpenInventoryQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ParentLineNum']"
+													},
+													"sink": {
+														"name": "ParentLineNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Incoterms']"
+													},
+													"sink": {
+														"name": "Incoterms",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TransportMode']"
+													},
+													"sink": {
+														"name": "TransportMode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NatureOfTransaction']"
+													},
+													"sink": {
+														"name": "NatureOfTransaction",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DestinationCountryForImport']"
+													},
+													"sink": {
+														"name": "DestinationCountryForImport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DestinationRegionForImport']"
+													},
+													"sink": {
+														"name": "DestinationRegionForImport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginCountryForExport']"
+													},
+													"sink": {
+														"name": "OriginCountryForExport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginRegionForExport']"
+													},
+													"sink": {
+														"name": "OriginRegionForExport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemType']"
+													},
+													"sink": {
+														"name": "ItemType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ChangeInventoryQuantityIndependently']"
+													},
+													"sink": {
+														"name": "ChangeInventoryQuantityIndependently",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FreeOfChargeBP']"
+													},
+													"sink": {
+														"name": "FreeOfChargeBP",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SACEntry']"
+													},
+													"sink": {
+														"name": "SACEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['HSNEntry']"
+													},
+													"sink": {
+														"name": "HSNEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossPrice']"
+													},
+													"sink": {
+														"name": "GrossPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotal']"
+													},
+													"sink": {
+														"name": "GrossTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotalFC']"
+													},
+													"sink": {
+														"name": "GrossTotalFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotalSC']"
+													},
+													"sink": {
+														"name": "GrossTotalSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NCMCode']"
+													},
+													"sink": {
+														"name": "NCMCode",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NVECode']"
+													},
+													"sink": {
+														"name": "NVECode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['IndEscala']"
+													},
+													"sink": {
+														"name": "IndEscala",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CtrSealQty']"
+													},
+													"sink": {
+														"name": "CtrSealQty",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CNJPMan']"
+													},
+													"sink": {
+														"name": "CNJPMan",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CESTCode']"
+													},
+													"sink": {
+														"name": "CESTCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UFFiscalBenefitCode']"
+													},
+													"sink": {
+														"name": "UFFiscalBenefitCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ReverseCharge']"
+													},
+													"sink": {
+														"name": "ReverseCharge",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipToCode']"
+													},
+													"sink": {
+														"name": "ShipToCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipToDescription']"
+													},
+													"sink": {
+														"name": "ShipToDescription",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxRate']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxRate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmount']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmount",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountFC']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmountFC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountSC']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmountSC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StandardItemIdentification']"
+													},
+													"sink": {
+														"name": "StandardItemIdentification",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CommodityClassification']"
+													},
+													"sink": {
+														"name": "CommodityClassification",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnencumberedReason']"
+													},
+													"sink": {
+														"name": "UnencumberedReason",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CUSplit']"
+													},
+													"sink": {
+														"name": "CUSplit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_Installasjon']"
+													},
+													"sink": {
+														"name": "U_Installasjon",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_ParentItem']"
+													},
+													"sink": {
+														"name": "U_ParentItem",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_Codebars']"
+													},
+													"sink": {
+														"name": "U_Codebars",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_PlannedQty']"
+													},
+													"sink": {
+														"name": "U_PlannedQty",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IN']"
+													},
+													"sink": {
+														"name": "U_AIG_IN",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IA']"
+													},
+													"sink": {
+														"name": "U_AIG_IA",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PD']"
+													},
+													"sink": {
+														"name": "U_AIG_PD",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PDate']"
+													},
+													"sink": {
+														"name": "U_AIG_PDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_ID']"
+													},
+													"sink": {
+														"name": "U_AIG_ID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_PItemCode']"
+													},
+													"sink": {
+														"name": "U_PItemCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IR']"
+													},
+													"sink": {
+														"name": "U_AIG_IR",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_DDate']"
+													},
+													"sink": {
+														"name": "U_AIG_DDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_U_AIG_DDate']"
+													},
+													"sink": {
+														"name": "U_U_AIG_DDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_DSS_Charge']"
+													},
+													"sink": {
+														"name": "U_DSS_Charge",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "",
+											"mapComplexValuesToString": true
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_blob_bondura",
+											"type": "DatasetReference",
+											"parameters": {
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "sql_bo_sap_invoices",
+											"type": "DatasetReference",
+											"parameters": {
+												"tableName": "stg_invoices_lines_test"
+											}
+										}
+									]
 								}
 							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Stream": {
+						"type": "string",
+						"defaultValue": "Invoices_new"
+					},
+					"WildCard": {
+						"type": "string",
+						"defaultValue": "*"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]",
+				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_docLines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AllPagesFetched",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(bool(variables('repeat')))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "ApiCallPagination",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "GetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ETLDocLines",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "ETLInvoices",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_invoices_doclines",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"apiOrders": {
+													"resPath": "Invoices?$skip=2622"
+												},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "ETLInvoices",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_invoices",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ApiCall": {},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "ErrorStop",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLInvoices",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "CheckRepeat",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@bool(0)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "CheckRepeat",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Invoices?$skip=0"
+					},
+					"repeat": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_master')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AllPagesFetched",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@not(bool(variables('repeat')))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "ApiCallPagination",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "ETLInvoices",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "GetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@if(contains(activity('ApiCallPagination').output, '@odata.nextLink'), replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' ), 'false')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ETLInvoices",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_invoices",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ApiCall": {
+													"resPath": "Invoices?$skip=2622"
+												},
+												"SinkToSQLTable": {
+													"tableName": "sample_invoices_master"
+												}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "ErrorStop",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLInvoices",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "CheckRepeat",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@bool(0)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "CheckRepeat",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "repeat",
+										"value": {
+											"value": "@if(not(equals(variables('nextLink'), 'false')), true, false)",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27&$skip=0"
+					},
+					"repeat": {
+						"type": "Boolean",
+						"defaultValue": true
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_orders_docLines')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "AllPagesFetched",
+						"type": "Until",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"expression": {
+								"value": "@empty(variables('nextLink'))",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "ApiCallPagination",
+									"type": "WebActivity",
+									"dependsOn": [
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"method": "GET",
+										"headers": {},
+										"url": {
+											"value": "@concat(variables('baseUrl'),variables('nextLink'),'&$select=DocNum')",
+											"type": "Expression"
+										},
+										"authentication": {
+											"type": "Basic",
+											"username": "{\"CompanyDB\":\"BONDURA\",\"UserName\":\"CLOUD\\\\ui.report\"}",
+											"password": {
+												"type": "AzureKeyVaultSecret",
+												"store": {
+													"referenceName": "AzureKeyVault_bo",
+													"type": "LinkedServiceReference"
+												},
+												"secretName": "Bondura"
+											}
+										}
+									}
+								},
+								{
+									"name": "GetNextLink",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "@replace(activity('ApiCallPagination').output['@odata.nextLink'],'&$select=DocNum' , '' )",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ETLDocLines",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [
+										{
+											"activity": "ETLOrders",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_orders_doclines",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"apiOrders": {
+													"QueryParam": {
+														"value": "@variables('nextLink')",
+														"type": "Expression"
+													}
+												},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "ETLOrders",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_bo_orders",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ApiCall": {
+													"QueryParam": {
+														"value": "@variables('nextLink')",
+														"type": "Expression"
+													}
+												},
+												"SinkToSQLTable": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 16,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "setEmpty",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "GetNextLink",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ApiCallPagination",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLDocLines",
+											"dependencyConditions": [
+												"Failed"
+											]
+										},
+										{
+											"activity": "ETLOrders",
+											"dependencyConditions": [
+												"Failed"
+											]
+										}
+									],
+									"policy": {
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "nextLink",
+										"value": {
+											"value": "''",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"timeout": "0.12:00:00"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"variables": {
+					"baseUrl": {
+						"type": "String",
+						"defaultValue": "https://SU-2111-139.emea.businessone.cloud.sap/b1s/v2/"
+					},
+					"nextLink": {
+						"type": "String",
+						"defaultValue": "Orders?$skip=0"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_bo_orders_doclines')]",
+				"[concat(variables('factoryId'), '/dataflows/df_bo_orders')]",
+				"[concat(variables('factoryId'), '/linkedServices/AzureKeyVault_bo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_test')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Data flow1",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "df_bo_invoices_doclines_lake",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"ReadJsonFile": {},
+									"SinkSQL": {}
+								}
+							},
+							"staging": {},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
 						}
 					}
 				],
@@ -6061,9 +5976,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]",
-				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices')]",
-				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines_lake')]"
 			]
 		},
 		{
@@ -8475,56 +8388,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pipeline_test')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Data flow1",
-						"type": "ExecuteDataFlow",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.12:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"dataflow": {
-								"referenceName": "df_bo_invoices",
-								"type": "DataFlowReference",
-								"parameters": {},
-								"datasetParameters": {
-									"ApiCall": {
-										"resPath": "Invoices?$filter=DocDate%20gt%20%272024-01-01%27"
-									},
-									"SinkToSQLTable": {
-										"tableName": "test_invoices"
-									}
-								}
-							},
-							"staging": {},
-							"compute": {
-								"coreCount": 8,
-								"computeType": "General"
-							},
-							"traceLevel": "Fine"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {}
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_bo_budgets')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -8931,6 +8794,27 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "Orders_Dump"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AzureSqlTable_test')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "invoices_lines_test"
 				}
 			},
 			"dependsOn": [
@@ -11022,7 +10906,8 @@
 							"type": "Expression"
 						},
 						"container": "bondura"
-					}
+					},
+					"encodingName": "UTF-8 without BOM"
 				},
 				"schema": {}
 			},
@@ -11031,7 +10916,7 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_json_blob')]",
+			"name": "[concat(parameters('factoryName'), '/ds_bo_json_test')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -11044,10 +10929,11 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "invoices.json",
-						"folderPath": "Invoices",
+						"fileName": "2024-06-10T11:18:33.2002913Z.json",
+						"folderPath": "Invoices_new",
 						"container": "bondura"
-					}
+					},
+					"encodingName": "UTF-8"
 				},
 				"schema": {
 					"type": "object",
@@ -12659,7 +12545,113 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_json_invoices')]",
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_invoices')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"resPath": {
+						"type": "string",
+						"defaultValue": "Invoices?$skip=2622"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().resPath",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_orders')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"QueryParam": {
+						"type": "string",
+						"defaultValue": "Orders"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().QueryParam",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_parametrized')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ResPath": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@dataset().ResPath",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_salepersons')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "link_bo_sap",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": "SalesPersons"
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_lake_uinvest')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -14287,112 +14279,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_invoices')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "link_bo_sap",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"resPath": {
-						"type": "string",
-						"defaultValue": "Invoices?$skip=2622"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "@dataset().resPath",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_orders')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "link_bo_sap",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"QueryParam": {
-						"type": "string",
-						"defaultValue": "Orders"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "@dataset().QueryParam",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_parametrized')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "link_bo_sap",
-					"type": "LinkedServiceReference"
-				},
-				"parameters": {
-					"ResPath": {
-						"type": "string"
-					}
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "@dataset().ResPath",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/ds_bo_sap_salepersons')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "link_bo_sap",
-					"type": "LinkedServiceReference"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": "SalesPersons"
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/link_bo_sap')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/sql_bo_orders_lines')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -14425,7 +14311,7 @@
 				"parameters": {
 					"tableName": {
 						"type": "string",
-						"defaultValue": "stg_invoices_master"
+						"defaultValue": "stg_invoices_det"
 					}
 				},
 				"annotations": [],
@@ -16336,6 +16222,300 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_invoices')]",
 				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices_lines')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_bo_invoices_doclines_lake')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_bo_json_test",
+								"type": "DatasetReference"
+							},
+							"name": "ReadJsonFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_test",
+								"type": "DatasetReference"
+							},
+							"name": "SinkSQL"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Flatten"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {@odata.context} as string,",
+						"          value as ({@odata.etag} as string, DocEntry as integer, DocNum as integer, DocType as string, HandWritten as string, Printed as string, DocDate as string, DocDueDate as string, CardCode as string, CardName as string, Address as string, NumAtCard as string, DocTotal as double, AttachmentEntry as string, DocCurrency as string, DocRate as double, Reference1 as string, Reference2 as string, Comments as string, JournalMemo as string, PaymentGroupCode as integer, DocTime as string, SalesPersonCode as integer, TransportationCode as integer, Confirmed as string, ImportFileNum as string, SummeryType as string, ContactPersonCode as integer, ShowSCN as string, Series as integer, TaxDate as string, PartialSupply as string, DocObjectCode as string, ShipToCode as string, Indicator as string, FederalTaxID as string, DiscountPercent as double, PaymentReference as string, CreationDate as string, UpdateDate as string, FinancialPeriod as integer, UserSign as integer, TransNum as integer, VatSum as double, VatSumSys as double, VatSumFc as double, NetProcedure as string, DocTotalFc as double, DocTotalSys as double, Form1099 as string, Box1099 as string, RevisionPo as string, RequriedDate as string, CancelDate as string, BlockDunning as string, Submitted as string, Segment as integer, PickStatus as string, Pick as string, PaymentMethod as string, PaymentBlock as string, PaymentBlockEntry as string, CentralBankIndicator as string, MaximumCashDiscount as string, Reserve as string, Project as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, WareHouseUpdateType as string, Rounding as string, ExternalCorrectedDocNum as string, InternalCorrectedDocNum as string, NextCorrectingDocument as string, DeferredTax as string, TaxExemptionLetterNum as string, WTApplied as double, WTAppliedFC as double, BillOfExchangeReserved as string, AgentCode as string, WTAppliedSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NumberOfInstallments as integer, ApplyTaxOnFirstInstallment as string, WTNonSubjectAmount as double, WTNonSubjectAmountSC as double, WTNonSubjectAmountFC as double, WTExemptedAmount as double, WTExemptedAmountSC as double, WTExemptedAmountFC as double, BaseAmount as double, BaseAmountSC as double, BaseAmountFC as double, WTAmount as double, WTAmountSC as double, WTAmountFC as double, VatDate as string, DocumentsOwner as integer, FolioPrefixString as string, FolioNumber as string, DocumentSubType as string, BPChannelCode as string, BPChannelContact as string, Address2 as string, DocumentStatus as string, PeriodIndicator as string, PayToCode as string, ManualNumber as string, UseShpdGoodsAct as string, IsPayToBank as string, PayToBankCountry as string, PayToBankCode as string, PayToBankAccountNo as string, PayToBankBranch as string, BPL_IDAssignedToInvoice as string, DownPayment as double, ReserveInvoice as string, LanguageCode as integer, TrackingNumber as string, PickRemark as string, ClosingDate as string, SequenceCode as string, SequenceSerial as string, SeriesString as string, SubSeriesString as string, SequenceModel as string, UseCorrectionVATGroup as string, TotalDiscount as double, DownPaymentAmount as double, DownPaymentPercentage as double, DownPaymentType as string, DownPaymentAmountSC as double, DownPaymentAmountFC as double, VatPercent as double, ServiceGrossProfitPercent as string, OpeningRemarks as string, ClosingRemarks as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, Cancelled as string, SignatureInputMessage as string, SignatureDigest as string, CertificationNumber as string, PrivateKeyVersion as string, ControlAccount as string, InsuranceOperation347 as string, ArchiveNonremovableSalesQuotation as string, GTSChecker as string, GTSPayee as string, ExtraMonth as integer, ExtraDays as integer, CashDiscountDateOffset as integer, StartFrom as string, NTSApproved as string, ETaxWebSite as string, ETaxNumber as string, NTSApprovedNumber as string, EDocGenerationType as string, EDocSeries as string, EDocNum as string, EDocExportFormat as string, EDocStatus as string, EDocErrorCode as string, EDocErrorMessage as string, DownPaymentStatus as string, GroupSeries as string, GroupNumber as string, GroupHandWritten as string, ReopenOriginalDocument as string, ReopenManuallyClosedOrCanceledDocument as string, CreateOnlineQuotation as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSCashierNumber as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ClosingOption as string, SpecifiedClosingDate as string, OpenForLandedCosts as string, AuthorizationStatus as string, TotalDiscountFC as double, TotalDiscountSC as double, RelevantToGTS as string, BPLName as string, VATRegNum as string, AnnualInvoiceDeclarationReference as string, Supplier as string, Releaser as string, Receiver as string, BlanketAgreementNumber as string, IsAlteration as string, CancelStatus as string, AssetValueDate as string, InvoicePayment as string, DocumentDelivery as string, AuthorizationCode as string, StartDeliveryDate as string, StartDeliveryTime as string, EndDeliveryDate as string, EndDeliveryTime as string, VehiclePlate as string, ATDocumentType as string, ElecCommStatus as string, ElecCommMessage as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, PrintSEPADirect as string, FiscalDocNum as string, POSDailySummaryNo as string, POSReceiptNo as string, PointOfIssueCode as string, Letter as string, FolioNumberFrom as string, FolioNumberTo as string, InterimType as string, RelatedType as integer, RelatedEntry as string, SAPPassport as string, DocumentTaxID as string, DateOfReportingControlStatementVAT as string, ReportingSectionControlStatementVAT as string, ExcludeFromTaxReportControlStatementVAT as string, POS_CashRegister as string, UpdateTime as string, CreateQRCodeFrom as string, PriceMode as string, Revision as string, OriginalRefNo as string, OriginalRefDate as string, GSTTransactionType as string, OriginalCreditOrDebitNo as string, OriginalCreditOrDebitDate as string, ECommerceOperator as string, ECommerceGSTIN as string, ShipFrom as string, CommissionTrade as string, CommissionTradeReturn as string, UseBillToAddrToDetermineTax as string, IssuingReason as integer, Cig as string, Cup as string, EDocType as string, FCEAsPaymentMeans as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, BaseType as integer, BaseEntry as string, FatherCard as string, FatherType as string, ShipState as string, ShipPlace as string, CustOffice as string, FCI as string, AddLegIn as string, LegTextF as string, DANFELgTxt as string, IndFinal as string, DataVersion as integer, LastPageFolioNumber as string, U_AIG_KID as string, U_Ordrenummer as string, U_esurl as string, U_sluttkunde as string, U_Levbet as string, U_Sted as string, U_Opperk as string, U_DSS_SendStatus as integer, U_DSS_EHFBuyersRef as string, Document_ApprovalRequests as string[], DocumentLines as (LineNum as integer, ItemCode as string, ItemDescription as string, Quantity as double, ShipDate as string, Price as double, PriceAfterVAT as double, Currency as string, Rate as double, DiscountPercent as double, VendorNum as string, SerialNum as string, WarehouseCode as string, SalesPersonCode as integer, CommisionPercent as double, TreeType as string, AccountCode as string, UseBaseUnits as string, SupplierCatNum as string, CostingCode as string, ProjectCode as string, BarCode as string, VatGroup as string, Height1 as double, Hight1Unit as string, Height2 as double, Height2Unit as string, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, Weight1 as double, Weight1Unit as string, Weight2 as double, Weight2Unit as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, BaseType as integer, BaseEntry as integer, BaseLine as integer, Volume as double, VolumeUnit as integer, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, Address as string, TaxCode as string, TaxType as string, TaxLiable as string, PickStatus as string, PickQuantity as double, PickListIdNumber as string, OriginalItem as string, BackOrder as string, FreeText as string, ShippingMethod as integer, POTargetNum as string, POTargetEntry as string, POTargetRowNum as string, CorrectionInvoiceItem as string, CorrInvAmountToStock as double, CorrInvAmountToDiffAcct as double, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, WTLiable as string, DeferredTax as string, EqualizationTaxPercent as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, MeasureUnit as string, UnitsOfMeasurment as double, LineTotal as double, TaxPercentagePerRow as double, TaxTotal as double, ConsumerSalesForecast as string, ExciseAmount as double, TaxPerUnit as double, TotalInclTax as double, CountryOrg as string, SWW as string, TransactionType as string, DistributeExpense as string, RowTotalFC as double, RowTotalSC as double, LastBuyInmPrice as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyDistributeSum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockDistributesum as double, StockInmPrice as double, PickStatusEx as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, CFOPCode as string, CSTCode as string, Usage as string, TaxOnly as string, VisualOrder as integer, BaseOpenQuantity as double, UnitPrice as double, LineStatus as string, PackageQuantity as double, Text as string, LineType as string, COGSCostingCode as string, COGSAccountCode as string, ChangeAssemlyBoMWarehouse as string, GrossBuyPrice as double, GrossBase as integer, GrossProfitTotalBasePrice as double, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, ItemDetails as string, LocationCode as string, ActualDeliveryDate as string, RemainingOpenQuantity as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, ExLineNo as string, RequiredDate as string, RequiredQuantity as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTforIPI as string, CSTforPIS as string, CSTforCOFINS as string, CreditOriginCode as string, WithoutInventoryMovement as string, AgreementNo as string, AgreementRowNumber as string, ActualBaseEntry as string, ActualBaseLine as string, DocEntry as integer, Surpluses as string, DefectAndBreakup as string, Shortages as string, ConsiderQuantity as string, PartialRetirement as string, RetirementQuantity as string, RetirementAPC as string, ThirdParty as string, PoNum as string, PoItmNum as string, ExpenseType as string, ReceiptNumber as string, ExpenseOperationType as string, FederalTaxID as string, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, PriceSource as string, StgSeqNum as string, StgEntry as string, StgDesc as string, UoMEntry as integer, UoMCode as string, InventoryQuantity as double, RemainingOpenInventoryQuantity as double, ParentLineNum as string, Incoterms as integer, TransportMode as integer, NatureOfTransaction as string, DestinationCountryForImport as string, DestinationRegionForImport as string, OriginCountryForExport as string, OriginRegionForExport as string, ItemType as string, ChangeInventoryQuantityIndependently as string, FreeOfChargeBP as string, SACEntry as string, HSNEntry as string, GrossPrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, NCMCode as integer, NVECode as string, IndEscala as string, CtrSealQty as string, CNJPMan as string, CESTCode as string, UFFiscalBenefitCode as string, ReverseCharge as string, ShipToCode as string, ShipToDescription as string, ExternalCalcTaxRate as string, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, StandardItemIdentification as string, CommodityClassification as string, UnencumberedReason as string, CUSplit as string, U_Installasjon as string, U_ParentItem as string, U_Codebars as string, U_PlannedQty as double, U_AIG_IN as string, U_AIG_IA as string, U_AIG_PD as string, U_AIG_PDate as string, U_AIG_ID as string, U_PItemCode as string, U_AIG_IR as string, U_AIG_DDate as string, U_U_AIG_DDate as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, LineTaxJurisdictions as string[], ExportProcesses as string[], EBooksDetails as string[], DocumentLineAdditionalExpenses as string[], WithholdingTaxLines as string[], SerialNumbers as string[], BatchNumbers as string[], CCDNumbers as string[], DocumentLinesBinAllocations as string[])[], EWayBillDetails as ({} as string), ElectronicProtocols as string[], DocumentAdditionalExpenses as string[], WithholdingTaxDataWTXCollection as string[], WithholdingTaxDataCollection as string[], DocumentPackages as string[], DocumentSpecialLines as string[], DocumentInstallments as (DueDate as string, Percentage as double, Total as double, LastDunningDate as string, DunningLevel as integer, TotalFC as string, InstallmentId as integer, PaymentOrdered as string)[], DownPaymentsToDraw as string[], TaxExtension as ({} as string), AddressExtension as ({} as string), DocumentReferences as string[])[],",
+						"          {@odata.nextLink} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     limit: 100,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> ReadJsonFile",
+						"ReadJsonFile foldDown(unroll(value.DocumentLines, value),",
+						"     mapColumn(",
+						"          DocNum = value.DocNum,",
+						"          DocDate = value.DocDate,",
+						"          DocDueDate = value.DocDueDate,",
+						"          CardCode = value.CardCode,",
+						"          LineNum = value.DocumentLines.LineNum,",
+						"          ItemCode = value.DocumentLines.ItemCode,",
+						"          ItemDescription = value.DocumentLines.ItemDescription,",
+						"          Quantity = value.DocumentLines.Quantity,",
+						"          ShipDate = value.DocumentLines.ShipDate,",
+						"          Price = value.DocumentLines.Price,",
+						"          PriceAfterVAT = value.DocumentLines.PriceAfterVAT,",
+						"          Currency = value.DocumentLines.Currency,",
+						"          Rate = value.DocumentLines.Rate,",
+						"          DiscountPercent = value.DocumentLines.DiscountPercent,",
+						"          VendorNum = value.DocumentLines.VendorNum,",
+						"          SerialNum = value.DocumentLines.SerialNum,",
+						"          WarehouseCode = value.DocumentLines.WarehouseCode,",
+						"          SalesPersonCode = value.DocumentLines.SalesPersonCode,",
+						"          CommisionPercent = value.DocumentLines.CommisionPercent,",
+						"          TreeType = value.DocumentLines.TreeType,",
+						"          AccountCode = value.DocumentLines.AccountCode,",
+						"          UseBaseUnits = value.DocumentLines.UseBaseUnits,",
+						"          SupplierCatNum = value.DocumentLines.SupplierCatNum,",
+						"          CostingCode = value.DocumentLines.CostingCode,",
+						"          ProjectCode = value.DocumentLines.ProjectCode,",
+						"          BarCode = value.DocumentLines.BarCode,",
+						"          VatGroup = value.DocumentLines.VatGroup,",
+						"          Height1 = value.DocumentLines.Height1,",
+						"          Hight1Unit = value.DocumentLines.Hight1Unit,",
+						"          Height2 = value.DocumentLines.Height2,",
+						"          Height2Unit = value.DocumentLines.Height2Unit,",
+						"          Lengh1 = value.DocumentLines.Lengh1,",
+						"          Lengh1Unit = value.DocumentLines.Lengh1Unit,",
+						"          Lengh2 = value.DocumentLines.Lengh2,",
+						"          Lengh2Unit = value.DocumentLines.Lengh2Unit,",
+						"          Weight1 = value.DocumentLines.Weight1,",
+						"          Weight1Unit = value.DocumentLines.Weight1Unit,",
+						"          Weight2 = value.DocumentLines.Weight2,",
+						"          Weight2Unit = value.DocumentLines.Weight2Unit,",
+						"          Factor1 = value.DocumentLines.Factor1,",
+						"          Factor2 = value.DocumentLines.Factor2,",
+						"          Factor3 = value.DocumentLines.Factor3,",
+						"          Factor4 = value.DocumentLines.Factor4,",
+						"          BaseType = value.DocumentLines.BaseType,",
+						"          BaseEntry = value.DocumentLines.BaseEntry,",
+						"          BaseLine = value.DocumentLines.BaseLine,",
+						"          Volume = value.DocumentLines.Volume,",
+						"          VolumeUnit = value.DocumentLines.VolumeUnit,",
+						"          Width1 = value.DocumentLines.Width1,",
+						"          Width1Unit = value.DocumentLines.Width1Unit,",
+						"          Width2 = value.DocumentLines.Width2,",
+						"          Width2Unit = value.DocumentLines.Width2Unit,",
+						"          Address = value.DocumentLines.Address,",
+						"          TaxCode = value.DocumentLines.TaxCode,",
+						"          TaxType = value.DocumentLines.TaxType,",
+						"          TaxLiable = value.DocumentLines.TaxLiable,",
+						"          PickStatus = value.DocumentLines.PickStatus,",
+						"          PickQuantity = value.DocumentLines.PickQuantity,",
+						"          PickListIdNumber = value.DocumentLines.PickListIdNumber,",
+						"          OriginalItem = value.DocumentLines.OriginalItem,",
+						"          BackOrder = value.DocumentLines.BackOrder,",
+						"          FreeText = value.DocumentLines.FreeText,",
+						"          ShippingMethod = value.DocumentLines.ShippingMethod,",
+						"          POTargetNum = value.DocumentLines.POTargetNum,",
+						"          POTargetEntry = value.DocumentLines.POTargetEntry,",
+						"          POTargetRowNum = value.DocumentLines.POTargetRowNum,",
+						"          CorrectionInvoiceItem = value.DocumentLines.CorrectionInvoiceItem,",
+						"          CorrInvAmountToStock = value.DocumentLines.CorrInvAmountToStock,",
+						"          CorrInvAmountToDiffAcct = value.DocumentLines.CorrInvAmountToDiffAcct,",
+						"          AppliedTax = value.DocumentLines.AppliedTax,",
+						"          AppliedTaxFC = value.DocumentLines.AppliedTaxFC,",
+						"          AppliedTaxSC = value.DocumentLines.AppliedTaxSC,",
+						"          WTLiable = value.DocumentLines.WTLiable,",
+						"          DeferredTax = value.DocumentLines.DeferredTax,",
+						"          EqualizationTaxPercent = value.DocumentLines.EqualizationTaxPercent,",
+						"          TotalEqualizationTax = value.DocumentLines.TotalEqualizationTax,",
+						"          TotalEqualizationTaxFC = value.DocumentLines.TotalEqualizationTaxFC,",
+						"          TotalEqualizationTaxSC = value.DocumentLines.TotalEqualizationTaxSC,",
+						"          NetTaxAmount = value.DocumentLines.NetTaxAmount,",
+						"          NetTaxAmountFC = value.DocumentLines.NetTaxAmountFC,",
+						"          NetTaxAmountSC = value.DocumentLines.NetTaxAmountSC,",
+						"          MeasureUnit = value.DocumentLines.MeasureUnit,",
+						"          UnitsOfMeasurment = value.DocumentLines.UnitsOfMeasurment,",
+						"          LineTotal = value.DocumentLines.LineTotal,",
+						"          TaxPercentagePerRow = value.DocumentLines.TaxPercentagePerRow,",
+						"          TaxTotal = value.DocumentLines.TaxTotal,",
+						"          ConsumerSalesForecast = value.DocumentLines.ConsumerSalesForecast,",
+						"          ExciseAmount = value.DocumentLines.ExciseAmount,",
+						"          TaxPerUnit = value.DocumentLines.TaxPerUnit,",
+						"          TotalInclTax = value.DocumentLines.TotalInclTax,",
+						"          CountryOrg = value.DocumentLines.CountryOrg,",
+						"          SWW = value.DocumentLines.SWW,",
+						"          TransactionType = value.DocumentLines.TransactionType,",
+						"          DistributeExpense = value.DocumentLines.DistributeExpense,",
+						"          RowTotalFC = value.DocumentLines.RowTotalFC,",
+						"          RowTotalSC = value.DocumentLines.RowTotalSC,",
+						"          LastBuyInmPrice = value.DocumentLines.LastBuyInmPrice,",
+						"          LastBuyDistributeSumFc = value.DocumentLines.LastBuyDistributeSumFc,",
+						"          LastBuyDistributeSumSc = value.DocumentLines.LastBuyDistributeSumSc,",
+						"          LastBuyDistributeSum = value.DocumentLines.LastBuyDistributeSum,",
+						"          StockDistributesumForeign = value.DocumentLines.StockDistributesumForeign,",
+						"          StockDistributesumSystem = value.DocumentLines.StockDistributesumSystem,",
+						"          StockDistributesum = value.DocumentLines.StockDistributesum,",
+						"          StockInmPrice = value.DocumentLines.StockInmPrice,",
+						"          PickStatusEx = value.DocumentLines.PickStatusEx,",
+						"          TaxBeforeDPM = value.DocumentLines.TaxBeforeDPM,",
+						"          TaxBeforeDPMFC = value.DocumentLines.TaxBeforeDPMFC,",
+						"          TaxBeforeDPMSC = value.DocumentLines.TaxBeforeDPMSC,",
+						"          CFOPCode = value.DocumentLines.CFOPCode,",
+						"          CSTCode = value.DocumentLines.CSTCode,",
+						"          Usage = value.DocumentLines.Usage,",
+						"          TaxOnly = value.DocumentLines.TaxOnly,",
+						"          VisualOrder = value.DocumentLines.VisualOrder,",
+						"          BaseOpenQuantity = value.DocumentLines.BaseOpenQuantity,",
+						"          UnitPrice = value.DocumentLines.UnitPrice,",
+						"          LineStatus = value.DocumentLines.LineStatus,",
+						"          PackageQuantity = value.DocumentLines.PackageQuantity,",
+						"          Text = value.DocumentLines.Text,",
+						"          LineType = value.DocumentLines.LineType,",
+						"          COGSCostingCode = value.DocumentLines.COGSCostingCode,",
+						"          COGSAccountCode = value.DocumentLines.COGSAccountCode,",
+						"          ChangeAssemlyBoMWarehouse = value.DocumentLines.ChangeAssemlyBoMWarehouse,",
+						"          GrossBuyPrice = value.DocumentLines.GrossBuyPrice,",
+						"          GrossBase = value.DocumentLines.GrossBase,",
+						"          GrossProfitTotalBasePrice = value.DocumentLines.GrossProfitTotalBasePrice,",
+						"          CostingCode2 = value.DocumentLines.CostingCode2,",
+						"          CostingCode3 = value.DocumentLines.CostingCode3,",
+						"          CostingCode4 = value.DocumentLines.CostingCode4,",
+						"          CostingCode5 = value.DocumentLines.CostingCode5,",
+						"          ItemDetails = value.DocumentLines.ItemDetails,",
+						"          LocationCode = value.DocumentLines.LocationCode,",
+						"          ActualDeliveryDate = value.DocumentLines.ActualDeliveryDate,",
+						"          RemainingOpenQuantity = value.DocumentLines.RemainingOpenQuantity,",
+						"          OpenAmount = value.DocumentLines.OpenAmount,",
+						"          OpenAmountFC = value.DocumentLines.OpenAmountFC,",
+						"          OpenAmountSC = value.DocumentLines.OpenAmountSC,",
+						"          ExLineNo = value.DocumentLines.ExLineNo,",
+						"          RequiredDate = value.DocumentLines.RequiredDate,",
+						"          RequiredQuantity = value.DocumentLines.RequiredQuantity,",
+						"          COGSCostingCode2 = value.DocumentLines.COGSCostingCode2,",
+						"          COGSCostingCode3 = value.DocumentLines.COGSCostingCode3,",
+						"          COGSCostingCode4 = value.DocumentLines.COGSCostingCode4,",
+						"          COGSCostingCode5 = value.DocumentLines.COGSCostingCode5,",
+						"          CSTforIPI = value.DocumentLines.CSTforIPI,",
+						"          CSTforPIS = value.DocumentLines.CSTforPIS,",
+						"          CSTforCOFINS = value.DocumentLines.CSTforCOFINS,",
+						"          CreditOriginCode = value.DocumentLines.CreditOriginCode,",
+						"          WithoutInventoryMovement = value.DocumentLines.WithoutInventoryMovement,",
+						"          AgreementNo = value.DocumentLines.AgreementNo,",
+						"          AgreementRowNumber = value.DocumentLines.AgreementRowNumber,",
+						"          ActualBaseEntry = value.DocumentLines.ActualBaseEntry,",
+						"          ActualBaseLine = value.DocumentLines.ActualBaseLine,",
+						"          DocEntry = value.DocumentLines.DocEntry,",
+						"          Surpluses = value.DocumentLines.Surpluses,",
+						"          DefectAndBreakup = value.DocumentLines.DefectAndBreakup,",
+						"          Shortages = value.DocumentLines.Shortages,",
+						"          ConsiderQuantity = value.DocumentLines.ConsiderQuantity,",
+						"          PartialRetirement = value.DocumentLines.PartialRetirement,",
+						"          RetirementQuantity = value.DocumentLines.RetirementQuantity,",
+						"          RetirementAPC = value.DocumentLines.RetirementAPC,",
+						"          ThirdParty = value.DocumentLines.ThirdParty,",
+						"          PoNum = value.DocumentLines.PoNum,",
+						"          PoItmNum = value.DocumentLines.PoItmNum,",
+						"          ExpenseType = value.DocumentLines.ExpenseType,",
+						"          ReceiptNumber = value.DocumentLines.ReceiptNumber,",
+						"          ExpenseOperationType = value.DocumentLines.ExpenseOperationType,",
+						"          FederalTaxID = value.DocumentLines.FederalTaxID,",
+						"          GrossProfit = value.DocumentLines.GrossProfit,",
+						"          GrossProfitFC = value.DocumentLines.GrossProfitFC,",
+						"          GrossProfitSC = value.DocumentLines.GrossProfitSC,",
+						"          PriceSource = value.DocumentLines.PriceSource,",
+						"          StgSeqNum = value.DocumentLines.StgSeqNum,",
+						"          StgEntry = value.DocumentLines.StgEntry,",
+						"          StgDesc = value.DocumentLines.StgDesc,",
+						"          UoMEntry = value.DocumentLines.UoMEntry,",
+						"          UoMCode = value.DocumentLines.UoMCode,",
+						"          InventoryQuantity = value.DocumentLines.InventoryQuantity,",
+						"          RemainingOpenInventoryQuantity = value.DocumentLines.RemainingOpenInventoryQuantity,",
+						"          ParentLineNum = value.DocumentLines.ParentLineNum,",
+						"          Incoterms = value.DocumentLines.Incoterms,",
+						"          TransportMode = value.DocumentLines.TransportMode,",
+						"          NatureOfTransaction = value.DocumentLines.NatureOfTransaction,",
+						"          DestinationCountryForImport = value.DocumentLines.DestinationCountryForImport,",
+						"          DestinationRegionForImport = value.DocumentLines.DestinationRegionForImport,",
+						"          OriginCountryForExport = value.DocumentLines.OriginCountryForExport,",
+						"          OriginRegionForExport = value.DocumentLines.OriginRegionForExport,",
+						"          ItemType = value.DocumentLines.ItemType,",
+						"          ChangeInventoryQuantityIndependently = value.DocumentLines.ChangeInventoryQuantityIndependently,",
+						"          FreeOfChargeBP = value.DocumentLines.FreeOfChargeBP,",
+						"          SACEntry = value.DocumentLines.SACEntry,",
+						"          HSNEntry = value.DocumentLines.HSNEntry,",
+						"          GrossPrice = value.DocumentLines.GrossPrice,",
+						"          GrossTotal = value.DocumentLines.GrossTotal,",
+						"          GrossTotalFC = value.DocumentLines.GrossTotalFC,",
+						"          GrossTotalSC = value.DocumentLines.GrossTotalSC,",
+						"          NCMCode = value.DocumentLines.NCMCode,",
+						"          NVECode = value.DocumentLines.NVECode,",
+						"          IndEscala = value.DocumentLines.IndEscala,",
+						"          CtrSealQty = value.DocumentLines.CtrSealQty,",
+						"          CNJPMan = value.DocumentLines.CNJPMan,",
+						"          CESTCode = value.DocumentLines.CESTCode,",
+						"          UFFiscalBenefitCode = value.DocumentLines.UFFiscalBenefitCode,",
+						"          ReverseCharge = value.DocumentLines.ReverseCharge,",
+						"          ShipToCode = value.DocumentLines.ShipToCode,",
+						"          ShipToDescription = value.DocumentLines.ShipToDescription,",
+						"          ExternalCalcTaxRate = value.DocumentLines.ExternalCalcTaxRate,",
+						"          ExternalCalcTaxAmount = value.DocumentLines.ExternalCalcTaxAmount,",
+						"          ExternalCalcTaxAmountFC = value.DocumentLines.ExternalCalcTaxAmountFC,",
+						"          ExternalCalcTaxAmountSC = value.DocumentLines.ExternalCalcTaxAmountSC,",
+						"          StandardItemIdentification = value.DocumentLines.StandardItemIdentification,",
+						"          CommodityClassification = value.DocumentLines.CommodityClassification,",
+						"          UnencumberedReason = value.DocumentLines.UnencumberedReason,",
+						"          CUSplit = value.DocumentLines.CUSplit,",
+						"          U_Installasjon = value.DocumentLines.U_Installasjon,",
+						"          U_ParentItem = value.DocumentLines.U_ParentItem,",
+						"          U_Codebars = value.DocumentLines.U_Codebars,",
+						"          U_PlannedQty = value.DocumentLines.U_PlannedQty,",
+						"          U_AIG_IN = value.DocumentLines.U_AIG_IN,",
+						"          U_AIG_IA = value.DocumentLines.U_AIG_IA,",
+						"          U_AIG_PD = value.DocumentLines.U_AIG_PD,",
+						"          U_AIG_PDate = value.DocumentLines.U_AIG_PDate,",
+						"          U_AIG_ID = value.DocumentLines.U_AIG_ID,",
+						"          U_PItemCode = value.DocumentLines.U_PItemCode,",
+						"          U_AIG_IR = value.DocumentLines.U_AIG_IR,",
+						"          U_AIG_DDate = value.DocumentLines.U_AIG_DDate,",
+						"          U_U_AIG_DDate = value.DocumentLines.U_U_AIG_DDate,",
+						"          U_DSS_Charge = value.DocumentLines.U_DSS_Charge,",
+						"          U_DSS_ProdOrdr = value.DocumentLines.U_DSS_ProdOrdr",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> Flatten",
+						"Flatten sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SinkSQL"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_json_test')]",
+				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_test')]"
 			]
 		},
 		{
