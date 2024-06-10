@@ -1,5 +1,5 @@
 {
-	"name": "ds_bo_json_blob",
+	"name": "ds_bo_json_test",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "AzureBlobStorage_json",
@@ -10,10 +10,11 @@
 		"typeProperties": {
 			"location": {
 				"type": "AzureBlobStorageLocation",
-				"fileName": "invoices.json",
-				"folderPath": "Invoices",
+				"fileName": "2024-06-10T11:18:33.2002913Z.json",
+				"folderPath": "Invoices_new",
 				"container": "bondura"
-			}
+			},
+			"encodingName": "UTF-8"
 		},
 		"schema": {
 			"type": "object",

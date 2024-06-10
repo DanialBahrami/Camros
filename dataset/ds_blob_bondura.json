@@ -29,7 +29,8 @@
 					"type": "Expression"
 				},
 				"container": "bondura"
-			}
+			},
+			"encodingName": "UTF-8 without BOM"
 		},
 		"schema": {}
 	}

@@ -1,5 +1,5 @@
 {
-	"name": "ds_bo_json_invoices",
+	"name": "ds_lake_uinvest",
 	"properties": {
 		"linkedServiceName": {
 			"referenceName": "link_DL_Uinvest",

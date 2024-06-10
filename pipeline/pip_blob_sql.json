@@ -1,5 +1,5 @@
 {
-	"name": "pipe_blob_sql",
+	"name": "pip_blob_sql",
 	"properties": {
 		"activities": [
 			{
@@ -19,8 +19,14 @@
 						"referenceName": "ds_blob_bondura",
 						"type": "DatasetReference",
 						"parameters": {
-							"Directory": "Invoices",
-							"FileName": "*"
+							"Directory": {
+								"value": "@pipeline().parameters.Stream",
+								"type": "Expression"
+							},
+							"FileName": {
+								"value": "@pipeline().parameters.WildCard",
+								"type": "Expression"
+							}
 						}
 					},
 					"fieldList": [
@@ -28,7 +34,6 @@
 					],
 					"storeSettings": {
 						"type": "AzureBlobStorageReadSettings",
-						"recursive": true,
 						"enablePartitionDiscovery": false
 					},
 					"formatSettings": {
@@ -37,7 +42,7 @@
 				}
 			},
 			{
-				"name": "ForEach1",
+				"name": "ForEachFile",
 				"type": "ForEach",
 				"dependsOn": [
 					{
@@ -55,8 +60,10 @@
 					},
 					"activities": [
 						{
-							"name": "JsonToSql",
+							"name": "JsonToSqlMast",
 							"type": "Copy",
+							"state": "Inactive",
+							"onInactiveMarkAs": "Succeeded",
 							"dependsOn": [],
 							"policy": {
 								"timeout": "0.12:00:00",
@@ -2584,7 +2591,10 @@
 									"referenceName": "ds_blob_bondura",
 									"type": "DatasetReference",
 									"parameters": {
-										"Directory": "Invoices",
+										"Directory": {
+											"value": "@pipeline().parameters.Stream",
+											"type": "Expression"
+										},
 										"FileName": {
 											"value": "@item().name",
 											"type": "Expression"
@@ -2601,11 +2611,2140 @@
 									}
 								}
 							]
+						},
+						{
+							"name": "JsonToSqlDet",
+							"type": "Copy",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.12:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "JsonSource",
+									"storeSettings": {
+										"type": "AzureBlobStorageReadSettings",
+										"recursive": true,
+										"enablePartitionDiscovery": false
+									},
+									"formatSettings": {
+										"type": "JsonReadSettings"
+									}
+								},
+								"sink": {
+									"type": "AzureSqlSink",
+									"writeBehavior": "insert",
+									"sqlWriterUseTableLock": false,
+									"tableOption": "autoCreate",
+									"disableMetricsCollection": false
+								},
+								"enableStaging": false,
+								"enableSkipIncompatibleRow": true,
+								"translator": {
+									"type": "TabularTranslator",
+									"mappings": [
+										{
+											"source": {
+												"path": "$['value'][0]['DocNum']"
+											},
+											"sink": {
+												"name": "DocNum",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocDate']"
+											},
+											"sink": {
+												"name": "DocDate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocDueDate']"
+											},
+											"sink": {
+												"name": "DocDueDate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['CardCode']"
+											},
+											"sink": {
+												"name": "CardCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['CardName']"
+											},
+											"sink": {
+												"name": "CardName",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LineNum']"
+											},
+											"sink": {
+												"name": "LineNum",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ItemCode']"
+											},
+											"sink": {
+												"name": "ItemCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ItemDescription']"
+											},
+											"sink": {
+												"name": "ItemDescription",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Quantity']"
+											},
+											"sink": {
+												"name": "Quantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ShipDate']"
+											},
+											"sink": {
+												"name": "ShipDate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Price']"
+											},
+											"sink": {
+												"name": "Price",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PriceAfterVAT']"
+											},
+											"sink": {
+												"name": "PriceAfterVAT",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Currency']"
+											},
+											"sink": {
+												"name": "Currency",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Rate']"
+											},
+											"sink": {
+												"name": "Rate",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DiscountPercent']"
+											},
+											"sink": {
+												"name": "DiscountPercent",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['VendorNum']"
+											},
+											"sink": {
+												"name": "VendorNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['SerialNum']"
+											},
+											"sink": {
+												"name": "SerialNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['WarehouseCode']"
+											},
+											"sink": {
+												"name": "WarehouseCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['SalesPersonCode']"
+											},
+											"sink": {
+												"name": "SalesPersonCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CommisionPercent']"
+											},
+											"sink": {
+												"name": "CommisionPercent",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TreeType']"
+											},
+											"sink": {
+												"name": "TreeType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AccountCode']"
+											},
+											"sink": {
+												"name": "AccountCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UseBaseUnits']"
+											},
+											"sink": {
+												"name": "UseBaseUnits",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['SupplierCatNum']"
+											},
+											"sink": {
+												"name": "SupplierCatNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CostingCode']"
+											},
+											"sink": {
+												"name": "CostingCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ProjectCode']"
+											},
+											"sink": {
+												"name": "ProjectCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BarCode']"
+											},
+											"sink": {
+												"name": "BarCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['VatGroup']"
+											},
+											"sink": {
+												"name": "VatGroup",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Height1']"
+											},
+											"sink": {
+												"name": "Height1",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Hight1Unit']"
+											},
+											"sink": {
+												"name": "Hight1Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Height2']"
+											},
+											"sink": {
+												"name": "Height2",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Height2Unit']"
+											},
+											"sink": {
+												"name": "Height2Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Lengh1']"
+											},
+											"sink": {
+												"name": "Lengh1",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Lengh1Unit']"
+											},
+											"sink": {
+												"name": "Lengh1Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Lengh2']"
+											},
+											"sink": {
+												"name": "Lengh2",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Lengh2Unit']"
+											},
+											"sink": {
+												"name": "Lengh2Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Weight1']"
+											},
+											"sink": {
+												"name": "Weight1",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Weight1Unit']"
+											},
+											"sink": {
+												"name": "Weight1Unit",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Weight2']"
+											},
+											"sink": {
+												"name": "Weight2",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Weight2Unit']"
+											},
+											"sink": {
+												"name": "Weight2Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Factor1']"
+											},
+											"sink": {
+												"name": "Factor1",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Factor2']"
+											},
+											"sink": {
+												"name": "Factor2",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Factor3']"
+											},
+											"sink": {
+												"name": "Factor3",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Factor4']"
+											},
+											"sink": {
+												"name": "Factor4",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BaseType']"
+											},
+											"sink": {
+												"name": "BaseType",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BaseEntry']"
+											},
+											"sink": {
+												"name": "BaseEntry",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BaseLine']"
+											},
+											"sink": {
+												"name": "BaseLine",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Volume']"
+											},
+											"sink": {
+												"name": "Volume",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['VolumeUnit']"
+											},
+											"sink": {
+												"name": "VolumeUnit",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Width1']"
+											},
+											"sink": {
+												"name": "Width1",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Width1Unit']"
+											},
+											"sink": {
+												"name": "Width1Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Width2']"
+											},
+											"sink": {
+												"name": "Width2",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Width2Unit']"
+											},
+											"sink": {
+												"name": "Width2Unit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Address']"
+											},
+											"sink": {
+												"name": "Address",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxCode']"
+											},
+											"sink": {
+												"name": "TaxCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxType']"
+											},
+											"sink": {
+												"name": "TaxType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxLiable']"
+											},
+											"sink": {
+												"name": "TaxLiable",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PickStatus']"
+											},
+											"sink": {
+												"name": "PickStatus",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PickQuantity']"
+											},
+											"sink": {
+												"name": "PickQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PickListIdNumber']"
+											},
+											"sink": {
+												"name": "PickListIdNumber",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OriginalItem']"
+											},
+											"sink": {
+												"name": "OriginalItem",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BackOrder']"
+											},
+											"sink": {
+												"name": "BackOrder",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['FreeText']"
+											},
+											"sink": {
+												"name": "FreeText",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ShippingMethod']"
+											},
+											"sink": {
+												"name": "ShippingMethod",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['POTargetNum']"
+											},
+											"sink": {
+												"name": "POTargetNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['POTargetEntry']"
+											},
+											"sink": {
+												"name": "POTargetEntry",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['POTargetRowNum']"
+											},
+											"sink": {
+												"name": "POTargetRowNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CorrectionInvoiceItem']"
+											},
+											"sink": {
+												"name": "CorrectionInvoiceItem",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToStock']"
+											},
+											"sink": {
+												"name": "CorrInvAmountToStock",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToDiffAcct']"
+											},
+											"sink": {
+												"name": "CorrInvAmountToDiffAcct",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AppliedTax']"
+											},
+											"sink": {
+												"name": "AppliedTax",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxFC']"
+											},
+											"sink": {
+												"name": "AppliedTaxFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxSC']"
+											},
+											"sink": {
+												"name": "AppliedTaxSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['WTLiable']"
+											},
+											"sink": {
+												"name": "WTLiable",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DeferredTax']"
+											},
+											"sink": {
+												"name": "DeferredTax",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['EqualizationTaxPercent']"
+											},
+											"sink": {
+												"name": "EqualizationTaxPercent",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTax']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTax",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxFC']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTaxFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxSC']"
+											},
+											"sink": {
+												"name": "TotalEqualizationTaxSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmount']"
+											},
+											"sink": {
+												"name": "NetTaxAmount",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountFC']"
+											},
+											"sink": {
+												"name": "NetTaxAmountFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountSC']"
+											},
+											"sink": {
+												"name": "NetTaxAmountSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['MeasureUnit']"
+											},
+											"sink": {
+												"name": "MeasureUnit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UnitsOfMeasurment']"
+											},
+											"sink": {
+												"name": "UnitsOfMeasurment",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LineTotal']"
+											},
+											"sink": {
+												"name": "LineTotal",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxPercentagePerRow']"
+											},
+											"sink": {
+												"name": "TaxPercentagePerRow",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxTotal']"
+											},
+											"sink": {
+												"name": "TaxTotal",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ConsumerSalesForecast']"
+											},
+											"sink": {
+												"name": "ConsumerSalesForecast",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExciseAmount']"
+											},
+											"sink": {
+												"name": "ExciseAmount",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxPerUnit']"
+											},
+											"sink": {
+												"name": "TaxPerUnit",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TotalInclTax']"
+											},
+											"sink": {
+												"name": "TotalInclTax",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CountryOrg']"
+											},
+											"sink": {
+												"name": "CountryOrg",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['SWW']"
+											},
+											"sink": {
+												"name": "SWW",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TransactionType']"
+											},
+											"sink": {
+												"name": "TransactionType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DistributeExpense']"
+											},
+											"sink": {
+												"name": "DistributeExpense",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RowTotalFC']"
+											},
+											"sink": {
+												"name": "RowTotalFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RowTotalSC']"
+											},
+											"sink": {
+												"name": "RowTotalSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LastBuyInmPrice']"
+											},
+											"sink": {
+												"name": "LastBuyInmPrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumFc']"
+											},
+											"sink": {
+												"name": "LastBuyDistributeSumFc",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumSc']"
+											},
+											"sink": {
+												"name": "LastBuyDistributeSumSc",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSum']"
+											},
+											"sink": {
+												"name": "LastBuyDistributeSum",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumForeign']"
+											},
+											"sink": {
+												"name": "StockDistributesumForeign",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumSystem']"
+											},
+											"sink": {
+												"name": "StockDistributesumSystem",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StockDistributesum']"
+											},
+											"sink": {
+												"name": "StockDistributesum",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StockInmPrice']"
+											},
+											"sink": {
+												"name": "StockInmPrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PickStatusEx']"
+											},
+											"sink": {
+												"name": "PickStatusEx",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPM']"
+											},
+											"sink": {
+												"name": "TaxBeforeDPM",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMFC']"
+											},
+											"sink": {
+												"name": "TaxBeforeDPMFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMSC']"
+											},
+											"sink": {
+												"name": "TaxBeforeDPMSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CFOPCode']"
+											},
+											"sink": {
+												"name": "CFOPCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CSTCode']"
+											},
+											"sink": {
+												"name": "CSTCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Usage']"
+											},
+											"sink": {
+												"name": "Usage",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TaxOnly']"
+											},
+											"sink": {
+												"name": "TaxOnly",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['VisualOrder']"
+											},
+											"sink": {
+												"name": "VisualOrder",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['BaseOpenQuantity']"
+											},
+											"sink": {
+												"name": "BaseOpenQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UnitPrice']"
+											},
+											"sink": {
+												"name": "UnitPrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LineStatus']"
+											},
+											"sink": {
+												"name": "LineStatus",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PackageQuantity']"
+											},
+											"sink": {
+												"name": "PackageQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Text']"
+											},
+											"sink": {
+												"name": "Text",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LineType']"
+											},
+											"sink": {
+												"name": "LineType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode']"
+											},
+											"sink": {
+												"name": "COGSCostingCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSAccountCode']"
+											},
+											"sink": {
+												"name": "COGSAccountCode",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ChangeAssemlyBoMWarehouse']"
+											},
+											"sink": {
+												"name": "ChangeAssemlyBoMWarehouse",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossBuyPrice']"
+											},
+											"sink": {
+												"name": "GrossBuyPrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossBase']"
+											},
+											"sink": {
+												"name": "GrossBase",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossProfitTotalBasePrice']"
+											},
+											"sink": {
+												"name": "GrossProfitTotalBasePrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CostingCode2']"
+											},
+											"sink": {
+												"name": "CostingCode2",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CostingCode3']"
+											},
+											"sink": {
+												"name": "CostingCode3",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CostingCode4']"
+											},
+											"sink": {
+												"name": "CostingCode4",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CostingCode5']"
+											},
+											"sink": {
+												"name": "CostingCode5",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ItemDetails']"
+											},
+											"sink": {
+												"name": "ItemDetails",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['LocationCode']"
+											},
+											"sink": {
+												"name": "LocationCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ActualDeliveryDate']"
+											},
+											"sink": {
+												"name": "ActualDeliveryDate",
+												"type": "DateTime"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenQuantity']"
+											},
+											"sink": {
+												"name": "RemainingOpenQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OpenAmount']"
+											},
+											"sink": {
+												"name": "OpenAmount",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OpenAmountFC']"
+											},
+											"sink": {
+												"name": "OpenAmountFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OpenAmountSC']"
+											},
+											"sink": {
+												"name": "OpenAmountSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExLineNo']"
+											},
+											"sink": {
+												"name": "ExLineNo",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RequiredDate']"
+											},
+											"sink": {
+												"name": "RequiredDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RequiredQuantity']"
+											},
+											"sink": {
+												"name": "RequiredQuantity",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode2']"
+											},
+											"sink": {
+												"name": "COGSCostingCode2",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode3']"
+											},
+											"sink": {
+												"name": "COGSCostingCode3",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode4']"
+											},
+											"sink": {
+												"name": "COGSCostingCode4",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode5']"
+											},
+											"sink": {
+												"name": "COGSCostingCode5",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CSTforIPI']"
+											},
+											"sink": {
+												"name": "CSTforIPI",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CSTforPIS']"
+											},
+											"sink": {
+												"name": "CSTforPIS",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CSTforCOFINS']"
+											},
+											"sink": {
+												"name": "CSTforCOFINS",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CreditOriginCode']"
+											},
+											"sink": {
+												"name": "CreditOriginCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['WithoutInventoryMovement']"
+											},
+											"sink": {
+												"name": "WithoutInventoryMovement",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AgreementNo']"
+											},
+											"sink": {
+												"name": "AgreementNo",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['AgreementRowNumber']"
+											},
+											"sink": {
+												"name": "AgreementRowNumber",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ActualBaseEntry']"
+											},
+											"sink": {
+												"name": "ActualBaseEntry",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ActualBaseLine']"
+											},
+											"sink": {
+												"name": "ActualBaseLine",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DocEntry']"
+											},
+											"sink": {
+												"name": "DocEntry",
+												"type": "Int32"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Surpluses']"
+											},
+											"sink": {
+												"name": "Surpluses",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DefectAndBreakup']"
+											},
+											"sink": {
+												"name": "DefectAndBreakup",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Shortages']"
+											},
+											"sink": {
+												"name": "Shortages",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ConsiderQuantity']"
+											},
+											"sink": {
+												"name": "ConsiderQuantity",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PartialRetirement']"
+											},
+											"sink": {
+												"name": "PartialRetirement",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RetirementQuantity']"
+											},
+											"sink": {
+												"name": "RetirementQuantity",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RetirementAPC']"
+											},
+											"sink": {
+												"name": "RetirementAPC",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ThirdParty']"
+											},
+											"sink": {
+												"name": "ThirdParty",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PoNum']"
+											},
+											"sink": {
+												"name": "PoNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PoItmNum']"
+											},
+											"sink": {
+												"name": "PoItmNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExpenseType']"
+											},
+											"sink": {
+												"name": "ExpenseType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ReceiptNumber']"
+											},
+											"sink": {
+												"name": "ReceiptNumber",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExpenseOperationType']"
+											},
+											"sink": {
+												"name": "ExpenseOperationType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['FederalTaxID']"
+											},
+											"sink": {
+												"name": "FederalTaxID",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossProfit']"
+											},
+											"sink": {
+												"name": "GrossProfit",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossProfitFC']"
+											},
+											"sink": {
+												"name": "GrossProfitFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossProfitSC']"
+											},
+											"sink": {
+												"name": "GrossProfitSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['PriceSource']"
+											},
+											"sink": {
+												"name": "PriceSource",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StgSeqNum']"
+											},
+											"sink": {
+												"name": "StgSeqNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StgEntry']"
+											},
+											"sink": {
+												"name": "StgEntry",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StgDesc']"
+											},
+											"sink": {
+												"name": "StgDesc",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UoMEntry']"
+											},
+											"sink": {
+												"name": "UoMEntry",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UoMCode']"
+											},
+											"sink": {
+												"name": "UoMCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['InventoryQuantity']"
+											},
+											"sink": {
+												"name": "InventoryQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenInventoryQuantity']"
+											},
+											"sink": {
+												"name": "RemainingOpenInventoryQuantity",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ParentLineNum']"
+											},
+											"sink": {
+												"name": "ParentLineNum",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['Incoterms']"
+											},
+											"sink": {
+												"name": "Incoterms",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['TransportMode']"
+											},
+											"sink": {
+												"name": "TransportMode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NatureOfTransaction']"
+											},
+											"sink": {
+												"name": "NatureOfTransaction",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DestinationCountryForImport']"
+											},
+											"sink": {
+												"name": "DestinationCountryForImport",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['DestinationRegionForImport']"
+											},
+											"sink": {
+												"name": "DestinationRegionForImport",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OriginCountryForExport']"
+											},
+											"sink": {
+												"name": "OriginCountryForExport",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['OriginRegionForExport']"
+											},
+											"sink": {
+												"name": "OriginRegionForExport",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ItemType']"
+											},
+											"sink": {
+												"name": "ItemType",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ChangeInventoryQuantityIndependently']"
+											},
+											"sink": {
+												"name": "ChangeInventoryQuantityIndependently",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['FreeOfChargeBP']"
+											},
+											"sink": {
+												"name": "FreeOfChargeBP",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['SACEntry']"
+											},
+											"sink": {
+												"name": "SACEntry",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['HSNEntry']"
+											},
+											"sink": {
+												"name": "HSNEntry",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossPrice']"
+											},
+											"sink": {
+												"name": "GrossPrice",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossTotal']"
+											},
+											"sink": {
+												"name": "GrossTotal",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossTotalFC']"
+											},
+											"sink": {
+												"name": "GrossTotalFC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['GrossTotalSC']"
+											},
+											"sink": {
+												"name": "GrossTotalSC",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NCMCode']"
+											},
+											"sink": {
+												"name": "NCMCode",
+												"type": "Int16"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['NVECode']"
+											},
+											"sink": {
+												"name": "NVECode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['IndEscala']"
+											},
+											"sink": {
+												"name": "IndEscala",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CtrSealQty']"
+											},
+											"sink": {
+												"name": "CtrSealQty",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CNJPMan']"
+											},
+											"sink": {
+												"name": "CNJPMan",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CESTCode']"
+											},
+											"sink": {
+												"name": "CESTCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UFFiscalBenefitCode']"
+											},
+											"sink": {
+												"name": "UFFiscalBenefitCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ReverseCharge']"
+											},
+											"sink": {
+												"name": "ReverseCharge",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ShipToCode']"
+											},
+											"sink": {
+												"name": "ShipToCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ShipToDescription']"
+											},
+											"sink": {
+												"name": "ShipToDescription",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxRate']"
+											},
+											"sink": {
+												"name": "ExternalCalcTaxRate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmount']"
+											},
+											"sink": {
+												"name": "ExternalCalcTaxAmount",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountFC']"
+											},
+											"sink": {
+												"name": "ExternalCalcTaxAmountFC",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountSC']"
+											},
+											"sink": {
+												"name": "ExternalCalcTaxAmountSC",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['StandardItemIdentification']"
+											},
+											"sink": {
+												"name": "StandardItemIdentification",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CommodityClassification']"
+											},
+											"sink": {
+												"name": "CommodityClassification",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['UnencumberedReason']"
+											},
+											"sink": {
+												"name": "UnencumberedReason",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['CUSplit']"
+											},
+											"sink": {
+												"name": "CUSplit",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_Installasjon']"
+											},
+											"sink": {
+												"name": "U_Installasjon",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_ParentItem']"
+											},
+											"sink": {
+												"name": "U_ParentItem",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_Codebars']"
+											},
+											"sink": {
+												"name": "U_Codebars",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_PlannedQty']"
+											},
+											"sink": {
+												"name": "U_PlannedQty",
+												"type": "Double"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IN']"
+											},
+											"sink": {
+												"name": "U_AIG_IN",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IA']"
+											},
+											"sink": {
+												"name": "U_AIG_IA",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PD']"
+											},
+											"sink": {
+												"name": "U_AIG_PD",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PDate']"
+											},
+											"sink": {
+												"name": "U_AIG_PDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_ID']"
+											},
+											"sink": {
+												"name": "U_AIG_ID",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_PItemCode']"
+											},
+											"sink": {
+												"name": "U_PItemCode",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IR']"
+											},
+											"sink": {
+												"name": "U_AIG_IR",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_AIG_DDate']"
+											},
+											"sink": {
+												"name": "U_AIG_DDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_U_AIG_DDate']"
+											},
+											"sink": {
+												"name": "U_U_AIG_DDate",
+												"type": "String"
+											}
+										},
+										{
+											"source": {
+												"path": "$['value'][0]['DocumentLines'][0]['U_DSS_Charge']"
+											},
+											"sink": {
+												"name": "U_DSS_Charge",
+												"type": "String"
+											}
+										}
+									],
+									"collectionReference": "",
+									"mapComplexValuesToString": true
+								}
+							},
+							"inputs": [
+								{
+									"referenceName": "ds_blob_bondura",
+									"type": "DatasetReference",
+									"parameters": {
+										"Directory": {
+											"value": "@pipeline().parameters.Stream",
+											"type": "Expression"
+										},
+										"FileName": {
+											"value": "@item().name",
+											"type": "Expression"
+										}
+									}
+								}
+							],
+							"outputs": [
+								{
+									"referenceName": "sql_bo_sap_invoices",
+									"type": "DatasetReference",
+									"parameters": {
+										"tableName": "stg_invoices_lines_test"
+									}
+								}
+							]
 						}
 					]
 				}
 			}
 		],
+		"parameters": {
+			"Stream": {
+				"type": "string",
+				"defaultValue": "Invoices_new"
+			},
+			"WildCard": {
+				"type": "string",
+				"defaultValue": "*"
+			}
+		},
 		"annotations": []
 	}
 }
