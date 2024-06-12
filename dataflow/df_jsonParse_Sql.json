@@ -1,12 +1,12 @@
 {
-	"name": "df_bo_invoices_doclines_lake",
+	"name": "df_jsonParse_Sql",
 	"properties": {
 		"type": "MappingDataFlow",
 		"typeProperties": {
 			"sources": [
 				{
 					"dataset": {
-						"referenceName": "ds_bo_json_test",
+						"referenceName": "ds_blob_sap",
 						"type": "DatasetReference"
 					},
 					"name": "ReadJsonFile"
@@ -15,7 +15,7 @@
 			"sinks": [
 				{
 					"dataset": {
-						"referenceName": "AzureSqlTable_test",
+						"referenceName": "sql_bo_sap_invoices",
 						"type": "DatasetReference"
 					},
 					"name": "SinkSQL"

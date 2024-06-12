@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "dfParser",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
@@ -16,8 +16,13 @@
 				"userProperties": [],
 				"typeProperties": {
 					"dataflow": {
-						"referenceName": "df_bo_invoices_doclines_lake",
-						"type": "DataFlowReference"
+						"referenceName": "df_jsonParse_Sql",
+						"type": "DataFlowReference",
+						"datasetParameters": {
+							"SinkSQL": {
+								"tableName": "stg_invoices_det"
+							}
+						}
 					},
 					"compute": {
 						"coreCount": 8,
