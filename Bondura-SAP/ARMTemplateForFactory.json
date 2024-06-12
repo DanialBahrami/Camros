@@ -5969,6 +5969,184 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/pip_salesPersons')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "JsonToSQL",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "JsonSource",
+								"storeSettings": {
+									"type": "AzureBlobStorageReadSettings",
+									"recursive": true,
+									"enablePartitionDiscovery": false
+								},
+								"formatSettings": {
+									"type": "JsonReadSettings"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeCode']"
+										},
+										"sink": {
+											"name": "SalesEmployeeCode",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeName']"
+										},
+										"sink": {
+											"name": "SalesEmployeeName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Remarks']"
+										},
+										"sink": {
+											"name": "Remarks",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionForSalesEmployee']"
+										},
+										"sink": {
+											"name": "CommissionForSalesEmployee",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionGroup']"
+										},
+										"sink": {
+											"name": "CommissionGroup",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Locked']"
+										},
+										"sink": {
+											"name": "Locked",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['EmployeeID']"
+										},
+										"sink": {
+											"name": "EmployeeID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Active']"
+										},
+										"sink": {
+											"name": "Active",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Telephone']"
+										},
+										"sink": {
+											"name": "Telephone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Mobile']"
+										},
+										"sink": {
+											"name": "Mobile",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Fax']"
+										},
+										"sink": {
+											"name": "Fax",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Email']"
+										},
+										"sink": {
+											"name": "Email",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_bo_json_test",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "sql_bo_sap_salespersons",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_bo_json_test')]",
+				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_salespersons')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/pip_test')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -6005,6 +6183,175 @@
 							},
 							"traceLevel": "Fine"
 						}
+					},
+					{
+						"name": "Copy data1",
+						"type": "Copy",
+						"state": "Inactive",
+						"onInactiveMarkAs": "Succeeded",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"AbsoluteUrl": "$['@odata.nextLink']"
+								}
+							},
+							"sink": {
+								"type": "JsonSink",
+								"storeSettings": {
+									"type": "AzureBlobStorageWriteSettings"
+								},
+								"formatSettings": {
+									"type": "JsonWriteSettings"
+								}
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeCode']"
+										},
+										"sink": {
+											"name": "SalesEmployeeCode",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeName']"
+										},
+										"sink": {
+											"name": "SalesEmployeeName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Remarks']"
+										},
+										"sink": {
+											"name": "Remarks",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionForSalesEmployee']"
+										},
+										"sink": {
+											"name": "CommissionForSalesEmployee",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionGroup']"
+										},
+										"sink": {
+											"name": "CommissionGroup",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Locked']"
+										},
+										"sink": {
+											"name": "Locked",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['EmployeeID']"
+										},
+										"sink": {
+											"name": "EmployeeID",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Active']"
+										},
+										"sink": {
+											"name": "Active",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Telephone']"
+										},
+										"sink": {
+											"name": "Telephone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Mobile']"
+										},
+										"sink": {
+											"name": "Mobile",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Fax']"
+										},
+										"sink": {
+											"name": "Fax",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Email']"
+										},
+										"sink": {
+											"name": "Email",
+											"type": "String"
+										}
+									}
+								]
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_bo_sap_salepersons",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "ds_blob_bondura",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": "SalesPersons",
+									"FileName": {
+										"value": "@concat('salesPersons_', utcnow(), '.json')",
+										"type": "Expression"
+									}
+								}
+							}
+						]
 					}
 				],
 				"policy": {
@@ -6013,7 +6360,9 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]"
+				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]",
+				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_salepersons')]",
+				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]"
 			]
 		},
 		{
@@ -12592,8 +12941,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"fileName": "2024-06-10T11:18:33.2002913Z.json",
-						"folderPath": "Invoices_new",
+						"fileName": "salesPersons_2024-06-12T11:05:50.5160254Z.json",
+						"folderPath": "SalesPersons",
 						"container": "bondura"
 					},
 					"encodingName": "UTF-8"
@@ -16028,6 +16377,27 @@
 				"typeProperties": {
 					"schema": "dbo",
 					"table": "OrdersMaster"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureSqlDatabase_Bondura')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/sql_bo_sap_salespersons')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureSqlDatabase_Bondura",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "dbo",
+					"table": "SalesPersons"
 				}
 			},
 			"dependsOn": [
