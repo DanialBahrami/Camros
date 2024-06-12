@@ -1,9 +1,9 @@
 {
-	"name": "pip_salesPersons",
+	"name": "pip_salesPersons_file",
 	"properties": {
 		"activities": [
 			{
-				"name": "JsonToSQL",
+				"name": "cpyJsonSql",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -145,12 +145,13 @@
 									"type": "String"
 								}
 							}
-						]
+						],
+						"collectionReference": "$['value']"
 					}
 				},
 				"inputs": [
 					{
-						"referenceName": "ds_bo_json_test",
+						"referenceName": "ds_blob_sap",
 						"type": "DatasetReference"
 					}
 				],

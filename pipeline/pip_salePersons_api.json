@@ -1,38 +1,9 @@
 {
-	"name": "pip_test",
+	"name": "pip_salePersons_api",
 	"properties": {
 		"activities": [
 			{
-				"name": "dfParser",
-				"type": "ExecuteDataFlow",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.12:00:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"dataflow": {
-						"referenceName": "df_jsonParse_Sql",
-						"type": "DataFlowReference",
-						"datasetParameters": {
-							"SinkSQL": {
-								"tableName": "stg_invoices_det"
-							}
-						}
-					},
-					"compute": {
-						"coreCount": 8,
-						"computeType": "General"
-					},
-					"traceLevel": "Fine"
-				}
-			},
-			{
-				"name": "Copy data1",
+				"name": "ApiCall",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
@@ -50,17 +21,15 @@
 						"requestInterval": "00.00:00:00.010",
 						"requestMethod": "GET",
 						"paginationRules": {
-							"AbsoluteUrl": "$['@odata.nextLink']"
+							"QueryParameters.{skip}": "RANGE:0:35:1"
 						}
 					},
 					"sink": {
-						"type": "JsonSink",
-						"storeSettings": {
-							"type": "AzureBlobStorageWriteSettings"
-						},
-						"formatSettings": {
-							"type": "JsonWriteSettings"
-						}
+						"type": "AzureSqlSink",
+						"writeBehavior": "insert",
+						"sqlWriterUseTableLock": false,
+						"tableOption": "autoCreate",
+						"disableMetricsCollection": false
 					},
 					"enableStaging": false,
 					"translator": {
@@ -126,7 +95,7 @@
 								},
 								"sink": {
 									"name": "EmployeeID",
-									"type": "Int32"
+									"type": "String"
 								}
 							},
 							{
@@ -174,7 +143,8 @@
 									"type": "String"
 								}
 							}
-						]
+						],
+						"collectionReference": ""
 					}
 				},
 				"inputs": [
@@ -185,15 +155,8 @@
 				],
 				"outputs": [
 					{
-						"referenceName": "ds_blob_bondura",
-						"type": "DatasetReference",
-						"parameters": {
-							"Directory": "SalesPersons",
-							"FileName": {
-								"value": "@concat('salesPersons_', utcnow(), '.json')",
-								"type": "Expression"
-							}
-						}
+						"referenceName": "sql_bo_sap_salespersons",
+						"type": "DatasetReference"
 					}
 				]
 			}
