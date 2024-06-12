@@ -10,7 +10,7 @@
 		"schema": [],
 		"typeProperties": {
 			"schema": "dbo",
-			"table": "SalesPersons"
+			"table": "stg_salesPersons"
 		}
 	}
 }
