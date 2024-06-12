@@ -3104,6 +3104,8 @@
 								{
 									"name": "JsonToSqlDet",
 									"type": "Copy",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
 									"dependsOn": [],
 									"policy": {
 										"timeout": "0.12:00:00",
@@ -5219,6 +5221,38 @@
 											}
 										}
 									]
+								},
+								{
+									"name": "JsonParserSql",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_jsonParse_Sql",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ReadJsonFile": {},
+												"SinkSQL": {
+													"tableName": "stg_invoices_det"
+												}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
 								}
 							]
 						}
@@ -5242,6 +5276,7 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_blob_bondura')]",
 				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices')]",
+				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]",
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
 			]
 		},
@@ -5940,7 +5975,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "dfParser",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -5953,12 +5988,14 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "df_bo_invoices_doclines_lake",
+								"referenceName": "df_jsonParse_Sql",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
 									"ReadJsonFile": {},
-									"SinkSQL": {}
+									"SinkSQL": {
+										"tableName": "stg_invoices_det"
+									}
 								}
 							},
 							"staging": {},
@@ -5976,7 +6013,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines_lake')]"
+				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]"
 			]
 		},
 		{
@@ -10885,7 +10922,7 @@
 				"parameters": {
 					"Directory": {
 						"type": "string",
-						"defaultValue": "Invoices"
+						"defaultValue": "Invoices_new"
 					},
 					"FileName": {
 						"type": "string",
@@ -10906,10 +10943,1636 @@
 							"type": "Expression"
 						},
 						"container": "bondura"
-					},
-					"encodingName": "UTF-8 without BOM"
+					}
 				},
 				"schema": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ds_blob_sap')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "AzureBlobStorage_json",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobStorageLocation",
+						"folderPath": "Invoices",
+						"container": "bondura"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"@odata.context": {
+							"type": "string"
+						},
+						"value": {
+							"type": "array",
+							"items": {
+								"type": "object",
+								"properties": {
+									"@odata.etag": {
+										"type": "string"
+									},
+									"DocEntry": {
+										"type": "integer"
+									},
+									"DocNum": {
+										"type": "integer"
+									},
+									"DocType": {
+										"type": "string"
+									},
+									"HandWritten": {
+										"type": "string"
+									},
+									"Printed": {
+										"type": "string"
+									},
+									"DocDate": {
+										"type": "string"
+									},
+									"DocDueDate": {
+										"type": "string"
+									},
+									"CardCode": {
+										"type": "string"
+									},
+									"CardName": {
+										"type": "string"
+									},
+									"Address": {
+										"type": "string"
+									},
+									"NumAtCard": {
+										"type": "string"
+									},
+									"DocTotal": {
+										"type": "number"
+									},
+									"AttachmentEntry": {
+										"type": "null"
+									},
+									"DocCurrency": {
+										"type": "string"
+									},
+									"DocRate": {
+										"type": "number"
+									},
+									"Reference1": {
+										"type": "string"
+									},
+									"Reference2": {
+										"type": "null"
+									},
+									"Comments": {
+										"type": "string"
+									},
+									"JournalMemo": {
+										"type": "string"
+									},
+									"PaymentGroupCode": {
+										"type": "integer"
+									},
+									"DocTime": {
+										"type": "string"
+									},
+									"SalesPersonCode": {
+										"type": "integer"
+									},
+									"TransportationCode": {
+										"type": "integer"
+									},
+									"Confirmed": {
+										"type": "string"
+									},
+									"ImportFileNum": {
+										"type": "null"
+									},
+									"SummeryType": {
+										"type": "string"
+									},
+									"ContactPersonCode": {
+										"type": "integer"
+									},
+									"ShowSCN": {
+										"type": "string"
+									},
+									"Series": {
+										"type": "integer"
+									},
+									"TaxDate": {
+										"type": "string"
+									},
+									"PartialSupply": {
+										"type": "string"
+									},
+									"DocObjectCode": {
+										"type": "string"
+									},
+									"ShipToCode": {
+										"type": "string"
+									},
+									"Indicator": {
+										"type": "null"
+									},
+									"FederalTaxID": {
+										"type": "string"
+									},
+									"DiscountPercent": {
+										"type": "number"
+									},
+									"PaymentReference": {
+										"type": "string"
+									},
+									"CreationDate": {
+										"type": "string"
+									},
+									"UpdateDate": {
+										"type": "string"
+									},
+									"FinancialPeriod": {
+										"type": "integer"
+									},
+									"UserSign": {
+										"type": "integer"
+									},
+									"TransNum": {
+										"type": "integer"
+									},
+									"VatSum": {
+										"type": "number"
+									},
+									"VatSumSys": {
+										"type": "number"
+									},
+									"VatSumFc": {
+										"type": "number"
+									},
+									"NetProcedure": {
+										"type": "string"
+									},
+									"DocTotalFc": {
+										"type": "number"
+									},
+									"DocTotalSys": {
+										"type": "number"
+									},
+									"Form1099": {
+										"type": "null"
+									},
+									"Box1099": {
+										"type": "null"
+									},
+									"RevisionPo": {
+										"type": "string"
+									},
+									"RequriedDate": {
+										"type": "null"
+									},
+									"CancelDate": {
+										"type": "null"
+									},
+									"BlockDunning": {
+										"type": "string"
+									},
+									"Submitted": {
+										"type": "string"
+									},
+									"Segment": {
+										"type": "integer"
+									},
+									"PickStatus": {
+										"type": "string"
+									},
+									"Pick": {
+										"type": "string"
+									},
+									"PaymentMethod": {
+										"type": "string"
+									},
+									"PaymentBlock": {
+										"type": "string"
+									},
+									"PaymentBlockEntry": {
+										"type": "null"
+									},
+									"CentralBankIndicator": {
+										"type": "null"
+									},
+									"MaximumCashDiscount": {
+										"type": "string"
+									},
+									"Reserve": {
+										"type": "string"
+									},
+									"Project": {
+										"type": "null"
+									},
+									"ExemptionValidityDateFrom": {
+										"type": "null"
+									},
+									"ExemptionValidityDateTo": {
+										"type": "null"
+									},
+									"WareHouseUpdateType": {
+										"type": "string"
+									},
+									"Rounding": {
+										"type": "string"
+									},
+									"ExternalCorrectedDocNum": {
+										"type": "null"
+									},
+									"InternalCorrectedDocNum": {
+										"type": "null"
+									},
+									"NextCorrectingDocument": {
+										"type": "null"
+									},
+									"DeferredTax": {
+										"type": "string"
+									},
+									"TaxExemptionLetterNum": {
+										"type": "null"
+									},
+									"WTApplied": {
+										"type": "number"
+									},
+									"WTAppliedFC": {
+										"type": "number"
+									},
+									"BillOfExchangeReserved": {
+										"type": "string"
+									},
+									"AgentCode": {
+										"type": "null"
+									},
+									"WTAppliedSC": {
+										"type": "number"
+									},
+									"TotalEqualizationTax": {
+										"type": "number"
+									},
+									"TotalEqualizationTaxFC": {
+										"type": "number"
+									},
+									"TotalEqualizationTaxSC": {
+										"type": "number"
+									},
+									"NumberOfInstallments": {
+										"type": "integer"
+									},
+									"ApplyTaxOnFirstInstallment": {
+										"type": "string"
+									},
+									"WTNonSubjectAmount": {
+										"type": "number"
+									},
+									"WTNonSubjectAmountSC": {
+										"type": "number"
+									},
+									"WTNonSubjectAmountFC": {
+										"type": "number"
+									},
+									"WTExemptedAmount": {
+										"type": "number"
+									},
+									"WTExemptedAmountSC": {
+										"type": "number"
+									},
+									"WTExemptedAmountFC": {
+										"type": "number"
+									},
+									"BaseAmount": {
+										"type": "number"
+									},
+									"BaseAmountSC": {
+										"type": "number"
+									},
+									"BaseAmountFC": {
+										"type": "number"
+									},
+									"WTAmount": {
+										"type": "number"
+									},
+									"WTAmountSC": {
+										"type": "number"
+									},
+									"WTAmountFC": {
+										"type": "number"
+									},
+									"VatDate": {
+										"type": "null"
+									},
+									"DocumentsOwner": {
+										"type": "integer"
+									},
+									"FolioPrefixString": {
+										"type": "null"
+									},
+									"FolioNumber": {
+										"type": "null"
+									},
+									"DocumentSubType": {
+										"type": "string"
+									},
+									"BPChannelCode": {
+										"type": "null"
+									},
+									"BPChannelContact": {
+										"type": "null"
+									},
+									"Address2": {
+										"type": "string"
+									},
+									"DocumentStatus": {
+										"type": "string"
+									},
+									"PeriodIndicator": {
+										"type": "string"
+									},
+									"PayToCode": {
+										"type": "string"
+									},
+									"ManualNumber": {
+										"type": "null"
+									},
+									"UseShpdGoodsAct": {
+										"type": "string"
+									},
+									"IsPayToBank": {
+										"type": "string"
+									},
+									"PayToBankCountry": {
+										"type": "null"
+									},
+									"PayToBankCode": {
+										"type": "null"
+									},
+									"PayToBankAccountNo": {
+										"type": "null"
+									},
+									"PayToBankBranch": {
+										"type": "null"
+									},
+									"BPL_IDAssignedToInvoice": {
+										"type": "null"
+									},
+									"DownPayment": {
+										"type": "number"
+									},
+									"ReserveInvoice": {
+										"type": "string"
+									},
+									"LanguageCode": {
+										"type": "integer"
+									},
+									"TrackingNumber": {
+										"type": "null"
+									},
+									"PickRemark": {
+										"type": "string"
+									},
+									"ClosingDate": {
+										"type": "null"
+									},
+									"SequenceCode": {
+										"type": "null"
+									},
+									"SequenceSerial": {
+										"type": "null"
+									},
+									"SeriesString": {
+										"type": "null"
+									},
+									"SubSeriesString": {
+										"type": "null"
+									},
+									"SequenceModel": {
+										"type": "string"
+									},
+									"UseCorrectionVATGroup": {
+										"type": "string"
+									},
+									"TotalDiscount": {
+										"type": "number"
+									},
+									"DownPaymentAmount": {
+										"type": "number"
+									},
+									"DownPaymentPercentage": {
+										"type": "number"
+									},
+									"DownPaymentType": {
+										"type": "string"
+									},
+									"DownPaymentAmountSC": {
+										"type": "number"
+									},
+									"DownPaymentAmountFC": {
+										"type": "number"
+									},
+									"VatPercent": {
+										"type": "number"
+									},
+									"ServiceGrossProfitPercent": {
+										"type": "null"
+									},
+									"OpeningRemarks": {
+										"type": "string"
+									},
+									"ClosingRemarks": {
+										"type": "string"
+									},
+									"RoundingDiffAmount": {
+										"type": "number"
+									},
+									"RoundingDiffAmountFC": {
+										"type": "number"
+									},
+									"RoundingDiffAmountSC": {
+										"type": "number"
+									},
+									"Cancelled": {
+										"type": "string"
+									},
+									"SignatureInputMessage": {
+										"type": "null"
+									},
+									"SignatureDigest": {
+										"type": "null"
+									},
+									"CertificationNumber": {
+										"type": "null"
+									},
+									"PrivateKeyVersion": {
+										"type": "null"
+									},
+									"ControlAccount": {
+										"type": "string"
+									},
+									"InsuranceOperation347": {
+										"type": "string"
+									},
+									"ArchiveNonremovableSalesQuotation": {
+										"type": "string"
+									},
+									"GTSChecker": {
+										"type": "null"
+									},
+									"GTSPayee": {
+										"type": "null"
+									},
+									"ExtraMonth": {
+										"type": "integer"
+									},
+									"ExtraDays": {
+										"type": "integer"
+									},
+									"CashDiscountDateOffset": {
+										"type": "integer"
+									},
+									"StartFrom": {
+										"type": "string"
+									},
+									"NTSApproved": {
+										"type": "string"
+									},
+									"ETaxWebSite": {
+										"type": "null"
+									},
+									"ETaxNumber": {
+										"type": "null"
+									},
+									"NTSApprovedNumber": {
+										"type": "null"
+									},
+									"EDocGenerationType": {
+										"type": "string"
+									},
+									"EDocSeries": {
+										"type": "null"
+									},
+									"EDocNum": {
+										"type": "null"
+									},
+									"EDocExportFormat": {
+										"type": "null"
+									},
+									"EDocStatus": {
+										"type": "string"
+									},
+									"EDocErrorCode": {
+										"type": "null"
+									},
+									"EDocErrorMessage": {
+										"type": "null"
+									},
+									"DownPaymentStatus": {
+										"type": "string"
+									},
+									"GroupSeries": {
+										"type": "null"
+									},
+									"GroupNumber": {
+										"type": "null"
+									},
+									"GroupHandWritten": {
+										"type": "string"
+									},
+									"ReopenOriginalDocument": {
+										"type": "null"
+									},
+									"ReopenManuallyClosedOrCanceledDocument": {
+										"type": "null"
+									},
+									"CreateOnlineQuotation": {
+										"type": "string"
+									},
+									"POSEquipmentNumber": {
+										"type": "null"
+									},
+									"POSManufacturerSerialNumber": {
+										"type": "null"
+									},
+									"POSCashierNumber": {
+										"type": "null"
+									},
+									"ApplyCurrentVATRatesForDownPaymentsToDraw": {
+										"type": "string"
+									},
+									"ClosingOption": {
+										"type": "string"
+									},
+									"SpecifiedClosingDate": {
+										"type": "null"
+									},
+									"OpenForLandedCosts": {
+										"type": "string"
+									},
+									"AuthorizationStatus": {
+										"type": "string"
+									},
+									"TotalDiscountFC": {
+										"type": "number"
+									},
+									"TotalDiscountSC": {
+										"type": "number"
+									},
+									"RelevantToGTS": {
+										"type": "string"
+									},
+									"BPLName": {
+										"type": "null"
+									},
+									"VATRegNum": {
+										"type": "null"
+									},
+									"AnnualInvoiceDeclarationReference": {
+										"type": "null"
+									},
+									"Supplier": {
+										"type": "null"
+									},
+									"Releaser": {
+										"type": "null"
+									},
+									"Receiver": {
+										"type": "null"
+									},
+									"BlanketAgreementNumber": {
+										"type": "null"
+									},
+									"IsAlteration": {
+										"type": "string"
+									},
+									"CancelStatus": {
+										"type": "string"
+									},
+									"AssetValueDate": {
+										"type": "null"
+									},
+									"InvoicePayment": {
+										"type": "string"
+									},
+									"DocumentDelivery": {
+										"type": "string"
+									},
+									"AuthorizationCode": {
+										"type": "null"
+									},
+									"StartDeliveryDate": {
+										"type": "null"
+									},
+									"StartDeliveryTime": {
+										"type": "null"
+									},
+									"EndDeliveryDate": {
+										"type": "null"
+									},
+									"EndDeliveryTime": {
+										"type": "null"
+									},
+									"VehiclePlate": {
+										"type": "null"
+									},
+									"ATDocumentType": {
+										"type": "null"
+									},
+									"ElecCommStatus": {
+										"type": "null"
+									},
+									"ElecCommMessage": {
+										"type": "null"
+									},
+									"ReuseDocumentNum": {
+										"type": "string"
+									},
+									"ReuseNotaFiscalNum": {
+										"type": "string"
+									},
+									"PrintSEPADirect": {
+										"type": "string"
+									},
+									"FiscalDocNum": {
+										"type": "null"
+									},
+									"POSDailySummaryNo": {
+										"type": "null"
+									},
+									"POSReceiptNo": {
+										"type": "null"
+									},
+									"PointOfIssueCode": {
+										"type": "null"
+									},
+									"Letter": {
+										"type": "null"
+									},
+									"FolioNumberFrom": {
+										"type": "null"
+									},
+									"FolioNumberTo": {
+										"type": "null"
+									},
+									"InterimType": {
+										"type": "string"
+									},
+									"RelatedType": {
+										"type": "integer"
+									},
+									"RelatedEntry": {
+										"type": "null"
+									},
+									"SAPPassport": {
+										"type": "null"
+									},
+									"DocumentTaxID": {
+										"type": "null"
+									},
+									"DateOfReportingControlStatementVAT": {
+										"type": "null"
+									},
+									"ReportingSectionControlStatementVAT": {
+										"type": "null"
+									},
+									"ExcludeFromTaxReportControlStatementVAT": {
+										"type": "string"
+									},
+									"POS_CashRegister": {
+										"type": "null"
+									},
+									"UpdateTime": {
+										"type": "string"
+									},
+									"CreateQRCodeFrom": {
+										"type": "null"
+									},
+									"PriceMode": {
+										"type": "null"
+									},
+									"Revision": {
+										"type": "string"
+									},
+									"OriginalRefNo": {
+										"type": "null"
+									},
+									"OriginalRefDate": {
+										"type": "null"
+									},
+									"GSTTransactionType": {
+										"type": "null"
+									},
+									"OriginalCreditOrDebitNo": {
+										"type": "null"
+									},
+									"OriginalCreditOrDebitDate": {
+										"type": "null"
+									},
+									"ECommerceOperator": {
+										"type": "null"
+									},
+									"ECommerceGSTIN": {
+										"type": "null"
+									},
+									"ShipFrom": {
+										"type": "string"
+									},
+									"CommissionTrade": {
+										"type": "string"
+									},
+									"CommissionTradeReturn": {
+										"type": "string"
+									},
+									"UseBillToAddrToDetermineTax": {
+										"type": "null"
+									},
+									"IssuingReason": {
+										"type": "integer"
+									},
+									"Cig": {
+										"type": "null"
+									},
+									"Cup": {
+										"type": "null"
+									},
+									"EDocType": {
+										"type": "string"
+									},
+									"FCEAsPaymentMeans": {
+										"type": "string"
+									},
+									"PaidToDate": {
+										"type": "number"
+									},
+									"PaidToDateFC": {
+										"type": "number"
+									},
+									"PaidToDateSys": {
+										"type": "number"
+									},
+									"BaseType": {
+										"type": "integer"
+									},
+									"BaseEntry": {
+										"type": "null"
+									},
+									"FatherCard": {
+										"type": "null"
+									},
+									"FatherType": {
+										"type": "string"
+									},
+									"ShipState": {
+										"type": "null"
+									},
+									"ShipPlace": {
+										"type": "null"
+									},
+									"CustOffice": {
+										"type": "null"
+									},
+									"FCI": {
+										"type": "null"
+									},
+									"AddLegIn": {
+										"type": "null"
+									},
+									"LegTextF": {
+										"type": "null"
+									},
+									"DANFELgTxt": {
+										"type": "null"
+									},
+									"IndFinal": {
+										"type": "string"
+									},
+									"DataVersion": {
+										"type": "integer"
+									},
+									"LastPageFolioNumber": {
+										"type": "null"
+									},
+									"U_AIG_KID": {
+										"type": "null"
+									},
+									"U_Ordrenummer": {
+										"type": "null"
+									},
+									"U_esurl": {
+										"type": "null"
+									},
+									"U_sluttkunde": {
+										"type": "null"
+									},
+									"U_Levbet": {
+										"type": "null"
+									},
+									"U_Sted": {
+										"type": "null"
+									},
+									"U_Opperk": {
+										"type": "null"
+									},
+									"U_DSS_SendStatus": {
+										"type": "integer"
+									},
+									"U_DSS_EHFBuyersRef": {
+										"type": "null"
+									},
+									"Document_ApprovalRequests": {
+										"type": "array"
+									},
+									"DocumentLines": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"LineNum": {
+													"type": "integer"
+												},
+												"ItemCode": {
+													"type": "string"
+												},
+												"ItemDescription": {
+													"type": "string"
+												},
+												"Quantity": {
+													"type": "number"
+												},
+												"ShipDate": {
+													"type": "string"
+												},
+												"Price": {
+													"type": "number"
+												},
+												"PriceAfterVAT": {
+													"type": "number"
+												},
+												"Currency": {
+													"type": "string"
+												},
+												"Rate": {
+													"type": "number"
+												},
+												"DiscountPercent": {
+													"type": "number"
+												},
+												"VendorNum": {
+													"type": "string"
+												},
+												"SerialNum": {
+													"type": "null"
+												},
+												"WarehouseCode": {
+													"type": "string"
+												},
+												"SalesPersonCode": {
+													"type": "integer"
+												},
+												"CommisionPercent": {
+													"type": "number"
+												},
+												"TreeType": {
+													"type": "string"
+												},
+												"AccountCode": {
+													"type": "string"
+												},
+												"UseBaseUnits": {
+													"type": "string"
+												},
+												"SupplierCatNum": {
+													"type": "string"
+												},
+												"CostingCode": {
+													"type": "string"
+												},
+												"ProjectCode": {
+													"type": "string"
+												},
+												"BarCode": {
+													"type": "string"
+												},
+												"VatGroup": {
+													"type": "string"
+												},
+												"Height1": {
+													"type": "number"
+												},
+												"Hight1Unit": {
+													"type": "null"
+												},
+												"Height2": {
+													"type": "number"
+												},
+												"Height2Unit": {
+													"type": "null"
+												},
+												"Lengh1": {
+													"type": "number"
+												},
+												"Lengh1Unit": {
+													"type": "null"
+												},
+												"Lengh2": {
+													"type": "number"
+												},
+												"Lengh2Unit": {
+													"type": "null"
+												},
+												"Weight1": {
+													"type": "number"
+												},
+												"Weight1Unit": {
+													"type": "null"
+												},
+												"Weight2": {
+													"type": "number"
+												},
+												"Weight2Unit": {
+													"type": "null"
+												},
+												"Factor1": {
+													"type": "number"
+												},
+												"Factor2": {
+													"type": "number"
+												},
+												"Factor3": {
+													"type": "number"
+												},
+												"Factor4": {
+													"type": "number"
+												},
+												"BaseType": {
+													"type": "integer"
+												},
+												"BaseEntry": {
+													"type": "integer"
+												},
+												"BaseLine": {
+													"type": "integer"
+												},
+												"Volume": {
+													"type": "number"
+												},
+												"VolumeUnit": {
+													"type": "integer"
+												},
+												"Width1": {
+													"type": "number"
+												},
+												"Width1Unit": {
+													"type": "null"
+												},
+												"Width2": {
+													"type": "number"
+												},
+												"Width2Unit": {
+													"type": "null"
+												},
+												"Address": {
+													"type": "string"
+												},
+												"TaxCode": {
+													"type": "null"
+												},
+												"TaxType": {
+													"type": "string"
+												},
+												"TaxLiable": {
+													"type": "string"
+												},
+												"PickStatus": {
+													"type": "string"
+												},
+												"PickQuantity": {
+													"type": "number"
+												},
+												"PickListIdNumber": {
+													"type": "null"
+												},
+												"OriginalItem": {
+													"type": "string"
+												},
+												"BackOrder": {
+													"type": "string"
+												},
+												"FreeText": {
+													"type": "null"
+												},
+												"ShippingMethod": {
+													"type": "integer"
+												},
+												"POTargetNum": {
+													"type": "null"
+												},
+												"POTargetEntry": {
+													"type": "string"
+												},
+												"POTargetRowNum": {
+													"type": "null"
+												},
+												"CorrectionInvoiceItem": {
+													"type": "string"
+												},
+												"CorrInvAmountToStock": {
+													"type": "number"
+												},
+												"CorrInvAmountToDiffAcct": {
+													"type": "number"
+												},
+												"AppliedTax": {
+													"type": "number"
+												},
+												"AppliedTaxFC": {
+													"type": "number"
+												},
+												"AppliedTaxSC": {
+													"type": "number"
+												},
+												"WTLiable": {
+													"type": "string"
+												},
+												"DeferredTax": {
+													"type": "string"
+												},
+												"EqualizationTaxPercent": {
+													"type": "number"
+												},
+												"TotalEqualizationTax": {
+													"type": "number"
+												},
+												"TotalEqualizationTaxFC": {
+													"type": "number"
+												},
+												"TotalEqualizationTaxSC": {
+													"type": "number"
+												},
+												"NetTaxAmount": {
+													"type": "number"
+												},
+												"NetTaxAmountFC": {
+													"type": "number"
+												},
+												"NetTaxAmountSC": {
+													"type": "number"
+												},
+												"MeasureUnit": {
+													"type": "string"
+												},
+												"UnitsOfMeasurment": {
+													"type": "number"
+												},
+												"LineTotal": {
+													"type": "number"
+												},
+												"TaxPercentagePerRow": {
+													"type": "number"
+												},
+												"TaxTotal": {
+													"type": "number"
+												},
+												"ConsumerSalesForecast": {
+													"type": "string"
+												},
+												"ExciseAmount": {
+													"type": "number"
+												},
+												"TaxPerUnit": {
+													"type": "number"
+												},
+												"TotalInclTax": {
+													"type": "number"
+												},
+												"CountryOrg": {
+													"type": "string"
+												},
+												"SWW": {
+													"type": "string"
+												},
+												"TransactionType": {
+													"type": "null"
+												},
+												"DistributeExpense": {
+													"type": "string"
+												},
+												"RowTotalFC": {
+													"type": "number"
+												},
+												"RowTotalSC": {
+													"type": "number"
+												},
+												"LastBuyInmPrice": {
+													"type": "number"
+												},
+												"LastBuyDistributeSumFc": {
+													"type": "number"
+												},
+												"LastBuyDistributeSumSc": {
+													"type": "number"
+												},
+												"LastBuyDistributeSum": {
+													"type": "number"
+												},
+												"StockDistributesumForeign": {
+													"type": "number"
+												},
+												"StockDistributesumSystem": {
+													"type": "number"
+												},
+												"StockDistributesum": {
+													"type": "number"
+												},
+												"StockInmPrice": {
+													"type": "number"
+												},
+												"PickStatusEx": {
+													"type": "string"
+												},
+												"TaxBeforeDPM": {
+													"type": "number"
+												},
+												"TaxBeforeDPMFC": {
+													"type": "number"
+												},
+												"TaxBeforeDPMSC": {
+													"type": "number"
+												},
+												"CFOPCode": {
+													"type": "null"
+												},
+												"CSTCode": {
+													"type": "null"
+												},
+												"Usage": {
+													"type": "null"
+												},
+												"TaxOnly": {
+													"type": "string"
+												},
+												"VisualOrder": {
+													"type": "integer"
+												},
+												"BaseOpenQuantity": {
+													"type": "number"
+												},
+												"UnitPrice": {
+													"type": "number"
+												},
+												"LineStatus": {
+													"type": "string"
+												},
+												"PackageQuantity": {
+													"type": "number"
+												},
+												"Text": {
+													"type": "null"
+												},
+												"LineType": {
+													"type": "string"
+												},
+												"COGSCostingCode": {
+													"type": "string"
+												},
+												"COGSAccountCode": {
+													"type": "string"
+												},
+												"ChangeAssemlyBoMWarehouse": {
+													"type": "string"
+												},
+												"GrossBuyPrice": {
+													"type": "number"
+												},
+												"GrossBase": {
+													"type": "integer"
+												},
+												"GrossProfitTotalBasePrice": {
+													"type": "number"
+												},
+												"CostingCode2": {
+													"type": "null"
+												},
+												"CostingCode3": {
+													"type": "null"
+												},
+												"CostingCode4": {
+													"type": "null"
+												},
+												"CostingCode5": {
+													"type": "null"
+												},
+												"ItemDetails": {
+													"type": "null"
+												},
+												"LocationCode": {
+													"type": "null"
+												},
+												"ActualDeliveryDate": {
+													"type": "string"
+												},
+												"RemainingOpenQuantity": {
+													"type": "number"
+												},
+												"OpenAmount": {
+													"type": "number"
+												},
+												"OpenAmountFC": {
+													"type": "number"
+												},
+												"OpenAmountSC": {
+													"type": "number"
+												},
+												"ExLineNo": {
+													"type": "null"
+												},
+												"RequiredDate": {
+													"type": "null"
+												},
+												"RequiredQuantity": {
+													"type": "null"
+												},
+												"COGSCostingCode2": {
+													"type": "null"
+												},
+												"COGSCostingCode3": {
+													"type": "null"
+												},
+												"COGSCostingCode4": {
+													"type": "null"
+												},
+												"COGSCostingCode5": {
+													"type": "null"
+												},
+												"CSTforIPI": {
+													"type": "null"
+												},
+												"CSTforPIS": {
+													"type": "null"
+												},
+												"CSTforCOFINS": {
+													"type": "null"
+												},
+												"CreditOriginCode": {
+													"type": "null"
+												},
+												"WithoutInventoryMovement": {
+													"type": "string"
+												},
+												"AgreementNo": {
+													"type": "null"
+												},
+												"AgreementRowNumber": {
+													"type": "null"
+												},
+												"ActualBaseEntry": {
+													"type": "null"
+												},
+												"ActualBaseLine": {
+													"type": "null"
+												},
+												"DocEntry": {
+													"type": "integer"
+												},
+												"Surpluses": {
+													"type": "null"
+												},
+												"DefectAndBreakup": {
+													"type": "null"
+												},
+												"Shortages": {
+													"type": "null"
+												},
+												"ConsiderQuantity": {
+													"type": "string"
+												},
+												"PartialRetirement": {
+													"type": "string"
+												},
+												"RetirementQuantity": {
+													"type": "null"
+												},
+												"RetirementAPC": {
+													"type": "null"
+												},
+												"ThirdParty": {
+													"type": "string"
+												},
+												"PoNum": {
+													"type": "null"
+												},
+												"PoItmNum": {
+													"type": "null"
+												},
+												"ExpenseType": {
+													"type": "null"
+												},
+												"ReceiptNumber": {
+													"type": "null"
+												},
+												"ExpenseOperationType": {
+													"type": "null"
+												},
+												"FederalTaxID": {
+													"type": "null"
+												},
+												"GrossProfit": {
+													"type": "number"
+												},
+												"GrossProfitFC": {
+													"type": "number"
+												},
+												"GrossProfitSC": {
+													"type": "number"
+												},
+												"PriceSource": {
+													"type": "string"
+												},
+												"StgSeqNum": {
+													"type": "null"
+												},
+												"StgEntry": {
+													"type": "null"
+												},
+												"StgDesc": {
+													"type": "null"
+												},
+												"UoMEntry": {
+													"type": "integer"
+												},
+												"UoMCode": {
+													"type": "string"
+												},
+												"InventoryQuantity": {
+													"type": "number"
+												},
+												"RemainingOpenInventoryQuantity": {
+													"type": "number"
+												},
+												"ParentLineNum": {
+													"type": "null"
+												},
+												"Incoterms": {
+													"type": "integer"
+												},
+												"TransportMode": {
+													"type": "integer"
+												},
+												"NatureOfTransaction": {
+													"type": "null"
+												},
+												"DestinationCountryForImport": {
+													"type": "null"
+												},
+												"DestinationRegionForImport": {
+													"type": "null"
+												},
+												"OriginCountryForExport": {
+													"type": "null"
+												},
+												"OriginRegionForExport": {
+													"type": "null"
+												},
+												"ItemType": {
+													"type": "string"
+												},
+												"ChangeInventoryQuantityIndependently": {
+													"type": "string"
+												},
+												"FreeOfChargeBP": {
+													"type": "null"
+												},
+												"SACEntry": {
+													"type": "null"
+												},
+												"HSNEntry": {
+													"type": "null"
+												},
+												"GrossPrice": {
+													"type": "number"
+												},
+												"GrossTotal": {
+													"type": "number"
+												},
+												"GrossTotalFC": {
+													"type": "number"
+												},
+												"GrossTotalSC": {
+													"type": "number"
+												},
+												"NCMCode": {
+													"type": "integer"
+												},
+												"NVECode": {
+													"type": "null"
+												},
+												"IndEscala": {
+													"type": "string"
+												},
+												"CtrSealQty": {
+													"type": "null"
+												},
+												"CNJPMan": {
+													"type": "null"
+												},
+												"CESTCode": {
+													"type": "null"
+												},
+												"UFFiscalBenefitCode": {
+													"type": "null"
+												},
+												"ReverseCharge": {
+													"type": "string"
+												},
+												"ShipToCode": {
+													"type": "string"
+												},
+												"ShipToDescription": {
+													"type": "string"
+												},
+												"ExternalCalcTaxRate": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmount": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmountFC": {
+													"type": "null"
+												},
+												"ExternalCalcTaxAmountSC": {
+													"type": "null"
+												},
+												"StandardItemIdentification": {
+													"type": "null"
+												},
+												"CommodityClassification": {
+													"type": "null"
+												},
+												"UnencumberedReason": {
+													"type": "null"
+												},
+												"CUSplit": {
+													"type": "string"
+												},
+												"U_Installasjon": {
+													"type": "string"
+												},
+												"U_ParentItem": {
+													"type": "null"
+												},
+												"U_Codebars": {
+													"type": "null"
+												},
+												"U_PlannedQty": {
+													"type": "number"
+												},
+												"U_AIG_IN": {
+													"type": "null"
+												},
+												"U_AIG_IA": {
+													"type": "null"
+												},
+												"U_AIG_PD": {
+													"type": "null"
+												},
+												"U_AIG_PDate": {
+													"type": "null"
+												},
+												"U_AIG_ID": {
+													"type": "null"
+												},
+												"U_PItemCode": {
+													"type": "null"
+												},
+												"U_AIG_IR": {
+													"type": "null"
+												},
+												"U_AIG_DDate": {
+													"type": "null"
+												},
+												"U_U_AIG_DDate": {
+													"type": "null"
+												},
+												"U_DSS_Charge": {
+													"type": "null"
+												},
+												"U_DSS_ProdOrdr": {
+													"type": "null"
+												},
+												"LineTaxJurisdictions": {
+													"type": "array"
+												},
+												"ExportProcesses": {
+													"type": "array"
+												},
+												"EBooksDetails": {
+													"type": "array"
+												},
+												"DocumentLineAdditionalExpenses": {
+													"type": "array"
+												},
+												"WithholdingTaxLines": {
+													"type": "array"
+												},
+												"SerialNumbers": {
+													"type": "array"
+												},
+												"BatchNumbers": {
+													"type": "array"
+												},
+												"CCDNumbers": {
+													"type": "array"
+												},
+												"DocumentLinesBinAllocations": {
+													"type": "array"
+												}
+											}
+										}
+									},
+									"EWayBillDetails": {
+										"type": "object"
+									},
+									"ElectronicProtocols": {
+										"type": "array"
+									},
+									"DocumentAdditionalExpenses": {
+										"type": "array"
+									},
+									"WithholdingTaxDataWTXCollection": {
+										"type": "array"
+									},
+									"WithholdingTaxDataCollection": {
+										"type": "array"
+									},
+									"DocumentPackages": {
+										"type": "array"
+									},
+									"DocumentSpecialLines": {
+										"type": "array"
+									},
+									"DocumentInstallments": {
+										"type": "array",
+										"items": {
+											"type": "object",
+											"properties": {
+												"DueDate": {
+													"type": "string"
+												},
+												"Percentage": {
+													"type": "number"
+												},
+												"Total": {
+													"type": "number"
+												},
+												"LastDunningDate": {
+													"type": "null"
+												},
+												"DunningLevel": {
+													"type": "integer"
+												},
+												"TotalFC": {
+													"type": "null"
+												},
+												"InstallmentId": {
+													"type": "integer"
+												},
+												"PaymentOrdered": {
+													"type": "string"
+												}
+											}
+										}
+									},
+									"DownPaymentsToDraw": {
+										"type": "array"
+									},
+									"TaxExtension": {
+										"type": "object"
+									},
+									"AddressExtension": {
+										"type": "object"
+									},
+									"DocumentReferences": {
+										"type": "array"
+									}
+								}
+							}
+						},
+						"@odata.nextLink": {
+							"type": "string"
+						}
+					}
+				}
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/AzureBlobStorage_json')]"
@@ -16225,300 +17888,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/df_bo_invoices_doclines_lake')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_bo_json_test",
-								"type": "DatasetReference"
-							},
-							"name": "ReadJsonFile"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSqlTable_test",
-								"type": "DatasetReference"
-							},
-							"name": "SinkSQL"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Flatten"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          {@odata.context} as string,",
-						"          value as ({@odata.etag} as string, DocEntry as integer, DocNum as integer, DocType as string, HandWritten as string, Printed as string, DocDate as string, DocDueDate as string, CardCode as string, CardName as string, Address as string, NumAtCard as string, DocTotal as double, AttachmentEntry as string, DocCurrency as string, DocRate as double, Reference1 as string, Reference2 as string, Comments as string, JournalMemo as string, PaymentGroupCode as integer, DocTime as string, SalesPersonCode as integer, TransportationCode as integer, Confirmed as string, ImportFileNum as string, SummeryType as string, ContactPersonCode as integer, ShowSCN as string, Series as integer, TaxDate as string, PartialSupply as string, DocObjectCode as string, ShipToCode as string, Indicator as string, FederalTaxID as string, DiscountPercent as double, PaymentReference as string, CreationDate as string, UpdateDate as string, FinancialPeriod as integer, UserSign as integer, TransNum as integer, VatSum as double, VatSumSys as double, VatSumFc as double, NetProcedure as string, DocTotalFc as double, DocTotalSys as double, Form1099 as string, Box1099 as string, RevisionPo as string, RequriedDate as string, CancelDate as string, BlockDunning as string, Submitted as string, Segment as integer, PickStatus as string, Pick as string, PaymentMethod as string, PaymentBlock as string, PaymentBlockEntry as string, CentralBankIndicator as string, MaximumCashDiscount as string, Reserve as string, Project as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, WareHouseUpdateType as string, Rounding as string, ExternalCorrectedDocNum as string, InternalCorrectedDocNum as string, NextCorrectingDocument as string, DeferredTax as string, TaxExemptionLetterNum as string, WTApplied as double, WTAppliedFC as double, BillOfExchangeReserved as string, AgentCode as string, WTAppliedSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NumberOfInstallments as integer, ApplyTaxOnFirstInstallment as string, WTNonSubjectAmount as double, WTNonSubjectAmountSC as double, WTNonSubjectAmountFC as double, WTExemptedAmount as double, WTExemptedAmountSC as double, WTExemptedAmountFC as double, BaseAmount as double, BaseAmountSC as double, BaseAmountFC as double, WTAmount as double, WTAmountSC as double, WTAmountFC as double, VatDate as string, DocumentsOwner as integer, FolioPrefixString as string, FolioNumber as string, DocumentSubType as string, BPChannelCode as string, BPChannelContact as string, Address2 as string, DocumentStatus as string, PeriodIndicator as string, PayToCode as string, ManualNumber as string, UseShpdGoodsAct as string, IsPayToBank as string, PayToBankCountry as string, PayToBankCode as string, PayToBankAccountNo as string, PayToBankBranch as string, BPL_IDAssignedToInvoice as string, DownPayment as double, ReserveInvoice as string, LanguageCode as integer, TrackingNumber as string, PickRemark as string, ClosingDate as string, SequenceCode as string, SequenceSerial as string, SeriesString as string, SubSeriesString as string, SequenceModel as string, UseCorrectionVATGroup as string, TotalDiscount as double, DownPaymentAmount as double, DownPaymentPercentage as double, DownPaymentType as string, DownPaymentAmountSC as double, DownPaymentAmountFC as double, VatPercent as double, ServiceGrossProfitPercent as string, OpeningRemarks as string, ClosingRemarks as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, Cancelled as string, SignatureInputMessage as string, SignatureDigest as string, CertificationNumber as string, PrivateKeyVersion as string, ControlAccount as string, InsuranceOperation347 as string, ArchiveNonremovableSalesQuotation as string, GTSChecker as string, GTSPayee as string, ExtraMonth as integer, ExtraDays as integer, CashDiscountDateOffset as integer, StartFrom as string, NTSApproved as string, ETaxWebSite as string, ETaxNumber as string, NTSApprovedNumber as string, EDocGenerationType as string, EDocSeries as string, EDocNum as string, EDocExportFormat as string, EDocStatus as string, EDocErrorCode as string, EDocErrorMessage as string, DownPaymentStatus as string, GroupSeries as string, GroupNumber as string, GroupHandWritten as string, ReopenOriginalDocument as string, ReopenManuallyClosedOrCanceledDocument as string, CreateOnlineQuotation as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSCashierNumber as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ClosingOption as string, SpecifiedClosingDate as string, OpenForLandedCosts as string, AuthorizationStatus as string, TotalDiscountFC as double, TotalDiscountSC as double, RelevantToGTS as string, BPLName as string, VATRegNum as string, AnnualInvoiceDeclarationReference as string, Supplier as string, Releaser as string, Receiver as string, BlanketAgreementNumber as string, IsAlteration as string, CancelStatus as string, AssetValueDate as string, InvoicePayment as string, DocumentDelivery as string, AuthorizationCode as string, StartDeliveryDate as string, StartDeliveryTime as string, EndDeliveryDate as string, EndDeliveryTime as string, VehiclePlate as string, ATDocumentType as string, ElecCommStatus as string, ElecCommMessage as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, PrintSEPADirect as string, FiscalDocNum as string, POSDailySummaryNo as string, POSReceiptNo as string, PointOfIssueCode as string, Letter as string, FolioNumberFrom as string, FolioNumberTo as string, InterimType as string, RelatedType as integer, RelatedEntry as string, SAPPassport as string, DocumentTaxID as string, DateOfReportingControlStatementVAT as string, ReportingSectionControlStatementVAT as string, ExcludeFromTaxReportControlStatementVAT as string, POS_CashRegister as string, UpdateTime as string, CreateQRCodeFrom as string, PriceMode as string, Revision as string, OriginalRefNo as string, OriginalRefDate as string, GSTTransactionType as string, OriginalCreditOrDebitNo as string, OriginalCreditOrDebitDate as string, ECommerceOperator as string, ECommerceGSTIN as string, ShipFrom as string, CommissionTrade as string, CommissionTradeReturn as string, UseBillToAddrToDetermineTax as string, IssuingReason as integer, Cig as string, Cup as string, EDocType as string, FCEAsPaymentMeans as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, BaseType as integer, BaseEntry as string, FatherCard as string, FatherType as string, ShipState as string, ShipPlace as string, CustOffice as string, FCI as string, AddLegIn as string, LegTextF as string, DANFELgTxt as string, IndFinal as string, DataVersion as integer, LastPageFolioNumber as string, U_AIG_KID as string, U_Ordrenummer as string, U_esurl as string, U_sluttkunde as string, U_Levbet as string, U_Sted as string, U_Opperk as string, U_DSS_SendStatus as integer, U_DSS_EHFBuyersRef as string, Document_ApprovalRequests as string[], DocumentLines as (LineNum as integer, ItemCode as string, ItemDescription as string, Quantity as double, ShipDate as string, Price as double, PriceAfterVAT as double, Currency as string, Rate as double, DiscountPercent as double, VendorNum as string, SerialNum as string, WarehouseCode as string, SalesPersonCode as integer, CommisionPercent as double, TreeType as string, AccountCode as string, UseBaseUnits as string, SupplierCatNum as string, CostingCode as string, ProjectCode as string, BarCode as string, VatGroup as string, Height1 as double, Hight1Unit as string, Height2 as double, Height2Unit as string, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, Weight1 as double, Weight1Unit as string, Weight2 as double, Weight2Unit as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, BaseType as integer, BaseEntry as integer, BaseLine as integer, Volume as double, VolumeUnit as integer, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, Address as string, TaxCode as string, TaxType as string, TaxLiable as string, PickStatus as string, PickQuantity as double, PickListIdNumber as string, OriginalItem as string, BackOrder as string, FreeText as string, ShippingMethod as integer, POTargetNum as string, POTargetEntry as string, POTargetRowNum as string, CorrectionInvoiceItem as string, CorrInvAmountToStock as double, CorrInvAmountToDiffAcct as double, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, WTLiable as string, DeferredTax as string, EqualizationTaxPercent as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, MeasureUnit as string, UnitsOfMeasurment as double, LineTotal as double, TaxPercentagePerRow as double, TaxTotal as double, ConsumerSalesForecast as string, ExciseAmount as double, TaxPerUnit as double, TotalInclTax as double, CountryOrg as string, SWW as string, TransactionType as string, DistributeExpense as string, RowTotalFC as double, RowTotalSC as double, LastBuyInmPrice as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyDistributeSum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockDistributesum as double, StockInmPrice as double, PickStatusEx as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, CFOPCode as string, CSTCode as string, Usage as string, TaxOnly as string, VisualOrder as integer, BaseOpenQuantity as double, UnitPrice as double, LineStatus as string, PackageQuantity as double, Text as string, LineType as string, COGSCostingCode as string, COGSAccountCode as string, ChangeAssemlyBoMWarehouse as string, GrossBuyPrice as double, GrossBase as integer, GrossProfitTotalBasePrice as double, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, ItemDetails as string, LocationCode as string, ActualDeliveryDate as string, RemainingOpenQuantity as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, ExLineNo as string, RequiredDate as string, RequiredQuantity as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTforIPI as string, CSTforPIS as string, CSTforCOFINS as string, CreditOriginCode as string, WithoutInventoryMovement as string, AgreementNo as string, AgreementRowNumber as string, ActualBaseEntry as string, ActualBaseLine as string, DocEntry as integer, Surpluses as string, DefectAndBreakup as string, Shortages as string, ConsiderQuantity as string, PartialRetirement as string, RetirementQuantity as string, RetirementAPC as string, ThirdParty as string, PoNum as string, PoItmNum as string, ExpenseType as string, ReceiptNumber as string, ExpenseOperationType as string, FederalTaxID as string, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, PriceSource as string, StgSeqNum as string, StgEntry as string, StgDesc as string, UoMEntry as integer, UoMCode as string, InventoryQuantity as double, RemainingOpenInventoryQuantity as double, ParentLineNum as string, Incoterms as integer, TransportMode as integer, NatureOfTransaction as string, DestinationCountryForImport as string, DestinationRegionForImport as string, OriginCountryForExport as string, OriginRegionForExport as string, ItemType as string, ChangeInventoryQuantityIndependently as string, FreeOfChargeBP as string, SACEntry as string, HSNEntry as string, GrossPrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, NCMCode as integer, NVECode as string, IndEscala as string, CtrSealQty as string, CNJPMan as string, CESTCode as string, UFFiscalBenefitCode as string, ReverseCharge as string, ShipToCode as string, ShipToDescription as string, ExternalCalcTaxRate as string, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, StandardItemIdentification as string, CommodityClassification as string, UnencumberedReason as string, CUSplit as string, U_Installasjon as string, U_ParentItem as string, U_Codebars as string, U_PlannedQty as double, U_AIG_IN as string, U_AIG_IA as string, U_AIG_PD as string, U_AIG_PDate as string, U_AIG_ID as string, U_PItemCode as string, U_AIG_IR as string, U_AIG_DDate as string, U_U_AIG_DDate as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, LineTaxJurisdictions as string[], ExportProcesses as string[], EBooksDetails as string[], DocumentLineAdditionalExpenses as string[], WithholdingTaxLines as string[], SerialNumbers as string[], BatchNumbers as string[], CCDNumbers as string[], DocumentLinesBinAllocations as string[])[], EWayBillDetails as ({} as string), ElectronicProtocols as string[], DocumentAdditionalExpenses as string[], WithholdingTaxDataWTXCollection as string[], WithholdingTaxDataCollection as string[], DocumentPackages as string[], DocumentSpecialLines as string[], DocumentInstallments as (DueDate as string, Percentage as double, Total as double, LastDunningDate as string, DunningLevel as integer, TotalFC as string, InstallmentId as integer, PaymentOrdered as string)[], DownPaymentsToDraw as string[], TaxExtension as ({} as string), AddressExtension as ({} as string), DocumentReferences as string[])[],",
-						"          {@odata.nextLink} as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     limit: 100,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'documentPerLine') ~> ReadJsonFile",
-						"ReadJsonFile foldDown(unroll(value.DocumentLines, value),",
-						"     mapColumn(",
-						"          DocNum = value.DocNum,",
-						"          DocDate = value.DocDate,",
-						"          DocDueDate = value.DocDueDate,",
-						"          CardCode = value.CardCode,",
-						"          LineNum = value.DocumentLines.LineNum,",
-						"          ItemCode = value.DocumentLines.ItemCode,",
-						"          ItemDescription = value.DocumentLines.ItemDescription,",
-						"          Quantity = value.DocumentLines.Quantity,",
-						"          ShipDate = value.DocumentLines.ShipDate,",
-						"          Price = value.DocumentLines.Price,",
-						"          PriceAfterVAT = value.DocumentLines.PriceAfterVAT,",
-						"          Currency = value.DocumentLines.Currency,",
-						"          Rate = value.DocumentLines.Rate,",
-						"          DiscountPercent = value.DocumentLines.DiscountPercent,",
-						"          VendorNum = value.DocumentLines.VendorNum,",
-						"          SerialNum = value.DocumentLines.SerialNum,",
-						"          WarehouseCode = value.DocumentLines.WarehouseCode,",
-						"          SalesPersonCode = value.DocumentLines.SalesPersonCode,",
-						"          CommisionPercent = value.DocumentLines.CommisionPercent,",
-						"          TreeType = value.DocumentLines.TreeType,",
-						"          AccountCode = value.DocumentLines.AccountCode,",
-						"          UseBaseUnits = value.DocumentLines.UseBaseUnits,",
-						"          SupplierCatNum = value.DocumentLines.SupplierCatNum,",
-						"          CostingCode = value.DocumentLines.CostingCode,",
-						"          ProjectCode = value.DocumentLines.ProjectCode,",
-						"          BarCode = value.DocumentLines.BarCode,",
-						"          VatGroup = value.DocumentLines.VatGroup,",
-						"          Height1 = value.DocumentLines.Height1,",
-						"          Hight1Unit = value.DocumentLines.Hight1Unit,",
-						"          Height2 = value.DocumentLines.Height2,",
-						"          Height2Unit = value.DocumentLines.Height2Unit,",
-						"          Lengh1 = value.DocumentLines.Lengh1,",
-						"          Lengh1Unit = value.DocumentLines.Lengh1Unit,",
-						"          Lengh2 = value.DocumentLines.Lengh2,",
-						"          Lengh2Unit = value.DocumentLines.Lengh2Unit,",
-						"          Weight1 = value.DocumentLines.Weight1,",
-						"          Weight1Unit = value.DocumentLines.Weight1Unit,",
-						"          Weight2 = value.DocumentLines.Weight2,",
-						"          Weight2Unit = value.DocumentLines.Weight2Unit,",
-						"          Factor1 = value.DocumentLines.Factor1,",
-						"          Factor2 = value.DocumentLines.Factor2,",
-						"          Factor3 = value.DocumentLines.Factor3,",
-						"          Factor4 = value.DocumentLines.Factor4,",
-						"          BaseType = value.DocumentLines.BaseType,",
-						"          BaseEntry = value.DocumentLines.BaseEntry,",
-						"          BaseLine = value.DocumentLines.BaseLine,",
-						"          Volume = value.DocumentLines.Volume,",
-						"          VolumeUnit = value.DocumentLines.VolumeUnit,",
-						"          Width1 = value.DocumentLines.Width1,",
-						"          Width1Unit = value.DocumentLines.Width1Unit,",
-						"          Width2 = value.DocumentLines.Width2,",
-						"          Width2Unit = value.DocumentLines.Width2Unit,",
-						"          Address = value.DocumentLines.Address,",
-						"          TaxCode = value.DocumentLines.TaxCode,",
-						"          TaxType = value.DocumentLines.TaxType,",
-						"          TaxLiable = value.DocumentLines.TaxLiable,",
-						"          PickStatus = value.DocumentLines.PickStatus,",
-						"          PickQuantity = value.DocumentLines.PickQuantity,",
-						"          PickListIdNumber = value.DocumentLines.PickListIdNumber,",
-						"          OriginalItem = value.DocumentLines.OriginalItem,",
-						"          BackOrder = value.DocumentLines.BackOrder,",
-						"          FreeText = value.DocumentLines.FreeText,",
-						"          ShippingMethod = value.DocumentLines.ShippingMethod,",
-						"          POTargetNum = value.DocumentLines.POTargetNum,",
-						"          POTargetEntry = value.DocumentLines.POTargetEntry,",
-						"          POTargetRowNum = value.DocumentLines.POTargetRowNum,",
-						"          CorrectionInvoiceItem = value.DocumentLines.CorrectionInvoiceItem,",
-						"          CorrInvAmountToStock = value.DocumentLines.CorrInvAmountToStock,",
-						"          CorrInvAmountToDiffAcct = value.DocumentLines.CorrInvAmountToDiffAcct,",
-						"          AppliedTax = value.DocumentLines.AppliedTax,",
-						"          AppliedTaxFC = value.DocumentLines.AppliedTaxFC,",
-						"          AppliedTaxSC = value.DocumentLines.AppliedTaxSC,",
-						"          WTLiable = value.DocumentLines.WTLiable,",
-						"          DeferredTax = value.DocumentLines.DeferredTax,",
-						"          EqualizationTaxPercent = value.DocumentLines.EqualizationTaxPercent,",
-						"          TotalEqualizationTax = value.DocumentLines.TotalEqualizationTax,",
-						"          TotalEqualizationTaxFC = value.DocumentLines.TotalEqualizationTaxFC,",
-						"          TotalEqualizationTaxSC = value.DocumentLines.TotalEqualizationTaxSC,",
-						"          NetTaxAmount = value.DocumentLines.NetTaxAmount,",
-						"          NetTaxAmountFC = value.DocumentLines.NetTaxAmountFC,",
-						"          NetTaxAmountSC = value.DocumentLines.NetTaxAmountSC,",
-						"          MeasureUnit = value.DocumentLines.MeasureUnit,",
-						"          UnitsOfMeasurment = value.DocumentLines.UnitsOfMeasurment,",
-						"          LineTotal = value.DocumentLines.LineTotal,",
-						"          TaxPercentagePerRow = value.DocumentLines.TaxPercentagePerRow,",
-						"          TaxTotal = value.DocumentLines.TaxTotal,",
-						"          ConsumerSalesForecast = value.DocumentLines.ConsumerSalesForecast,",
-						"          ExciseAmount = value.DocumentLines.ExciseAmount,",
-						"          TaxPerUnit = value.DocumentLines.TaxPerUnit,",
-						"          TotalInclTax = value.DocumentLines.TotalInclTax,",
-						"          CountryOrg = value.DocumentLines.CountryOrg,",
-						"          SWW = value.DocumentLines.SWW,",
-						"          TransactionType = value.DocumentLines.TransactionType,",
-						"          DistributeExpense = value.DocumentLines.DistributeExpense,",
-						"          RowTotalFC = value.DocumentLines.RowTotalFC,",
-						"          RowTotalSC = value.DocumentLines.RowTotalSC,",
-						"          LastBuyInmPrice = value.DocumentLines.LastBuyInmPrice,",
-						"          LastBuyDistributeSumFc = value.DocumentLines.LastBuyDistributeSumFc,",
-						"          LastBuyDistributeSumSc = value.DocumentLines.LastBuyDistributeSumSc,",
-						"          LastBuyDistributeSum = value.DocumentLines.LastBuyDistributeSum,",
-						"          StockDistributesumForeign = value.DocumentLines.StockDistributesumForeign,",
-						"          StockDistributesumSystem = value.DocumentLines.StockDistributesumSystem,",
-						"          StockDistributesum = value.DocumentLines.StockDistributesum,",
-						"          StockInmPrice = value.DocumentLines.StockInmPrice,",
-						"          PickStatusEx = value.DocumentLines.PickStatusEx,",
-						"          TaxBeforeDPM = value.DocumentLines.TaxBeforeDPM,",
-						"          TaxBeforeDPMFC = value.DocumentLines.TaxBeforeDPMFC,",
-						"          TaxBeforeDPMSC = value.DocumentLines.TaxBeforeDPMSC,",
-						"          CFOPCode = value.DocumentLines.CFOPCode,",
-						"          CSTCode = value.DocumentLines.CSTCode,",
-						"          Usage = value.DocumentLines.Usage,",
-						"          TaxOnly = value.DocumentLines.TaxOnly,",
-						"          VisualOrder = value.DocumentLines.VisualOrder,",
-						"          BaseOpenQuantity = value.DocumentLines.BaseOpenQuantity,",
-						"          UnitPrice = value.DocumentLines.UnitPrice,",
-						"          LineStatus = value.DocumentLines.LineStatus,",
-						"          PackageQuantity = value.DocumentLines.PackageQuantity,",
-						"          Text = value.DocumentLines.Text,",
-						"          LineType = value.DocumentLines.LineType,",
-						"          COGSCostingCode = value.DocumentLines.COGSCostingCode,",
-						"          COGSAccountCode = value.DocumentLines.COGSAccountCode,",
-						"          ChangeAssemlyBoMWarehouse = value.DocumentLines.ChangeAssemlyBoMWarehouse,",
-						"          GrossBuyPrice = value.DocumentLines.GrossBuyPrice,",
-						"          GrossBase = value.DocumentLines.GrossBase,",
-						"          GrossProfitTotalBasePrice = value.DocumentLines.GrossProfitTotalBasePrice,",
-						"          CostingCode2 = value.DocumentLines.CostingCode2,",
-						"          CostingCode3 = value.DocumentLines.CostingCode3,",
-						"          CostingCode4 = value.DocumentLines.CostingCode4,",
-						"          CostingCode5 = value.DocumentLines.CostingCode5,",
-						"          ItemDetails = value.DocumentLines.ItemDetails,",
-						"          LocationCode = value.DocumentLines.LocationCode,",
-						"          ActualDeliveryDate = value.DocumentLines.ActualDeliveryDate,",
-						"          RemainingOpenQuantity = value.DocumentLines.RemainingOpenQuantity,",
-						"          OpenAmount = value.DocumentLines.OpenAmount,",
-						"          OpenAmountFC = value.DocumentLines.OpenAmountFC,",
-						"          OpenAmountSC = value.DocumentLines.OpenAmountSC,",
-						"          ExLineNo = value.DocumentLines.ExLineNo,",
-						"          RequiredDate = value.DocumentLines.RequiredDate,",
-						"          RequiredQuantity = value.DocumentLines.RequiredQuantity,",
-						"          COGSCostingCode2 = value.DocumentLines.COGSCostingCode2,",
-						"          COGSCostingCode3 = value.DocumentLines.COGSCostingCode3,",
-						"          COGSCostingCode4 = value.DocumentLines.COGSCostingCode4,",
-						"          COGSCostingCode5 = value.DocumentLines.COGSCostingCode5,",
-						"          CSTforIPI = value.DocumentLines.CSTforIPI,",
-						"          CSTforPIS = value.DocumentLines.CSTforPIS,",
-						"          CSTforCOFINS = value.DocumentLines.CSTforCOFINS,",
-						"          CreditOriginCode = value.DocumentLines.CreditOriginCode,",
-						"          WithoutInventoryMovement = value.DocumentLines.WithoutInventoryMovement,",
-						"          AgreementNo = value.DocumentLines.AgreementNo,",
-						"          AgreementRowNumber = value.DocumentLines.AgreementRowNumber,",
-						"          ActualBaseEntry = value.DocumentLines.ActualBaseEntry,",
-						"          ActualBaseLine = value.DocumentLines.ActualBaseLine,",
-						"          DocEntry = value.DocumentLines.DocEntry,",
-						"          Surpluses = value.DocumentLines.Surpluses,",
-						"          DefectAndBreakup = value.DocumentLines.DefectAndBreakup,",
-						"          Shortages = value.DocumentLines.Shortages,",
-						"          ConsiderQuantity = value.DocumentLines.ConsiderQuantity,",
-						"          PartialRetirement = value.DocumentLines.PartialRetirement,",
-						"          RetirementQuantity = value.DocumentLines.RetirementQuantity,",
-						"          RetirementAPC = value.DocumentLines.RetirementAPC,",
-						"          ThirdParty = value.DocumentLines.ThirdParty,",
-						"          PoNum = value.DocumentLines.PoNum,",
-						"          PoItmNum = value.DocumentLines.PoItmNum,",
-						"          ExpenseType = value.DocumentLines.ExpenseType,",
-						"          ReceiptNumber = value.DocumentLines.ReceiptNumber,",
-						"          ExpenseOperationType = value.DocumentLines.ExpenseOperationType,",
-						"          FederalTaxID = value.DocumentLines.FederalTaxID,",
-						"          GrossProfit = value.DocumentLines.GrossProfit,",
-						"          GrossProfitFC = value.DocumentLines.GrossProfitFC,",
-						"          GrossProfitSC = value.DocumentLines.GrossProfitSC,",
-						"          PriceSource = value.DocumentLines.PriceSource,",
-						"          StgSeqNum = value.DocumentLines.StgSeqNum,",
-						"          StgEntry = value.DocumentLines.StgEntry,",
-						"          StgDesc = value.DocumentLines.StgDesc,",
-						"          UoMEntry = value.DocumentLines.UoMEntry,",
-						"          UoMCode = value.DocumentLines.UoMCode,",
-						"          InventoryQuantity = value.DocumentLines.InventoryQuantity,",
-						"          RemainingOpenInventoryQuantity = value.DocumentLines.RemainingOpenInventoryQuantity,",
-						"          ParentLineNum = value.DocumentLines.ParentLineNum,",
-						"          Incoterms = value.DocumentLines.Incoterms,",
-						"          TransportMode = value.DocumentLines.TransportMode,",
-						"          NatureOfTransaction = value.DocumentLines.NatureOfTransaction,",
-						"          DestinationCountryForImport = value.DocumentLines.DestinationCountryForImport,",
-						"          DestinationRegionForImport = value.DocumentLines.DestinationRegionForImport,",
-						"          OriginCountryForExport = value.DocumentLines.OriginCountryForExport,",
-						"          OriginRegionForExport = value.DocumentLines.OriginRegionForExport,",
-						"          ItemType = value.DocumentLines.ItemType,",
-						"          ChangeInventoryQuantityIndependently = value.DocumentLines.ChangeInventoryQuantityIndependently,",
-						"          FreeOfChargeBP = value.DocumentLines.FreeOfChargeBP,",
-						"          SACEntry = value.DocumentLines.SACEntry,",
-						"          HSNEntry = value.DocumentLines.HSNEntry,",
-						"          GrossPrice = value.DocumentLines.GrossPrice,",
-						"          GrossTotal = value.DocumentLines.GrossTotal,",
-						"          GrossTotalFC = value.DocumentLines.GrossTotalFC,",
-						"          GrossTotalSC = value.DocumentLines.GrossTotalSC,",
-						"          NCMCode = value.DocumentLines.NCMCode,",
-						"          NVECode = value.DocumentLines.NVECode,",
-						"          IndEscala = value.DocumentLines.IndEscala,",
-						"          CtrSealQty = value.DocumentLines.CtrSealQty,",
-						"          CNJPMan = value.DocumentLines.CNJPMan,",
-						"          CESTCode = value.DocumentLines.CESTCode,",
-						"          UFFiscalBenefitCode = value.DocumentLines.UFFiscalBenefitCode,",
-						"          ReverseCharge = value.DocumentLines.ReverseCharge,",
-						"          ShipToCode = value.DocumentLines.ShipToCode,",
-						"          ShipToDescription = value.DocumentLines.ShipToDescription,",
-						"          ExternalCalcTaxRate = value.DocumentLines.ExternalCalcTaxRate,",
-						"          ExternalCalcTaxAmount = value.DocumentLines.ExternalCalcTaxAmount,",
-						"          ExternalCalcTaxAmountFC = value.DocumentLines.ExternalCalcTaxAmountFC,",
-						"          ExternalCalcTaxAmountSC = value.DocumentLines.ExternalCalcTaxAmountSC,",
-						"          StandardItemIdentification = value.DocumentLines.StandardItemIdentification,",
-						"          CommodityClassification = value.DocumentLines.CommodityClassification,",
-						"          UnencumberedReason = value.DocumentLines.UnencumberedReason,",
-						"          CUSplit = value.DocumentLines.CUSplit,",
-						"          U_Installasjon = value.DocumentLines.U_Installasjon,",
-						"          U_ParentItem = value.DocumentLines.U_ParentItem,",
-						"          U_Codebars = value.DocumentLines.U_Codebars,",
-						"          U_PlannedQty = value.DocumentLines.U_PlannedQty,",
-						"          U_AIG_IN = value.DocumentLines.U_AIG_IN,",
-						"          U_AIG_IA = value.DocumentLines.U_AIG_IA,",
-						"          U_AIG_PD = value.DocumentLines.U_AIG_PD,",
-						"          U_AIG_PDate = value.DocumentLines.U_AIG_PDate,",
-						"          U_AIG_ID = value.DocumentLines.U_AIG_ID,",
-						"          U_PItemCode = value.DocumentLines.U_PItemCode,",
-						"          U_AIG_IR = value.DocumentLines.U_AIG_IR,",
-						"          U_AIG_DDate = value.DocumentLines.U_AIG_DDate,",
-						"          U_U_AIG_DDate = value.DocumentLines.U_U_AIG_DDate,",
-						"          U_DSS_Charge = value.DocumentLines.U_DSS_Charge,",
-						"          U_DSS_ProdOrdr = value.DocumentLines.U_DSS_ProdOrdr",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> Flatten",
-						"Flatten sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     recreate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> SinkSQL"
-					]
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/ds_bo_json_test')]",
-				"[concat(variables('factoryId'), '/datasets/AzureSqlTable_test')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_bo_orders')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -17131,6 +18500,300 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/ds_bo_sap_orders')]",
 				"[concat(variables('factoryId'), '/datasets/sql_bo_orders_lines')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_jsonParse_Sql')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_blob_sap",
+								"type": "DatasetReference"
+							},
+							"name": "ReadJsonFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sql_bo_sap_invoices",
+								"type": "DatasetReference"
+							},
+							"name": "SinkSQL"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Flatten"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {@odata.context} as string,",
+						"          value as ({@odata.etag} as string, DocEntry as integer, DocNum as integer, DocType as string, HandWritten as string, Printed as string, DocDate as string, DocDueDate as string, CardCode as string, CardName as string, Address as string, NumAtCard as string, DocTotal as double, AttachmentEntry as string, DocCurrency as string, DocRate as double, Reference1 as string, Reference2 as string, Comments as string, JournalMemo as string, PaymentGroupCode as integer, DocTime as string, SalesPersonCode as integer, TransportationCode as integer, Confirmed as string, ImportFileNum as string, SummeryType as string, ContactPersonCode as integer, ShowSCN as string, Series as integer, TaxDate as string, PartialSupply as string, DocObjectCode as string, ShipToCode as string, Indicator as string, FederalTaxID as string, DiscountPercent as double, PaymentReference as string, CreationDate as string, UpdateDate as string, FinancialPeriod as integer, UserSign as integer, TransNum as integer, VatSum as double, VatSumSys as double, VatSumFc as double, NetProcedure as string, DocTotalFc as double, DocTotalSys as double, Form1099 as string, Box1099 as string, RevisionPo as string, RequriedDate as string, CancelDate as string, BlockDunning as string, Submitted as string, Segment as integer, PickStatus as string, Pick as string, PaymentMethod as string, PaymentBlock as string, PaymentBlockEntry as string, CentralBankIndicator as string, MaximumCashDiscount as string, Reserve as string, Project as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, WareHouseUpdateType as string, Rounding as string, ExternalCorrectedDocNum as string, InternalCorrectedDocNum as string, NextCorrectingDocument as string, DeferredTax as string, TaxExemptionLetterNum as string, WTApplied as double, WTAppliedFC as double, BillOfExchangeReserved as string, AgentCode as string, WTAppliedSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NumberOfInstallments as integer, ApplyTaxOnFirstInstallment as string, WTNonSubjectAmount as double, WTNonSubjectAmountSC as double, WTNonSubjectAmountFC as double, WTExemptedAmount as double, WTExemptedAmountSC as double, WTExemptedAmountFC as double, BaseAmount as double, BaseAmountSC as double, BaseAmountFC as double, WTAmount as double, WTAmountSC as double, WTAmountFC as double, VatDate as string, DocumentsOwner as integer, FolioPrefixString as string, FolioNumber as string, DocumentSubType as string, BPChannelCode as string, BPChannelContact as string, Address2 as string, DocumentStatus as string, PeriodIndicator as string, PayToCode as string, ManualNumber as string, UseShpdGoodsAct as string, IsPayToBank as string, PayToBankCountry as string, PayToBankCode as string, PayToBankAccountNo as string, PayToBankBranch as string, BPL_IDAssignedToInvoice as string, DownPayment as double, ReserveInvoice as string, LanguageCode as integer, TrackingNumber as string, PickRemark as string, ClosingDate as string, SequenceCode as string, SequenceSerial as string, SeriesString as string, SubSeriesString as string, SequenceModel as string, UseCorrectionVATGroup as string, TotalDiscount as double, DownPaymentAmount as double, DownPaymentPercentage as double, DownPaymentType as string, DownPaymentAmountSC as double, DownPaymentAmountFC as double, VatPercent as double, ServiceGrossProfitPercent as string, OpeningRemarks as string, ClosingRemarks as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, Cancelled as string, SignatureInputMessage as string, SignatureDigest as string, CertificationNumber as string, PrivateKeyVersion as string, ControlAccount as string, InsuranceOperation347 as string, ArchiveNonremovableSalesQuotation as string, GTSChecker as string, GTSPayee as string, ExtraMonth as integer, ExtraDays as integer, CashDiscountDateOffset as integer, StartFrom as string, NTSApproved as string, ETaxWebSite as string, ETaxNumber as string, NTSApprovedNumber as string, EDocGenerationType as string, EDocSeries as string, EDocNum as string, EDocExportFormat as string, EDocStatus as string, EDocErrorCode as string, EDocErrorMessage as string, DownPaymentStatus as string, GroupSeries as string, GroupNumber as string, GroupHandWritten as string, ReopenOriginalDocument as string, ReopenManuallyClosedOrCanceledDocument as string, CreateOnlineQuotation as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSCashierNumber as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ClosingOption as string, SpecifiedClosingDate as string, OpenForLandedCosts as string, AuthorizationStatus as string, TotalDiscountFC as double, TotalDiscountSC as double, RelevantToGTS as string, BPLName as string, VATRegNum as string, AnnualInvoiceDeclarationReference as string, Supplier as string, Releaser as string, Receiver as string, BlanketAgreementNumber as string, IsAlteration as string, CancelStatus as string, AssetValueDate as string, InvoicePayment as string, DocumentDelivery as string, AuthorizationCode as string, StartDeliveryDate as string, StartDeliveryTime as string, EndDeliveryDate as string, EndDeliveryTime as string, VehiclePlate as string, ATDocumentType as string, ElecCommStatus as string, ElecCommMessage as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, PrintSEPADirect as string, FiscalDocNum as string, POSDailySummaryNo as string, POSReceiptNo as string, PointOfIssueCode as string, Letter as string, FolioNumberFrom as string, FolioNumberTo as string, InterimType as string, RelatedType as integer, RelatedEntry as string, SAPPassport as string, DocumentTaxID as string, DateOfReportingControlStatementVAT as string, ReportingSectionControlStatementVAT as string, ExcludeFromTaxReportControlStatementVAT as string, POS_CashRegister as string, UpdateTime as string, CreateQRCodeFrom as string, PriceMode as string, Revision as string, OriginalRefNo as string, OriginalRefDate as string, GSTTransactionType as string, OriginalCreditOrDebitNo as string, OriginalCreditOrDebitDate as string, ECommerceOperator as string, ECommerceGSTIN as string, ShipFrom as string, CommissionTrade as string, CommissionTradeReturn as string, UseBillToAddrToDetermineTax as string, IssuingReason as integer, Cig as string, Cup as string, EDocType as string, FCEAsPaymentMeans as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, BaseType as integer, BaseEntry as string, FatherCard as string, FatherType as string, ShipState as string, ShipPlace as string, CustOffice as string, FCI as string, AddLegIn as string, LegTextF as string, DANFELgTxt as string, IndFinal as string, DataVersion as integer, LastPageFolioNumber as string, U_AIG_KID as string, U_Ordrenummer as string, U_esurl as string, U_sluttkunde as string, U_Levbet as string, U_Sted as string, U_Opperk as string, U_DSS_SendStatus as integer, U_DSS_EHFBuyersRef as string, Document_ApprovalRequests as string[], DocumentLines as (LineNum as integer, ItemCode as string, ItemDescription as string, Quantity as double, ShipDate as string, Price as double, PriceAfterVAT as double, Currency as string, Rate as double, DiscountPercent as double, VendorNum as string, SerialNum as string, WarehouseCode as string, SalesPersonCode as integer, CommisionPercent as double, TreeType as string, AccountCode as string, UseBaseUnits as string, SupplierCatNum as string, CostingCode as string, ProjectCode as string, BarCode as string, VatGroup as string, Height1 as double, Hight1Unit as string, Height2 as double, Height2Unit as string, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, Weight1 as double, Weight1Unit as string, Weight2 as double, Weight2Unit as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, BaseType as integer, BaseEntry as integer, BaseLine as integer, Volume as double, VolumeUnit as integer, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, Address as string, TaxCode as string, TaxType as string, TaxLiable as string, PickStatus as string, PickQuantity as double, PickListIdNumber as string, OriginalItem as string, BackOrder as string, FreeText as string, ShippingMethod as integer, POTargetNum as string, POTargetEntry as string, POTargetRowNum as string, CorrectionInvoiceItem as string, CorrInvAmountToStock as double, CorrInvAmountToDiffAcct as double, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, WTLiable as string, DeferredTax as string, EqualizationTaxPercent as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, MeasureUnit as string, UnitsOfMeasurment as double, LineTotal as double, TaxPercentagePerRow as double, TaxTotal as double, ConsumerSalesForecast as string, ExciseAmount as double, TaxPerUnit as double, TotalInclTax as double, CountryOrg as string, SWW as string, TransactionType as string, DistributeExpense as string, RowTotalFC as double, RowTotalSC as double, LastBuyInmPrice as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyDistributeSum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockDistributesum as double, StockInmPrice as double, PickStatusEx as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, CFOPCode as string, CSTCode as string, Usage as string, TaxOnly as string, VisualOrder as integer, BaseOpenQuantity as double, UnitPrice as double, LineStatus as string, PackageQuantity as double, Text as string, LineType as string, COGSCostingCode as string, COGSAccountCode as string, ChangeAssemlyBoMWarehouse as string, GrossBuyPrice as double, GrossBase as integer, GrossProfitTotalBasePrice as double, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, ItemDetails as string, LocationCode as string, ActualDeliveryDate as string, RemainingOpenQuantity as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, ExLineNo as string, RequiredDate as string, RequiredQuantity as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTforIPI as string, CSTforPIS as string, CSTforCOFINS as string, CreditOriginCode as string, WithoutInventoryMovement as string, AgreementNo as string, AgreementRowNumber as string, ActualBaseEntry as string, ActualBaseLine as string, DocEntry as integer, Surpluses as string, DefectAndBreakup as string, Shortages as string, ConsiderQuantity as string, PartialRetirement as string, RetirementQuantity as string, RetirementAPC as string, ThirdParty as string, PoNum as string, PoItmNum as string, ExpenseType as string, ReceiptNumber as string, ExpenseOperationType as string, FederalTaxID as string, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, PriceSource as string, StgSeqNum as string, StgEntry as string, StgDesc as string, UoMEntry as integer, UoMCode as string, InventoryQuantity as double, RemainingOpenInventoryQuantity as double, ParentLineNum as string, Incoterms as integer, TransportMode as integer, NatureOfTransaction as string, DestinationCountryForImport as string, DestinationRegionForImport as string, OriginCountryForExport as string, OriginRegionForExport as string, ItemType as string, ChangeInventoryQuantityIndependently as string, FreeOfChargeBP as string, SACEntry as string, HSNEntry as string, GrossPrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, NCMCode as integer, NVECode as string, IndEscala as string, CtrSealQty as string, CNJPMan as string, CESTCode as string, UFFiscalBenefitCode as string, ReverseCharge as string, ShipToCode as string, ShipToDescription as string, ExternalCalcTaxRate as string, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, StandardItemIdentification as string, CommodityClassification as string, UnencumberedReason as string, CUSplit as string, U_Installasjon as string, U_ParentItem as string, U_Codebars as string, U_PlannedQty as double, U_AIG_IN as string, U_AIG_IA as string, U_AIG_PD as string, U_AIG_PDate as string, U_AIG_ID as string, U_PItemCode as string, U_AIG_IR as string, U_AIG_DDate as string, U_U_AIG_DDate as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, LineTaxJurisdictions as string[], ExportProcesses as string[], EBooksDetails as string[], DocumentLineAdditionalExpenses as string[], WithholdingTaxLines as string[], SerialNumbers as string[], BatchNumbers as string[], CCDNumbers as string[], DocumentLinesBinAllocations as string[])[], EWayBillDetails as ({} as string), ElectronicProtocols as string[], DocumentAdditionalExpenses as string[], WithholdingTaxDataWTXCollection as string[], WithholdingTaxDataCollection as string[], DocumentPackages as string[], DocumentSpecialLines as string[], DocumentInstallments as (DueDate as string, Percentage as double, Total as double, LastDunningDate as string, DunningLevel as integer, TotalFC as string, InstallmentId as integer, PaymentOrdered as string)[], DownPaymentsToDraw as string[], TaxExtension as ({} as string), AddressExtension as ({} as string), DocumentReferences as string[])[],",
+						"          {@odata.nextLink} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     limit: 100,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> ReadJsonFile",
+						"ReadJsonFile foldDown(unroll(value.DocumentLines, value),",
+						"     mapColumn(",
+						"          DocNum = value.DocNum,",
+						"          DocDate = value.DocDate,",
+						"          DocDueDate = value.DocDueDate,",
+						"          CardCode = value.CardCode,",
+						"          LineNum = value.DocumentLines.LineNum,",
+						"          ItemCode = value.DocumentLines.ItemCode,",
+						"          ItemDescription = value.DocumentLines.ItemDescription,",
+						"          Quantity = value.DocumentLines.Quantity,",
+						"          ShipDate = value.DocumentLines.ShipDate,",
+						"          Price = value.DocumentLines.Price,",
+						"          PriceAfterVAT = value.DocumentLines.PriceAfterVAT,",
+						"          Currency = value.DocumentLines.Currency,",
+						"          Rate = value.DocumentLines.Rate,",
+						"          DiscountPercent = value.DocumentLines.DiscountPercent,",
+						"          VendorNum = value.DocumentLines.VendorNum,",
+						"          SerialNum = value.DocumentLines.SerialNum,",
+						"          WarehouseCode = value.DocumentLines.WarehouseCode,",
+						"          SalesPersonCode = value.DocumentLines.SalesPersonCode,",
+						"          CommisionPercent = value.DocumentLines.CommisionPercent,",
+						"          TreeType = value.DocumentLines.TreeType,",
+						"          AccountCode = value.DocumentLines.AccountCode,",
+						"          UseBaseUnits = value.DocumentLines.UseBaseUnits,",
+						"          SupplierCatNum = value.DocumentLines.SupplierCatNum,",
+						"          CostingCode = value.DocumentLines.CostingCode,",
+						"          ProjectCode = value.DocumentLines.ProjectCode,",
+						"          BarCode = value.DocumentLines.BarCode,",
+						"          VatGroup = value.DocumentLines.VatGroup,",
+						"          Height1 = value.DocumentLines.Height1,",
+						"          Hight1Unit = value.DocumentLines.Hight1Unit,",
+						"          Height2 = value.DocumentLines.Height2,",
+						"          Height2Unit = value.DocumentLines.Height2Unit,",
+						"          Lengh1 = value.DocumentLines.Lengh1,",
+						"          Lengh1Unit = value.DocumentLines.Lengh1Unit,",
+						"          Lengh2 = value.DocumentLines.Lengh2,",
+						"          Lengh2Unit = value.DocumentLines.Lengh2Unit,",
+						"          Weight1 = value.DocumentLines.Weight1,",
+						"          Weight1Unit = value.DocumentLines.Weight1Unit,",
+						"          Weight2 = value.DocumentLines.Weight2,",
+						"          Weight2Unit = value.DocumentLines.Weight2Unit,",
+						"          Factor1 = value.DocumentLines.Factor1,",
+						"          Factor2 = value.DocumentLines.Factor2,",
+						"          Factor3 = value.DocumentLines.Factor3,",
+						"          Factor4 = value.DocumentLines.Factor4,",
+						"          BaseType = value.DocumentLines.BaseType,",
+						"          BaseEntry = value.DocumentLines.BaseEntry,",
+						"          BaseLine = value.DocumentLines.BaseLine,",
+						"          Volume = value.DocumentLines.Volume,",
+						"          VolumeUnit = value.DocumentLines.VolumeUnit,",
+						"          Width1 = value.DocumentLines.Width1,",
+						"          Width1Unit = value.DocumentLines.Width1Unit,",
+						"          Width2 = value.DocumentLines.Width2,",
+						"          Width2Unit = value.DocumentLines.Width2Unit,",
+						"          Address = value.DocumentLines.Address,",
+						"          TaxCode = value.DocumentLines.TaxCode,",
+						"          TaxType = value.DocumentLines.TaxType,",
+						"          TaxLiable = value.DocumentLines.TaxLiable,",
+						"          PickStatus = value.DocumentLines.PickStatus,",
+						"          PickQuantity = value.DocumentLines.PickQuantity,",
+						"          PickListIdNumber = value.DocumentLines.PickListIdNumber,",
+						"          OriginalItem = value.DocumentLines.OriginalItem,",
+						"          BackOrder = value.DocumentLines.BackOrder,",
+						"          FreeText = value.DocumentLines.FreeText,",
+						"          ShippingMethod = value.DocumentLines.ShippingMethod,",
+						"          POTargetNum = value.DocumentLines.POTargetNum,",
+						"          POTargetEntry = value.DocumentLines.POTargetEntry,",
+						"          POTargetRowNum = value.DocumentLines.POTargetRowNum,",
+						"          CorrectionInvoiceItem = value.DocumentLines.CorrectionInvoiceItem,",
+						"          CorrInvAmountToStock = value.DocumentLines.CorrInvAmountToStock,",
+						"          CorrInvAmountToDiffAcct = value.DocumentLines.CorrInvAmountToDiffAcct,",
+						"          AppliedTax = value.DocumentLines.AppliedTax,",
+						"          AppliedTaxFC = value.DocumentLines.AppliedTaxFC,",
+						"          AppliedTaxSC = value.DocumentLines.AppliedTaxSC,",
+						"          WTLiable = value.DocumentLines.WTLiable,",
+						"          DeferredTax = value.DocumentLines.DeferredTax,",
+						"          EqualizationTaxPercent = value.DocumentLines.EqualizationTaxPercent,",
+						"          TotalEqualizationTax = value.DocumentLines.TotalEqualizationTax,",
+						"          TotalEqualizationTaxFC = value.DocumentLines.TotalEqualizationTaxFC,",
+						"          TotalEqualizationTaxSC = value.DocumentLines.TotalEqualizationTaxSC,",
+						"          NetTaxAmount = value.DocumentLines.NetTaxAmount,",
+						"          NetTaxAmountFC = value.DocumentLines.NetTaxAmountFC,",
+						"          NetTaxAmountSC = value.DocumentLines.NetTaxAmountSC,",
+						"          MeasureUnit = value.DocumentLines.MeasureUnit,",
+						"          UnitsOfMeasurment = value.DocumentLines.UnitsOfMeasurment,",
+						"          LineTotal = value.DocumentLines.LineTotal,",
+						"          TaxPercentagePerRow = value.DocumentLines.TaxPercentagePerRow,",
+						"          TaxTotal = value.DocumentLines.TaxTotal,",
+						"          ConsumerSalesForecast = value.DocumentLines.ConsumerSalesForecast,",
+						"          ExciseAmount = value.DocumentLines.ExciseAmount,",
+						"          TaxPerUnit = value.DocumentLines.TaxPerUnit,",
+						"          TotalInclTax = value.DocumentLines.TotalInclTax,",
+						"          CountryOrg = value.DocumentLines.CountryOrg,",
+						"          SWW = value.DocumentLines.SWW,",
+						"          TransactionType = value.DocumentLines.TransactionType,",
+						"          DistributeExpense = value.DocumentLines.DistributeExpense,",
+						"          RowTotalFC = value.DocumentLines.RowTotalFC,",
+						"          RowTotalSC = value.DocumentLines.RowTotalSC,",
+						"          LastBuyInmPrice = value.DocumentLines.LastBuyInmPrice,",
+						"          LastBuyDistributeSumFc = value.DocumentLines.LastBuyDistributeSumFc,",
+						"          LastBuyDistributeSumSc = value.DocumentLines.LastBuyDistributeSumSc,",
+						"          LastBuyDistributeSum = value.DocumentLines.LastBuyDistributeSum,",
+						"          StockDistributesumForeign = value.DocumentLines.StockDistributesumForeign,",
+						"          StockDistributesumSystem = value.DocumentLines.StockDistributesumSystem,",
+						"          StockDistributesum = value.DocumentLines.StockDistributesum,",
+						"          StockInmPrice = value.DocumentLines.StockInmPrice,",
+						"          PickStatusEx = value.DocumentLines.PickStatusEx,",
+						"          TaxBeforeDPM = value.DocumentLines.TaxBeforeDPM,",
+						"          TaxBeforeDPMFC = value.DocumentLines.TaxBeforeDPMFC,",
+						"          TaxBeforeDPMSC = value.DocumentLines.TaxBeforeDPMSC,",
+						"          CFOPCode = value.DocumentLines.CFOPCode,",
+						"          CSTCode = value.DocumentLines.CSTCode,",
+						"          Usage = value.DocumentLines.Usage,",
+						"          TaxOnly = value.DocumentLines.TaxOnly,",
+						"          VisualOrder = value.DocumentLines.VisualOrder,",
+						"          BaseOpenQuantity = value.DocumentLines.BaseOpenQuantity,",
+						"          UnitPrice = value.DocumentLines.UnitPrice,",
+						"          LineStatus = value.DocumentLines.LineStatus,",
+						"          PackageQuantity = value.DocumentLines.PackageQuantity,",
+						"          Text = value.DocumentLines.Text,",
+						"          LineType = value.DocumentLines.LineType,",
+						"          COGSCostingCode = value.DocumentLines.COGSCostingCode,",
+						"          COGSAccountCode = value.DocumentLines.COGSAccountCode,",
+						"          ChangeAssemlyBoMWarehouse = value.DocumentLines.ChangeAssemlyBoMWarehouse,",
+						"          GrossBuyPrice = value.DocumentLines.GrossBuyPrice,",
+						"          GrossBase = value.DocumentLines.GrossBase,",
+						"          GrossProfitTotalBasePrice = value.DocumentLines.GrossProfitTotalBasePrice,",
+						"          CostingCode2 = value.DocumentLines.CostingCode2,",
+						"          CostingCode3 = value.DocumentLines.CostingCode3,",
+						"          CostingCode4 = value.DocumentLines.CostingCode4,",
+						"          CostingCode5 = value.DocumentLines.CostingCode5,",
+						"          ItemDetails = value.DocumentLines.ItemDetails,",
+						"          LocationCode = value.DocumentLines.LocationCode,",
+						"          ActualDeliveryDate = value.DocumentLines.ActualDeliveryDate,",
+						"          RemainingOpenQuantity = value.DocumentLines.RemainingOpenQuantity,",
+						"          OpenAmount = value.DocumentLines.OpenAmount,",
+						"          OpenAmountFC = value.DocumentLines.OpenAmountFC,",
+						"          OpenAmountSC = value.DocumentLines.OpenAmountSC,",
+						"          ExLineNo = value.DocumentLines.ExLineNo,",
+						"          RequiredDate = value.DocumentLines.RequiredDate,",
+						"          RequiredQuantity = value.DocumentLines.RequiredQuantity,",
+						"          COGSCostingCode2 = value.DocumentLines.COGSCostingCode2,",
+						"          COGSCostingCode3 = value.DocumentLines.COGSCostingCode3,",
+						"          COGSCostingCode4 = value.DocumentLines.COGSCostingCode4,",
+						"          COGSCostingCode5 = value.DocumentLines.COGSCostingCode5,",
+						"          CSTforIPI = value.DocumentLines.CSTforIPI,",
+						"          CSTforPIS = value.DocumentLines.CSTforPIS,",
+						"          CSTforCOFINS = value.DocumentLines.CSTforCOFINS,",
+						"          CreditOriginCode = value.DocumentLines.CreditOriginCode,",
+						"          WithoutInventoryMovement = value.DocumentLines.WithoutInventoryMovement,",
+						"          AgreementNo = value.DocumentLines.AgreementNo,",
+						"          AgreementRowNumber = value.DocumentLines.AgreementRowNumber,",
+						"          ActualBaseEntry = value.DocumentLines.ActualBaseEntry,",
+						"          ActualBaseLine = value.DocumentLines.ActualBaseLine,",
+						"          DocEntry = value.DocumentLines.DocEntry,",
+						"          Surpluses = value.DocumentLines.Surpluses,",
+						"          DefectAndBreakup = value.DocumentLines.DefectAndBreakup,",
+						"          Shortages = value.DocumentLines.Shortages,",
+						"          ConsiderQuantity = value.DocumentLines.ConsiderQuantity,",
+						"          PartialRetirement = value.DocumentLines.PartialRetirement,",
+						"          RetirementQuantity = value.DocumentLines.RetirementQuantity,",
+						"          RetirementAPC = value.DocumentLines.RetirementAPC,",
+						"          ThirdParty = value.DocumentLines.ThirdParty,",
+						"          PoNum = value.DocumentLines.PoNum,",
+						"          PoItmNum = value.DocumentLines.PoItmNum,",
+						"          ExpenseType = value.DocumentLines.ExpenseType,",
+						"          ReceiptNumber = value.DocumentLines.ReceiptNumber,",
+						"          ExpenseOperationType = value.DocumentLines.ExpenseOperationType,",
+						"          FederalTaxID = value.DocumentLines.FederalTaxID,",
+						"          GrossProfit = value.DocumentLines.GrossProfit,",
+						"          GrossProfitFC = value.DocumentLines.GrossProfitFC,",
+						"          GrossProfitSC = value.DocumentLines.GrossProfitSC,",
+						"          PriceSource = value.DocumentLines.PriceSource,",
+						"          StgSeqNum = value.DocumentLines.StgSeqNum,",
+						"          StgEntry = value.DocumentLines.StgEntry,",
+						"          StgDesc = value.DocumentLines.StgDesc,",
+						"          UoMEntry = value.DocumentLines.UoMEntry,",
+						"          UoMCode = value.DocumentLines.UoMCode,",
+						"          InventoryQuantity = value.DocumentLines.InventoryQuantity,",
+						"          RemainingOpenInventoryQuantity = value.DocumentLines.RemainingOpenInventoryQuantity,",
+						"          ParentLineNum = value.DocumentLines.ParentLineNum,",
+						"          Incoterms = value.DocumentLines.Incoterms,",
+						"          TransportMode = value.DocumentLines.TransportMode,",
+						"          NatureOfTransaction = value.DocumentLines.NatureOfTransaction,",
+						"          DestinationCountryForImport = value.DocumentLines.DestinationCountryForImport,",
+						"          DestinationRegionForImport = value.DocumentLines.DestinationRegionForImport,",
+						"          OriginCountryForExport = value.DocumentLines.OriginCountryForExport,",
+						"          OriginRegionForExport = value.DocumentLines.OriginRegionForExport,",
+						"          ItemType = value.DocumentLines.ItemType,",
+						"          ChangeInventoryQuantityIndependently = value.DocumentLines.ChangeInventoryQuantityIndependently,",
+						"          FreeOfChargeBP = value.DocumentLines.FreeOfChargeBP,",
+						"          SACEntry = value.DocumentLines.SACEntry,",
+						"          HSNEntry = value.DocumentLines.HSNEntry,",
+						"          GrossPrice = value.DocumentLines.GrossPrice,",
+						"          GrossTotal = value.DocumentLines.GrossTotal,",
+						"          GrossTotalFC = value.DocumentLines.GrossTotalFC,",
+						"          GrossTotalSC = value.DocumentLines.GrossTotalSC,",
+						"          NCMCode = value.DocumentLines.NCMCode,",
+						"          NVECode = value.DocumentLines.NVECode,",
+						"          IndEscala = value.DocumentLines.IndEscala,",
+						"          CtrSealQty = value.DocumentLines.CtrSealQty,",
+						"          CNJPMan = value.DocumentLines.CNJPMan,",
+						"          CESTCode = value.DocumentLines.CESTCode,",
+						"          UFFiscalBenefitCode = value.DocumentLines.UFFiscalBenefitCode,",
+						"          ReverseCharge = value.DocumentLines.ReverseCharge,",
+						"          ShipToCode = value.DocumentLines.ShipToCode,",
+						"          ShipToDescription = value.DocumentLines.ShipToDescription,",
+						"          ExternalCalcTaxRate = value.DocumentLines.ExternalCalcTaxRate,",
+						"          ExternalCalcTaxAmount = value.DocumentLines.ExternalCalcTaxAmount,",
+						"          ExternalCalcTaxAmountFC = value.DocumentLines.ExternalCalcTaxAmountFC,",
+						"          ExternalCalcTaxAmountSC = value.DocumentLines.ExternalCalcTaxAmountSC,",
+						"          StandardItemIdentification = value.DocumentLines.StandardItemIdentification,",
+						"          CommodityClassification = value.DocumentLines.CommodityClassification,",
+						"          UnencumberedReason = value.DocumentLines.UnencumberedReason,",
+						"          CUSplit = value.DocumentLines.CUSplit,",
+						"          U_Installasjon = value.DocumentLines.U_Installasjon,",
+						"          U_ParentItem = value.DocumentLines.U_ParentItem,",
+						"          U_Codebars = value.DocumentLines.U_Codebars,",
+						"          U_PlannedQty = value.DocumentLines.U_PlannedQty,",
+						"          U_AIG_IN = value.DocumentLines.U_AIG_IN,",
+						"          U_AIG_IA = value.DocumentLines.U_AIG_IA,",
+						"          U_AIG_PD = value.DocumentLines.U_AIG_PD,",
+						"          U_AIG_PDate = value.DocumentLines.U_AIG_PDate,",
+						"          U_AIG_ID = value.DocumentLines.U_AIG_ID,",
+						"          U_PItemCode = value.DocumentLines.U_PItemCode,",
+						"          U_AIG_IR = value.DocumentLines.U_AIG_IR,",
+						"          U_AIG_DDate = value.DocumentLines.U_AIG_DDate,",
+						"          U_U_AIG_DDate = value.DocumentLines.U_U_AIG_DDate,",
+						"          U_DSS_Charge = value.DocumentLines.U_DSS_Charge,",
+						"          U_DSS_ProdOrdr = value.DocumentLines.U_DSS_ProdOrdr",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> Flatten",
+						"Flatten sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SinkSQL"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/ds_blob_sap')]",
+				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_invoices')]"
 			]
 		}
 	]

@@ -13,297 +13,6 @@
 	},
 	"resources": [
 		{
-			"name": "[concat(parameters('factoryName'), '/df_bo_invoices_doclines_lake')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "ds_bo_json_test",
-								"type": "DatasetReference"
-							},
-							"name": "ReadJsonFile"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSqlTable_test",
-								"type": "DatasetReference"
-							},
-							"name": "SinkSQL"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Flatten"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          {@odata.context} as string,",
-						"          value as ({@odata.etag} as string, DocEntry as integer, DocNum as integer, DocType as string, HandWritten as string, Printed as string, DocDate as string, DocDueDate as string, CardCode as string, CardName as string, Address as string, NumAtCard as string, DocTotal as double, AttachmentEntry as string, DocCurrency as string, DocRate as double, Reference1 as string, Reference2 as string, Comments as string, JournalMemo as string, PaymentGroupCode as integer, DocTime as string, SalesPersonCode as integer, TransportationCode as integer, Confirmed as string, ImportFileNum as string, SummeryType as string, ContactPersonCode as integer, ShowSCN as string, Series as integer, TaxDate as string, PartialSupply as string, DocObjectCode as string, ShipToCode as string, Indicator as string, FederalTaxID as string, DiscountPercent as double, PaymentReference as string, CreationDate as string, UpdateDate as string, FinancialPeriod as integer, UserSign as integer, TransNum as integer, VatSum as double, VatSumSys as double, VatSumFc as double, NetProcedure as string, DocTotalFc as double, DocTotalSys as double, Form1099 as string, Box1099 as string, RevisionPo as string, RequriedDate as string, CancelDate as string, BlockDunning as string, Submitted as string, Segment as integer, PickStatus as string, Pick as string, PaymentMethod as string, PaymentBlock as string, PaymentBlockEntry as string, CentralBankIndicator as string, MaximumCashDiscount as string, Reserve as string, Project as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, WareHouseUpdateType as string, Rounding as string, ExternalCorrectedDocNum as string, InternalCorrectedDocNum as string, NextCorrectingDocument as string, DeferredTax as string, TaxExemptionLetterNum as string, WTApplied as double, WTAppliedFC as double, BillOfExchangeReserved as string, AgentCode as string, WTAppliedSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NumberOfInstallments as integer, ApplyTaxOnFirstInstallment as string, WTNonSubjectAmount as double, WTNonSubjectAmountSC as double, WTNonSubjectAmountFC as double, WTExemptedAmount as double, WTExemptedAmountSC as double, WTExemptedAmountFC as double, BaseAmount as double, BaseAmountSC as double, BaseAmountFC as double, WTAmount as double, WTAmountSC as double, WTAmountFC as double, VatDate as string, DocumentsOwner as integer, FolioPrefixString as string, FolioNumber as string, DocumentSubType as string, BPChannelCode as string, BPChannelContact as string, Address2 as string, DocumentStatus as string, PeriodIndicator as string, PayToCode as string, ManualNumber as string, UseShpdGoodsAct as string, IsPayToBank as string, PayToBankCountry as string, PayToBankCode as string, PayToBankAccountNo as string, PayToBankBranch as string, BPL_IDAssignedToInvoice as string, DownPayment as double, ReserveInvoice as string, LanguageCode as integer, TrackingNumber as string, PickRemark as string, ClosingDate as string, SequenceCode as string, SequenceSerial as string, SeriesString as string, SubSeriesString as string, SequenceModel as string, UseCorrectionVATGroup as string, TotalDiscount as double, DownPaymentAmount as double, DownPaymentPercentage as double, DownPaymentType as string, DownPaymentAmountSC as double, DownPaymentAmountFC as double, VatPercent as double, ServiceGrossProfitPercent as string, OpeningRemarks as string, ClosingRemarks as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, Cancelled as string, SignatureInputMessage as string, SignatureDigest as string, CertificationNumber as string, PrivateKeyVersion as string, ControlAccount as string, InsuranceOperation347 as string, ArchiveNonremovableSalesQuotation as string, GTSChecker as string, GTSPayee as string, ExtraMonth as integer, ExtraDays as integer, CashDiscountDateOffset as integer, StartFrom as string, NTSApproved as string, ETaxWebSite as string, ETaxNumber as string, NTSApprovedNumber as string, EDocGenerationType as string, EDocSeries as string, EDocNum as string, EDocExportFormat as string, EDocStatus as string, EDocErrorCode as string, EDocErrorMessage as string, DownPaymentStatus as string, GroupSeries as string, GroupNumber as string, GroupHandWritten as string, ReopenOriginalDocument as string, ReopenManuallyClosedOrCanceledDocument as string, CreateOnlineQuotation as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSCashierNumber as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ClosingOption as string, SpecifiedClosingDate as string, OpenForLandedCosts as string, AuthorizationStatus as string, TotalDiscountFC as double, TotalDiscountSC as double, RelevantToGTS as string, BPLName as string, VATRegNum as string, AnnualInvoiceDeclarationReference as string, Supplier as string, Releaser as string, Receiver as string, BlanketAgreementNumber as string, IsAlteration as string, CancelStatus as string, AssetValueDate as string, InvoicePayment as string, DocumentDelivery as string, AuthorizationCode as string, StartDeliveryDate as string, StartDeliveryTime as string, EndDeliveryDate as string, EndDeliveryTime as string, VehiclePlate as string, ATDocumentType as string, ElecCommStatus as string, ElecCommMessage as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, PrintSEPADirect as string, FiscalDocNum as string, POSDailySummaryNo as string, POSReceiptNo as string, PointOfIssueCode as string, Letter as string, FolioNumberFrom as string, FolioNumberTo as string, InterimType as string, RelatedType as integer, RelatedEntry as string, SAPPassport as string, DocumentTaxID as string, DateOfReportingControlStatementVAT as string, ReportingSectionControlStatementVAT as string, ExcludeFromTaxReportControlStatementVAT as string, POS_CashRegister as string, UpdateTime as string, CreateQRCodeFrom as string, PriceMode as string, Revision as string, OriginalRefNo as string, OriginalRefDate as string, GSTTransactionType as string, OriginalCreditOrDebitNo as string, OriginalCreditOrDebitDate as string, ECommerceOperator as string, ECommerceGSTIN as string, ShipFrom as string, CommissionTrade as string, CommissionTradeReturn as string, UseBillToAddrToDetermineTax as string, IssuingReason as integer, Cig as string, Cup as string, EDocType as string, FCEAsPaymentMeans as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, BaseType as integer, BaseEntry as string, FatherCard as string, FatherType as string, ShipState as string, ShipPlace as string, CustOffice as string, FCI as string, AddLegIn as string, LegTextF as string, DANFELgTxt as string, IndFinal as string, DataVersion as integer, LastPageFolioNumber as string, U_AIG_KID as string, U_Ordrenummer as string, U_esurl as string, U_sluttkunde as string, U_Levbet as string, U_Sted as string, U_Opperk as string, U_DSS_SendStatus as integer, U_DSS_EHFBuyersRef as string, Document_ApprovalRequests as string[], DocumentLines as (LineNum as integer, ItemCode as string, ItemDescription as string, Quantity as double, ShipDate as string, Price as double, PriceAfterVAT as double, Currency as string, Rate as double, DiscountPercent as double, VendorNum as string, SerialNum as string, WarehouseCode as string, SalesPersonCode as integer, CommisionPercent as double, TreeType as string, AccountCode as string, UseBaseUnits as string, SupplierCatNum as string, CostingCode as string, ProjectCode as string, BarCode as string, VatGroup as string, Height1 as double, Hight1Unit as string, Height2 as double, Height2Unit as string, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, Weight1 as double, Weight1Unit as string, Weight2 as double, Weight2Unit as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, BaseType as integer, BaseEntry as integer, BaseLine as integer, Volume as double, VolumeUnit as integer, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, Address as string, TaxCode as string, TaxType as string, TaxLiable as string, PickStatus as string, PickQuantity as double, PickListIdNumber as string, OriginalItem as string, BackOrder as string, FreeText as string, ShippingMethod as integer, POTargetNum as string, POTargetEntry as string, POTargetRowNum as string, CorrectionInvoiceItem as string, CorrInvAmountToStock as double, CorrInvAmountToDiffAcct as double, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, WTLiable as string, DeferredTax as string, EqualizationTaxPercent as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, MeasureUnit as string, UnitsOfMeasurment as double, LineTotal as double, TaxPercentagePerRow as double, TaxTotal as double, ConsumerSalesForecast as string, ExciseAmount as double, TaxPerUnit as double, TotalInclTax as double, CountryOrg as string, SWW as string, TransactionType as string, DistributeExpense as string, RowTotalFC as double, RowTotalSC as double, LastBuyInmPrice as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyDistributeSum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockDistributesum as double, StockInmPrice as double, PickStatusEx as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, CFOPCode as string, CSTCode as string, Usage as string, TaxOnly as string, VisualOrder as integer, BaseOpenQuantity as double, UnitPrice as double, LineStatus as string, PackageQuantity as double, Text as string, LineType as string, COGSCostingCode as string, COGSAccountCode as string, ChangeAssemlyBoMWarehouse as string, GrossBuyPrice as double, GrossBase as integer, GrossProfitTotalBasePrice as double, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, ItemDetails as string, LocationCode as string, ActualDeliveryDate as string, RemainingOpenQuantity as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, ExLineNo as string, RequiredDate as string, RequiredQuantity as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTforIPI as string, CSTforPIS as string, CSTforCOFINS as string, CreditOriginCode as string, WithoutInventoryMovement as string, AgreementNo as string, AgreementRowNumber as string, ActualBaseEntry as string, ActualBaseLine as string, DocEntry as integer, Surpluses as string, DefectAndBreakup as string, Shortages as string, ConsiderQuantity as string, PartialRetirement as string, RetirementQuantity as string, RetirementAPC as string, ThirdParty as string, PoNum as string, PoItmNum as string, ExpenseType as string, ReceiptNumber as string, ExpenseOperationType as string, FederalTaxID as string, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, PriceSource as string, StgSeqNum as string, StgEntry as string, StgDesc as string, UoMEntry as integer, UoMCode as string, InventoryQuantity as double, RemainingOpenInventoryQuantity as double, ParentLineNum as string, Incoterms as integer, TransportMode as integer, NatureOfTransaction as string, DestinationCountryForImport as string, DestinationRegionForImport as string, OriginCountryForExport as string, OriginRegionForExport as string, ItemType as string, ChangeInventoryQuantityIndependently as string, FreeOfChargeBP as string, SACEntry as string, HSNEntry as string, GrossPrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, NCMCode as integer, NVECode as string, IndEscala as string, CtrSealQty as string, CNJPMan as string, CESTCode as string, UFFiscalBenefitCode as string, ReverseCharge as string, ShipToCode as string, ShipToDescription as string, ExternalCalcTaxRate as string, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, StandardItemIdentification as string, CommodityClassification as string, UnencumberedReason as string, CUSplit as string, U_Installasjon as string, U_ParentItem as string, U_Codebars as string, U_PlannedQty as double, U_AIG_IN as string, U_AIG_IA as string, U_AIG_PD as string, U_AIG_PDate as string, U_AIG_ID as string, U_PItemCode as string, U_AIG_IR as string, U_AIG_DDate as string, U_U_AIG_DDate as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, LineTaxJurisdictions as string[], ExportProcesses as string[], EBooksDetails as string[], DocumentLineAdditionalExpenses as string[], WithholdingTaxLines as string[], SerialNumbers as string[], BatchNumbers as string[], CCDNumbers as string[], DocumentLinesBinAllocations as string[])[], EWayBillDetails as ({} as string), ElectronicProtocols as string[], DocumentAdditionalExpenses as string[], WithholdingTaxDataWTXCollection as string[], WithholdingTaxDataCollection as string[], DocumentPackages as string[], DocumentSpecialLines as string[], DocumentInstallments as (DueDate as string, Percentage as double, Total as double, LastDunningDate as string, DunningLevel as integer, TotalFC as string, InstallmentId as integer, PaymentOrdered as string)[], DownPaymentsToDraw as string[], TaxExtension as ({} as string), AddressExtension as ({} as string), DocumentReferences as string[])[],",
-						"          {@odata.nextLink} as string",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     inferDriftedColumnTypes: true,",
-						"     limit: 100,",
-						"     ignoreNoFilesFound: false,",
-						"     documentForm: 'documentPerLine') ~> ReadJsonFile",
-						"ReadJsonFile foldDown(unroll(value.DocumentLines, value),",
-						"     mapColumn(",
-						"          DocNum = value.DocNum,",
-						"          DocDate = value.DocDate,",
-						"          DocDueDate = value.DocDueDate,",
-						"          CardCode = value.CardCode,",
-						"          LineNum = value.DocumentLines.LineNum,",
-						"          ItemCode = value.DocumentLines.ItemCode,",
-						"          ItemDescription = value.DocumentLines.ItemDescription,",
-						"          Quantity = value.DocumentLines.Quantity,",
-						"          ShipDate = value.DocumentLines.ShipDate,",
-						"          Price = value.DocumentLines.Price,",
-						"          PriceAfterVAT = value.DocumentLines.PriceAfterVAT,",
-						"          Currency = value.DocumentLines.Currency,",
-						"          Rate = value.DocumentLines.Rate,",
-						"          DiscountPercent = value.DocumentLines.DiscountPercent,",
-						"          VendorNum = value.DocumentLines.VendorNum,",
-						"          SerialNum = value.DocumentLines.SerialNum,",
-						"          WarehouseCode = value.DocumentLines.WarehouseCode,",
-						"          SalesPersonCode = value.DocumentLines.SalesPersonCode,",
-						"          CommisionPercent = value.DocumentLines.CommisionPercent,",
-						"          TreeType = value.DocumentLines.TreeType,",
-						"          AccountCode = value.DocumentLines.AccountCode,",
-						"          UseBaseUnits = value.DocumentLines.UseBaseUnits,",
-						"          SupplierCatNum = value.DocumentLines.SupplierCatNum,",
-						"          CostingCode = value.DocumentLines.CostingCode,",
-						"          ProjectCode = value.DocumentLines.ProjectCode,",
-						"          BarCode = value.DocumentLines.BarCode,",
-						"          VatGroup = value.DocumentLines.VatGroup,",
-						"          Height1 = value.DocumentLines.Height1,",
-						"          Hight1Unit = value.DocumentLines.Hight1Unit,",
-						"          Height2 = value.DocumentLines.Height2,",
-						"          Height2Unit = value.DocumentLines.Height2Unit,",
-						"          Lengh1 = value.DocumentLines.Lengh1,",
-						"          Lengh1Unit = value.DocumentLines.Lengh1Unit,",
-						"          Lengh2 = value.DocumentLines.Lengh2,",
-						"          Lengh2Unit = value.DocumentLines.Lengh2Unit,",
-						"          Weight1 = value.DocumentLines.Weight1,",
-						"          Weight1Unit = value.DocumentLines.Weight1Unit,",
-						"          Weight2 = value.DocumentLines.Weight2,",
-						"          Weight2Unit = value.DocumentLines.Weight2Unit,",
-						"          Factor1 = value.DocumentLines.Factor1,",
-						"          Factor2 = value.DocumentLines.Factor2,",
-						"          Factor3 = value.DocumentLines.Factor3,",
-						"          Factor4 = value.DocumentLines.Factor4,",
-						"          BaseType = value.DocumentLines.BaseType,",
-						"          BaseEntry = value.DocumentLines.BaseEntry,",
-						"          BaseLine = value.DocumentLines.BaseLine,",
-						"          Volume = value.DocumentLines.Volume,",
-						"          VolumeUnit = value.DocumentLines.VolumeUnit,",
-						"          Width1 = value.DocumentLines.Width1,",
-						"          Width1Unit = value.DocumentLines.Width1Unit,",
-						"          Width2 = value.DocumentLines.Width2,",
-						"          Width2Unit = value.DocumentLines.Width2Unit,",
-						"          Address = value.DocumentLines.Address,",
-						"          TaxCode = value.DocumentLines.TaxCode,",
-						"          TaxType = value.DocumentLines.TaxType,",
-						"          TaxLiable = value.DocumentLines.TaxLiable,",
-						"          PickStatus = value.DocumentLines.PickStatus,",
-						"          PickQuantity = value.DocumentLines.PickQuantity,",
-						"          PickListIdNumber = value.DocumentLines.PickListIdNumber,",
-						"          OriginalItem = value.DocumentLines.OriginalItem,",
-						"          BackOrder = value.DocumentLines.BackOrder,",
-						"          FreeText = value.DocumentLines.FreeText,",
-						"          ShippingMethod = value.DocumentLines.ShippingMethod,",
-						"          POTargetNum = value.DocumentLines.POTargetNum,",
-						"          POTargetEntry = value.DocumentLines.POTargetEntry,",
-						"          POTargetRowNum = value.DocumentLines.POTargetRowNum,",
-						"          CorrectionInvoiceItem = value.DocumentLines.CorrectionInvoiceItem,",
-						"          CorrInvAmountToStock = value.DocumentLines.CorrInvAmountToStock,",
-						"          CorrInvAmountToDiffAcct = value.DocumentLines.CorrInvAmountToDiffAcct,",
-						"          AppliedTax = value.DocumentLines.AppliedTax,",
-						"          AppliedTaxFC = value.DocumentLines.AppliedTaxFC,",
-						"          AppliedTaxSC = value.DocumentLines.AppliedTaxSC,",
-						"          WTLiable = value.DocumentLines.WTLiable,",
-						"          DeferredTax = value.DocumentLines.DeferredTax,",
-						"          EqualizationTaxPercent = value.DocumentLines.EqualizationTaxPercent,",
-						"          TotalEqualizationTax = value.DocumentLines.TotalEqualizationTax,",
-						"          TotalEqualizationTaxFC = value.DocumentLines.TotalEqualizationTaxFC,",
-						"          TotalEqualizationTaxSC = value.DocumentLines.TotalEqualizationTaxSC,",
-						"          NetTaxAmount = value.DocumentLines.NetTaxAmount,",
-						"          NetTaxAmountFC = value.DocumentLines.NetTaxAmountFC,",
-						"          NetTaxAmountSC = value.DocumentLines.NetTaxAmountSC,",
-						"          MeasureUnit = value.DocumentLines.MeasureUnit,",
-						"          UnitsOfMeasurment = value.DocumentLines.UnitsOfMeasurment,",
-						"          LineTotal = value.DocumentLines.LineTotal,",
-						"          TaxPercentagePerRow = value.DocumentLines.TaxPercentagePerRow,",
-						"          TaxTotal = value.DocumentLines.TaxTotal,",
-						"          ConsumerSalesForecast = value.DocumentLines.ConsumerSalesForecast,",
-						"          ExciseAmount = value.DocumentLines.ExciseAmount,",
-						"          TaxPerUnit = value.DocumentLines.TaxPerUnit,",
-						"          TotalInclTax = value.DocumentLines.TotalInclTax,",
-						"          CountryOrg = value.DocumentLines.CountryOrg,",
-						"          SWW = value.DocumentLines.SWW,",
-						"          TransactionType = value.DocumentLines.TransactionType,",
-						"          DistributeExpense = value.DocumentLines.DistributeExpense,",
-						"          RowTotalFC = value.DocumentLines.RowTotalFC,",
-						"          RowTotalSC = value.DocumentLines.RowTotalSC,",
-						"          LastBuyInmPrice = value.DocumentLines.LastBuyInmPrice,",
-						"          LastBuyDistributeSumFc = value.DocumentLines.LastBuyDistributeSumFc,",
-						"          LastBuyDistributeSumSc = value.DocumentLines.LastBuyDistributeSumSc,",
-						"          LastBuyDistributeSum = value.DocumentLines.LastBuyDistributeSum,",
-						"          StockDistributesumForeign = value.DocumentLines.StockDistributesumForeign,",
-						"          StockDistributesumSystem = value.DocumentLines.StockDistributesumSystem,",
-						"          StockDistributesum = value.DocumentLines.StockDistributesum,",
-						"          StockInmPrice = value.DocumentLines.StockInmPrice,",
-						"          PickStatusEx = value.DocumentLines.PickStatusEx,",
-						"          TaxBeforeDPM = value.DocumentLines.TaxBeforeDPM,",
-						"          TaxBeforeDPMFC = value.DocumentLines.TaxBeforeDPMFC,",
-						"          TaxBeforeDPMSC = value.DocumentLines.TaxBeforeDPMSC,",
-						"          CFOPCode = value.DocumentLines.CFOPCode,",
-						"          CSTCode = value.DocumentLines.CSTCode,",
-						"          Usage = value.DocumentLines.Usage,",
-						"          TaxOnly = value.DocumentLines.TaxOnly,",
-						"          VisualOrder = value.DocumentLines.VisualOrder,",
-						"          BaseOpenQuantity = value.DocumentLines.BaseOpenQuantity,",
-						"          UnitPrice = value.DocumentLines.UnitPrice,",
-						"          LineStatus = value.DocumentLines.LineStatus,",
-						"          PackageQuantity = value.DocumentLines.PackageQuantity,",
-						"          Text = value.DocumentLines.Text,",
-						"          LineType = value.DocumentLines.LineType,",
-						"          COGSCostingCode = value.DocumentLines.COGSCostingCode,",
-						"          COGSAccountCode = value.DocumentLines.COGSAccountCode,",
-						"          ChangeAssemlyBoMWarehouse = value.DocumentLines.ChangeAssemlyBoMWarehouse,",
-						"          GrossBuyPrice = value.DocumentLines.GrossBuyPrice,",
-						"          GrossBase = value.DocumentLines.GrossBase,",
-						"          GrossProfitTotalBasePrice = value.DocumentLines.GrossProfitTotalBasePrice,",
-						"          CostingCode2 = value.DocumentLines.CostingCode2,",
-						"          CostingCode3 = value.DocumentLines.CostingCode3,",
-						"          CostingCode4 = value.DocumentLines.CostingCode4,",
-						"          CostingCode5 = value.DocumentLines.CostingCode5,",
-						"          ItemDetails = value.DocumentLines.ItemDetails,",
-						"          LocationCode = value.DocumentLines.LocationCode,",
-						"          ActualDeliveryDate = value.DocumentLines.ActualDeliveryDate,",
-						"          RemainingOpenQuantity = value.DocumentLines.RemainingOpenQuantity,",
-						"          OpenAmount = value.DocumentLines.OpenAmount,",
-						"          OpenAmountFC = value.DocumentLines.OpenAmountFC,",
-						"          OpenAmountSC = value.DocumentLines.OpenAmountSC,",
-						"          ExLineNo = value.DocumentLines.ExLineNo,",
-						"          RequiredDate = value.DocumentLines.RequiredDate,",
-						"          RequiredQuantity = value.DocumentLines.RequiredQuantity,",
-						"          COGSCostingCode2 = value.DocumentLines.COGSCostingCode2,",
-						"          COGSCostingCode3 = value.DocumentLines.COGSCostingCode3,",
-						"          COGSCostingCode4 = value.DocumentLines.COGSCostingCode4,",
-						"          COGSCostingCode5 = value.DocumentLines.COGSCostingCode5,",
-						"          CSTforIPI = value.DocumentLines.CSTforIPI,",
-						"          CSTforPIS = value.DocumentLines.CSTforPIS,",
-						"          CSTforCOFINS = value.DocumentLines.CSTforCOFINS,",
-						"          CreditOriginCode = value.DocumentLines.CreditOriginCode,",
-						"          WithoutInventoryMovement = value.DocumentLines.WithoutInventoryMovement,",
-						"          AgreementNo = value.DocumentLines.AgreementNo,",
-						"          AgreementRowNumber = value.DocumentLines.AgreementRowNumber,",
-						"          ActualBaseEntry = value.DocumentLines.ActualBaseEntry,",
-						"          ActualBaseLine = value.DocumentLines.ActualBaseLine,",
-						"          DocEntry = value.DocumentLines.DocEntry,",
-						"          Surpluses = value.DocumentLines.Surpluses,",
-						"          DefectAndBreakup = value.DocumentLines.DefectAndBreakup,",
-						"          Shortages = value.DocumentLines.Shortages,",
-						"          ConsiderQuantity = value.DocumentLines.ConsiderQuantity,",
-						"          PartialRetirement = value.DocumentLines.PartialRetirement,",
-						"          RetirementQuantity = value.DocumentLines.RetirementQuantity,",
-						"          RetirementAPC = value.DocumentLines.RetirementAPC,",
-						"          ThirdParty = value.DocumentLines.ThirdParty,",
-						"          PoNum = value.DocumentLines.PoNum,",
-						"          PoItmNum = value.DocumentLines.PoItmNum,",
-						"          ExpenseType = value.DocumentLines.ExpenseType,",
-						"          ReceiptNumber = value.DocumentLines.ReceiptNumber,",
-						"          ExpenseOperationType = value.DocumentLines.ExpenseOperationType,",
-						"          FederalTaxID = value.DocumentLines.FederalTaxID,",
-						"          GrossProfit = value.DocumentLines.GrossProfit,",
-						"          GrossProfitFC = value.DocumentLines.GrossProfitFC,",
-						"          GrossProfitSC = value.DocumentLines.GrossProfitSC,",
-						"          PriceSource = value.DocumentLines.PriceSource,",
-						"          StgSeqNum = value.DocumentLines.StgSeqNum,",
-						"          StgEntry = value.DocumentLines.StgEntry,",
-						"          StgDesc = value.DocumentLines.StgDesc,",
-						"          UoMEntry = value.DocumentLines.UoMEntry,",
-						"          UoMCode = value.DocumentLines.UoMCode,",
-						"          InventoryQuantity = value.DocumentLines.InventoryQuantity,",
-						"          RemainingOpenInventoryQuantity = value.DocumentLines.RemainingOpenInventoryQuantity,",
-						"          ParentLineNum = value.DocumentLines.ParentLineNum,",
-						"          Incoterms = value.DocumentLines.Incoterms,",
-						"          TransportMode = value.DocumentLines.TransportMode,",
-						"          NatureOfTransaction = value.DocumentLines.NatureOfTransaction,",
-						"          DestinationCountryForImport = value.DocumentLines.DestinationCountryForImport,",
-						"          DestinationRegionForImport = value.DocumentLines.DestinationRegionForImport,",
-						"          OriginCountryForExport = value.DocumentLines.OriginCountryForExport,",
-						"          OriginRegionForExport = value.DocumentLines.OriginRegionForExport,",
-						"          ItemType = value.DocumentLines.ItemType,",
-						"          ChangeInventoryQuantityIndependently = value.DocumentLines.ChangeInventoryQuantityIndependently,",
-						"          FreeOfChargeBP = value.DocumentLines.FreeOfChargeBP,",
-						"          SACEntry = value.DocumentLines.SACEntry,",
-						"          HSNEntry = value.DocumentLines.HSNEntry,",
-						"          GrossPrice = value.DocumentLines.GrossPrice,",
-						"          GrossTotal = value.DocumentLines.GrossTotal,",
-						"          GrossTotalFC = value.DocumentLines.GrossTotalFC,",
-						"          GrossTotalSC = value.DocumentLines.GrossTotalSC,",
-						"          NCMCode = value.DocumentLines.NCMCode,",
-						"          NVECode = value.DocumentLines.NVECode,",
-						"          IndEscala = value.DocumentLines.IndEscala,",
-						"          CtrSealQty = value.DocumentLines.CtrSealQty,",
-						"          CNJPMan = value.DocumentLines.CNJPMan,",
-						"          CESTCode = value.DocumentLines.CESTCode,",
-						"          UFFiscalBenefitCode = value.DocumentLines.UFFiscalBenefitCode,",
-						"          ReverseCharge = value.DocumentLines.ReverseCharge,",
-						"          ShipToCode = value.DocumentLines.ShipToCode,",
-						"          ShipToDescription = value.DocumentLines.ShipToDescription,",
-						"          ExternalCalcTaxRate = value.DocumentLines.ExternalCalcTaxRate,",
-						"          ExternalCalcTaxAmount = value.DocumentLines.ExternalCalcTaxAmount,",
-						"          ExternalCalcTaxAmountFC = value.DocumentLines.ExternalCalcTaxAmountFC,",
-						"          ExternalCalcTaxAmountSC = value.DocumentLines.ExternalCalcTaxAmountSC,",
-						"          StandardItemIdentification = value.DocumentLines.StandardItemIdentification,",
-						"          CommodityClassification = value.DocumentLines.CommodityClassification,",
-						"          UnencumberedReason = value.DocumentLines.UnencumberedReason,",
-						"          CUSplit = value.DocumentLines.CUSplit,",
-						"          U_Installasjon = value.DocumentLines.U_Installasjon,",
-						"          U_ParentItem = value.DocumentLines.U_ParentItem,",
-						"          U_Codebars = value.DocumentLines.U_Codebars,",
-						"          U_PlannedQty = value.DocumentLines.U_PlannedQty,",
-						"          U_AIG_IN = value.DocumentLines.U_AIG_IN,",
-						"          U_AIG_IA = value.DocumentLines.U_AIG_IA,",
-						"          U_AIG_PD = value.DocumentLines.U_AIG_PD,",
-						"          U_AIG_PDate = value.DocumentLines.U_AIG_PDate,",
-						"          U_AIG_ID = value.DocumentLines.U_AIG_ID,",
-						"          U_PItemCode = value.DocumentLines.U_PItemCode,",
-						"          U_AIG_IR = value.DocumentLines.U_AIG_IR,",
-						"          U_AIG_DDate = value.DocumentLines.U_AIG_DDate,",
-						"          U_U_AIG_DDate = value.DocumentLines.U_U_AIG_DDate,",
-						"          U_DSS_Charge = value.DocumentLines.U_DSS_Charge,",
-						"          U_DSS_ProdOrdr = value.DocumentLines.U_DSS_ProdOrdr",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> Flatten",
-						"Flatten sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     recreate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> SinkSQL"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/df_bo_orders')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -911,6 +620,5090 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/df_jsonParse_Sql')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "ds_blob_sap",
+								"type": "DatasetReference"
+							},
+							"name": "ReadJsonFile"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "sql_bo_sap_invoices",
+								"type": "DatasetReference"
+							},
+							"name": "SinkSQL"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Flatten"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          {@odata.context} as string,",
+						"          value as ({@odata.etag} as string, DocEntry as integer, DocNum as integer, DocType as string, HandWritten as string, Printed as string, DocDate as string, DocDueDate as string, CardCode as string, CardName as string, Address as string, NumAtCard as string, DocTotal as double, AttachmentEntry as string, DocCurrency as string, DocRate as double, Reference1 as string, Reference2 as string, Comments as string, JournalMemo as string, PaymentGroupCode as integer, DocTime as string, SalesPersonCode as integer, TransportationCode as integer, Confirmed as string, ImportFileNum as string, SummeryType as string, ContactPersonCode as integer, ShowSCN as string, Series as integer, TaxDate as string, PartialSupply as string, DocObjectCode as string, ShipToCode as string, Indicator as string, FederalTaxID as string, DiscountPercent as double, PaymentReference as string, CreationDate as string, UpdateDate as string, FinancialPeriod as integer, UserSign as integer, TransNum as integer, VatSum as double, VatSumSys as double, VatSumFc as double, NetProcedure as string, DocTotalFc as double, DocTotalSys as double, Form1099 as string, Box1099 as string, RevisionPo as string, RequriedDate as string, CancelDate as string, BlockDunning as string, Submitted as string, Segment as integer, PickStatus as string, Pick as string, PaymentMethod as string, PaymentBlock as string, PaymentBlockEntry as string, CentralBankIndicator as string, MaximumCashDiscount as string, Reserve as string, Project as string, ExemptionValidityDateFrom as string, ExemptionValidityDateTo as string, WareHouseUpdateType as string, Rounding as string, ExternalCorrectedDocNum as string, InternalCorrectedDocNum as string, NextCorrectingDocument as string, DeferredTax as string, TaxExemptionLetterNum as string, WTApplied as double, WTAppliedFC as double, BillOfExchangeReserved as string, AgentCode as string, WTAppliedSC as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NumberOfInstallments as integer, ApplyTaxOnFirstInstallment as string, WTNonSubjectAmount as double, WTNonSubjectAmountSC as double, WTNonSubjectAmountFC as double, WTExemptedAmount as double, WTExemptedAmountSC as double, WTExemptedAmountFC as double, BaseAmount as double, BaseAmountSC as double, BaseAmountFC as double, WTAmount as double, WTAmountSC as double, WTAmountFC as double, VatDate as string, DocumentsOwner as integer, FolioPrefixString as string, FolioNumber as string, DocumentSubType as string, BPChannelCode as string, BPChannelContact as string, Address2 as string, DocumentStatus as string, PeriodIndicator as string, PayToCode as string, ManualNumber as string, UseShpdGoodsAct as string, IsPayToBank as string, PayToBankCountry as string, PayToBankCode as string, PayToBankAccountNo as string, PayToBankBranch as string, BPL_IDAssignedToInvoice as string, DownPayment as double, ReserveInvoice as string, LanguageCode as integer, TrackingNumber as string, PickRemark as string, ClosingDate as string, SequenceCode as string, SequenceSerial as string, SeriesString as string, SubSeriesString as string, SequenceModel as string, UseCorrectionVATGroup as string, TotalDiscount as double, DownPaymentAmount as double, DownPaymentPercentage as double, DownPaymentType as string, DownPaymentAmountSC as double, DownPaymentAmountFC as double, VatPercent as double, ServiceGrossProfitPercent as string, OpeningRemarks as string, ClosingRemarks as string, RoundingDiffAmount as double, RoundingDiffAmountFC as double, RoundingDiffAmountSC as double, Cancelled as string, SignatureInputMessage as string, SignatureDigest as string, CertificationNumber as string, PrivateKeyVersion as string, ControlAccount as string, InsuranceOperation347 as string, ArchiveNonremovableSalesQuotation as string, GTSChecker as string, GTSPayee as string, ExtraMonth as integer, ExtraDays as integer, CashDiscountDateOffset as integer, StartFrom as string, NTSApproved as string, ETaxWebSite as string, ETaxNumber as string, NTSApprovedNumber as string, EDocGenerationType as string, EDocSeries as string, EDocNum as string, EDocExportFormat as string, EDocStatus as string, EDocErrorCode as string, EDocErrorMessage as string, DownPaymentStatus as string, GroupSeries as string, GroupNumber as string, GroupHandWritten as string, ReopenOriginalDocument as string, ReopenManuallyClosedOrCanceledDocument as string, CreateOnlineQuotation as string, POSEquipmentNumber as string, POSManufacturerSerialNumber as string, POSCashierNumber as string, ApplyCurrentVATRatesForDownPaymentsToDraw as string, ClosingOption as string, SpecifiedClosingDate as string, OpenForLandedCosts as string, AuthorizationStatus as string, TotalDiscountFC as double, TotalDiscountSC as double, RelevantToGTS as string, BPLName as string, VATRegNum as string, AnnualInvoiceDeclarationReference as string, Supplier as string, Releaser as string, Receiver as string, BlanketAgreementNumber as string, IsAlteration as string, CancelStatus as string, AssetValueDate as string, InvoicePayment as string, DocumentDelivery as string, AuthorizationCode as string, StartDeliveryDate as string, StartDeliveryTime as string, EndDeliveryDate as string, EndDeliveryTime as string, VehiclePlate as string, ATDocumentType as string, ElecCommStatus as string, ElecCommMessage as string, ReuseDocumentNum as string, ReuseNotaFiscalNum as string, PrintSEPADirect as string, FiscalDocNum as string, POSDailySummaryNo as string, POSReceiptNo as string, PointOfIssueCode as string, Letter as string, FolioNumberFrom as string, FolioNumberTo as string, InterimType as string, RelatedType as integer, RelatedEntry as string, SAPPassport as string, DocumentTaxID as string, DateOfReportingControlStatementVAT as string, ReportingSectionControlStatementVAT as string, ExcludeFromTaxReportControlStatementVAT as string, POS_CashRegister as string, UpdateTime as string, CreateQRCodeFrom as string, PriceMode as string, Revision as string, OriginalRefNo as string, OriginalRefDate as string, GSTTransactionType as string, OriginalCreditOrDebitNo as string, OriginalCreditOrDebitDate as string, ECommerceOperator as string, ECommerceGSTIN as string, ShipFrom as string, CommissionTrade as string, CommissionTradeReturn as string, UseBillToAddrToDetermineTax as string, IssuingReason as integer, Cig as string, Cup as string, EDocType as string, FCEAsPaymentMeans as string, PaidToDate as double, PaidToDateFC as double, PaidToDateSys as double, BaseType as integer, BaseEntry as string, FatherCard as string, FatherType as string, ShipState as string, ShipPlace as string, CustOffice as string, FCI as string, AddLegIn as string, LegTextF as string, DANFELgTxt as string, IndFinal as string, DataVersion as integer, LastPageFolioNumber as string, U_AIG_KID as string, U_Ordrenummer as string, U_esurl as string, U_sluttkunde as string, U_Levbet as string, U_Sted as string, U_Opperk as string, U_DSS_SendStatus as integer, U_DSS_EHFBuyersRef as string, Document_ApprovalRequests as string[], DocumentLines as (LineNum as integer, ItemCode as string, ItemDescription as string, Quantity as double, ShipDate as string, Price as double, PriceAfterVAT as double, Currency as string, Rate as double, DiscountPercent as double, VendorNum as string, SerialNum as string, WarehouseCode as string, SalesPersonCode as integer, CommisionPercent as double, TreeType as string, AccountCode as string, UseBaseUnits as string, SupplierCatNum as string, CostingCode as string, ProjectCode as string, BarCode as string, VatGroup as string, Height1 as double, Hight1Unit as string, Height2 as double, Height2Unit as string, Lengh1 as double, Lengh1Unit as string, Lengh2 as double, Lengh2Unit as string, Weight1 as double, Weight1Unit as string, Weight2 as double, Weight2Unit as string, Factor1 as double, Factor2 as double, Factor3 as double, Factor4 as double, BaseType as integer, BaseEntry as integer, BaseLine as integer, Volume as double, VolumeUnit as integer, Width1 as double, Width1Unit as string, Width2 as double, Width2Unit as string, Address as string, TaxCode as string, TaxType as string, TaxLiable as string, PickStatus as string, PickQuantity as double, PickListIdNumber as string, OriginalItem as string, BackOrder as string, FreeText as string, ShippingMethod as integer, POTargetNum as string, POTargetEntry as string, POTargetRowNum as string, CorrectionInvoiceItem as string, CorrInvAmountToStock as double, CorrInvAmountToDiffAcct as double, AppliedTax as double, AppliedTaxFC as double, AppliedTaxSC as double, WTLiable as string, DeferredTax as string, EqualizationTaxPercent as double, TotalEqualizationTax as double, TotalEqualizationTaxFC as double, TotalEqualizationTaxSC as double, NetTaxAmount as double, NetTaxAmountFC as double, NetTaxAmountSC as double, MeasureUnit as string, UnitsOfMeasurment as double, LineTotal as double, TaxPercentagePerRow as double, TaxTotal as double, ConsumerSalesForecast as string, ExciseAmount as double, TaxPerUnit as double, TotalInclTax as double, CountryOrg as string, SWW as string, TransactionType as string, DistributeExpense as string, RowTotalFC as double, RowTotalSC as double, LastBuyInmPrice as double, LastBuyDistributeSumFc as double, LastBuyDistributeSumSc as double, LastBuyDistributeSum as double, StockDistributesumForeign as double, StockDistributesumSystem as double, StockDistributesum as double, StockInmPrice as double, PickStatusEx as string, TaxBeforeDPM as double, TaxBeforeDPMFC as double, TaxBeforeDPMSC as double, CFOPCode as string, CSTCode as string, Usage as string, TaxOnly as string, VisualOrder as integer, BaseOpenQuantity as double, UnitPrice as double, LineStatus as string, PackageQuantity as double, Text as string, LineType as string, COGSCostingCode as string, COGSAccountCode as string, ChangeAssemlyBoMWarehouse as string, GrossBuyPrice as double, GrossBase as integer, GrossProfitTotalBasePrice as double, CostingCode2 as string, CostingCode3 as string, CostingCode4 as string, CostingCode5 as string, ItemDetails as string, LocationCode as string, ActualDeliveryDate as string, RemainingOpenQuantity as double, OpenAmount as double, OpenAmountFC as double, OpenAmountSC as double, ExLineNo as string, RequiredDate as string, RequiredQuantity as string, COGSCostingCode2 as string, COGSCostingCode3 as string, COGSCostingCode4 as string, COGSCostingCode5 as string, CSTforIPI as string, CSTforPIS as string, CSTforCOFINS as string, CreditOriginCode as string, WithoutInventoryMovement as string, AgreementNo as string, AgreementRowNumber as string, ActualBaseEntry as string, ActualBaseLine as string, DocEntry as integer, Surpluses as string, DefectAndBreakup as string, Shortages as string, ConsiderQuantity as string, PartialRetirement as string, RetirementQuantity as string, RetirementAPC as string, ThirdParty as string, PoNum as string, PoItmNum as string, ExpenseType as string, ReceiptNumber as string, ExpenseOperationType as string, FederalTaxID as string, GrossProfit as double, GrossProfitFC as double, GrossProfitSC as double, PriceSource as string, StgSeqNum as string, StgEntry as string, StgDesc as string, UoMEntry as integer, UoMCode as string, InventoryQuantity as double, RemainingOpenInventoryQuantity as double, ParentLineNum as string, Incoterms as integer, TransportMode as integer, NatureOfTransaction as string, DestinationCountryForImport as string, DestinationRegionForImport as string, OriginCountryForExport as string, OriginRegionForExport as string, ItemType as string, ChangeInventoryQuantityIndependently as string, FreeOfChargeBP as string, SACEntry as string, HSNEntry as string, GrossPrice as double, GrossTotal as double, GrossTotalFC as double, GrossTotalSC as double, NCMCode as integer, NVECode as string, IndEscala as string, CtrSealQty as string, CNJPMan as string, CESTCode as string, UFFiscalBenefitCode as string, ReverseCharge as string, ShipToCode as string, ShipToDescription as string, ExternalCalcTaxRate as string, ExternalCalcTaxAmount as string, ExternalCalcTaxAmountFC as string, ExternalCalcTaxAmountSC as string, StandardItemIdentification as string, CommodityClassification as string, UnencumberedReason as string, CUSplit as string, U_Installasjon as string, U_ParentItem as string, U_Codebars as string, U_PlannedQty as double, U_AIG_IN as string, U_AIG_IA as string, U_AIG_PD as string, U_AIG_PDate as string, U_AIG_ID as string, U_PItemCode as string, U_AIG_IR as string, U_AIG_DDate as string, U_U_AIG_DDate as string, U_DSS_Charge as string, U_DSS_ProdOrdr as string, LineTaxJurisdictions as string[], ExportProcesses as string[], EBooksDetails as string[], DocumentLineAdditionalExpenses as string[], WithholdingTaxLines as string[], SerialNumbers as string[], BatchNumbers as string[], CCDNumbers as string[], DocumentLinesBinAllocations as string[])[], EWayBillDetails as ({} as string), ElectronicProtocols as string[], DocumentAdditionalExpenses as string[], WithholdingTaxDataWTXCollection as string[], WithholdingTaxDataCollection as string[], DocumentPackages as string[], DocumentSpecialLines as string[], DocumentInstallments as (DueDate as string, Percentage as double, Total as double, LastDunningDate as string, DunningLevel as integer, TotalFC as string, InstallmentId as integer, PaymentOrdered as string)[], DownPaymentsToDraw as string[], TaxExtension as ({} as string), AddressExtension as ({} as string), DocumentReferences as string[])[],",
+						"          {@odata.nextLink} as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     inferDriftedColumnTypes: true,",
+						"     limit: 100,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> ReadJsonFile",
+						"ReadJsonFile foldDown(unroll(value.DocumentLines, value),",
+						"     mapColumn(",
+						"          DocNum = value.DocNum,",
+						"          DocDate = value.DocDate,",
+						"          DocDueDate = value.DocDueDate,",
+						"          CardCode = value.CardCode,",
+						"          LineNum = value.DocumentLines.LineNum,",
+						"          ItemCode = value.DocumentLines.ItemCode,",
+						"          ItemDescription = value.DocumentLines.ItemDescription,",
+						"          Quantity = value.DocumentLines.Quantity,",
+						"          ShipDate = value.DocumentLines.ShipDate,",
+						"          Price = value.DocumentLines.Price,",
+						"          PriceAfterVAT = value.DocumentLines.PriceAfterVAT,",
+						"          Currency = value.DocumentLines.Currency,",
+						"          Rate = value.DocumentLines.Rate,",
+						"          DiscountPercent = value.DocumentLines.DiscountPercent,",
+						"          VendorNum = value.DocumentLines.VendorNum,",
+						"          SerialNum = value.DocumentLines.SerialNum,",
+						"          WarehouseCode = value.DocumentLines.WarehouseCode,",
+						"          SalesPersonCode = value.DocumentLines.SalesPersonCode,",
+						"          CommisionPercent = value.DocumentLines.CommisionPercent,",
+						"          TreeType = value.DocumentLines.TreeType,",
+						"          AccountCode = value.DocumentLines.AccountCode,",
+						"          UseBaseUnits = value.DocumentLines.UseBaseUnits,",
+						"          SupplierCatNum = value.DocumentLines.SupplierCatNum,",
+						"          CostingCode = value.DocumentLines.CostingCode,",
+						"          ProjectCode = value.DocumentLines.ProjectCode,",
+						"          BarCode = value.DocumentLines.BarCode,",
+						"          VatGroup = value.DocumentLines.VatGroup,",
+						"          Height1 = value.DocumentLines.Height1,",
+						"          Hight1Unit = value.DocumentLines.Hight1Unit,",
+						"          Height2 = value.DocumentLines.Height2,",
+						"          Height2Unit = value.DocumentLines.Height2Unit,",
+						"          Lengh1 = value.DocumentLines.Lengh1,",
+						"          Lengh1Unit = value.DocumentLines.Lengh1Unit,",
+						"          Lengh2 = value.DocumentLines.Lengh2,",
+						"          Lengh2Unit = value.DocumentLines.Lengh2Unit,",
+						"          Weight1 = value.DocumentLines.Weight1,",
+						"          Weight1Unit = value.DocumentLines.Weight1Unit,",
+						"          Weight2 = value.DocumentLines.Weight2,",
+						"          Weight2Unit = value.DocumentLines.Weight2Unit,",
+						"          Factor1 = value.DocumentLines.Factor1,",
+						"          Factor2 = value.DocumentLines.Factor2,",
+						"          Factor3 = value.DocumentLines.Factor3,",
+						"          Factor4 = value.DocumentLines.Factor4,",
+						"          BaseType = value.DocumentLines.BaseType,",
+						"          BaseEntry = value.DocumentLines.BaseEntry,",
+						"          BaseLine = value.DocumentLines.BaseLine,",
+						"          Volume = value.DocumentLines.Volume,",
+						"          VolumeUnit = value.DocumentLines.VolumeUnit,",
+						"          Width1 = value.DocumentLines.Width1,",
+						"          Width1Unit = value.DocumentLines.Width1Unit,",
+						"          Width2 = value.DocumentLines.Width2,",
+						"          Width2Unit = value.DocumentLines.Width2Unit,",
+						"          Address = value.DocumentLines.Address,",
+						"          TaxCode = value.DocumentLines.TaxCode,",
+						"          TaxType = value.DocumentLines.TaxType,",
+						"          TaxLiable = value.DocumentLines.TaxLiable,",
+						"          PickStatus = value.DocumentLines.PickStatus,",
+						"          PickQuantity = value.DocumentLines.PickQuantity,",
+						"          PickListIdNumber = value.DocumentLines.PickListIdNumber,",
+						"          OriginalItem = value.DocumentLines.OriginalItem,",
+						"          BackOrder = value.DocumentLines.BackOrder,",
+						"          FreeText = value.DocumentLines.FreeText,",
+						"          ShippingMethod = value.DocumentLines.ShippingMethod,",
+						"          POTargetNum = value.DocumentLines.POTargetNum,",
+						"          POTargetEntry = value.DocumentLines.POTargetEntry,",
+						"          POTargetRowNum = value.DocumentLines.POTargetRowNum,",
+						"          CorrectionInvoiceItem = value.DocumentLines.CorrectionInvoiceItem,",
+						"          CorrInvAmountToStock = value.DocumentLines.CorrInvAmountToStock,",
+						"          CorrInvAmountToDiffAcct = value.DocumentLines.CorrInvAmountToDiffAcct,",
+						"          AppliedTax = value.DocumentLines.AppliedTax,",
+						"          AppliedTaxFC = value.DocumentLines.AppliedTaxFC,",
+						"          AppliedTaxSC = value.DocumentLines.AppliedTaxSC,",
+						"          WTLiable = value.DocumentLines.WTLiable,",
+						"          DeferredTax = value.DocumentLines.DeferredTax,",
+						"          EqualizationTaxPercent = value.DocumentLines.EqualizationTaxPercent,",
+						"          TotalEqualizationTax = value.DocumentLines.TotalEqualizationTax,",
+						"          TotalEqualizationTaxFC = value.DocumentLines.TotalEqualizationTaxFC,",
+						"          TotalEqualizationTaxSC = value.DocumentLines.TotalEqualizationTaxSC,",
+						"          NetTaxAmount = value.DocumentLines.NetTaxAmount,",
+						"          NetTaxAmountFC = value.DocumentLines.NetTaxAmountFC,",
+						"          NetTaxAmountSC = value.DocumentLines.NetTaxAmountSC,",
+						"          MeasureUnit = value.DocumentLines.MeasureUnit,",
+						"          UnitsOfMeasurment = value.DocumentLines.UnitsOfMeasurment,",
+						"          LineTotal = value.DocumentLines.LineTotal,",
+						"          TaxPercentagePerRow = value.DocumentLines.TaxPercentagePerRow,",
+						"          TaxTotal = value.DocumentLines.TaxTotal,",
+						"          ConsumerSalesForecast = value.DocumentLines.ConsumerSalesForecast,",
+						"          ExciseAmount = value.DocumentLines.ExciseAmount,",
+						"          TaxPerUnit = value.DocumentLines.TaxPerUnit,",
+						"          TotalInclTax = value.DocumentLines.TotalInclTax,",
+						"          CountryOrg = value.DocumentLines.CountryOrg,",
+						"          SWW = value.DocumentLines.SWW,",
+						"          TransactionType = value.DocumentLines.TransactionType,",
+						"          DistributeExpense = value.DocumentLines.DistributeExpense,",
+						"          RowTotalFC = value.DocumentLines.RowTotalFC,",
+						"          RowTotalSC = value.DocumentLines.RowTotalSC,",
+						"          LastBuyInmPrice = value.DocumentLines.LastBuyInmPrice,",
+						"          LastBuyDistributeSumFc = value.DocumentLines.LastBuyDistributeSumFc,",
+						"          LastBuyDistributeSumSc = value.DocumentLines.LastBuyDistributeSumSc,",
+						"          LastBuyDistributeSum = value.DocumentLines.LastBuyDistributeSum,",
+						"          StockDistributesumForeign = value.DocumentLines.StockDistributesumForeign,",
+						"          StockDistributesumSystem = value.DocumentLines.StockDistributesumSystem,",
+						"          StockDistributesum = value.DocumentLines.StockDistributesum,",
+						"          StockInmPrice = value.DocumentLines.StockInmPrice,",
+						"          PickStatusEx = value.DocumentLines.PickStatusEx,",
+						"          TaxBeforeDPM = value.DocumentLines.TaxBeforeDPM,",
+						"          TaxBeforeDPMFC = value.DocumentLines.TaxBeforeDPMFC,",
+						"          TaxBeforeDPMSC = value.DocumentLines.TaxBeforeDPMSC,",
+						"          CFOPCode = value.DocumentLines.CFOPCode,",
+						"          CSTCode = value.DocumentLines.CSTCode,",
+						"          Usage = value.DocumentLines.Usage,",
+						"          TaxOnly = value.DocumentLines.TaxOnly,",
+						"          VisualOrder = value.DocumentLines.VisualOrder,",
+						"          BaseOpenQuantity = value.DocumentLines.BaseOpenQuantity,",
+						"          UnitPrice = value.DocumentLines.UnitPrice,",
+						"          LineStatus = value.DocumentLines.LineStatus,",
+						"          PackageQuantity = value.DocumentLines.PackageQuantity,",
+						"          Text = value.DocumentLines.Text,",
+						"          LineType = value.DocumentLines.LineType,",
+						"          COGSCostingCode = value.DocumentLines.COGSCostingCode,",
+						"          COGSAccountCode = value.DocumentLines.COGSAccountCode,",
+						"          ChangeAssemlyBoMWarehouse = value.DocumentLines.ChangeAssemlyBoMWarehouse,",
+						"          GrossBuyPrice = value.DocumentLines.GrossBuyPrice,",
+						"          GrossBase = value.DocumentLines.GrossBase,",
+						"          GrossProfitTotalBasePrice = value.DocumentLines.GrossProfitTotalBasePrice,",
+						"          CostingCode2 = value.DocumentLines.CostingCode2,",
+						"          CostingCode3 = value.DocumentLines.CostingCode3,",
+						"          CostingCode4 = value.DocumentLines.CostingCode4,",
+						"          CostingCode5 = value.DocumentLines.CostingCode5,",
+						"          ItemDetails = value.DocumentLines.ItemDetails,",
+						"          LocationCode = value.DocumentLines.LocationCode,",
+						"          ActualDeliveryDate = value.DocumentLines.ActualDeliveryDate,",
+						"          RemainingOpenQuantity = value.DocumentLines.RemainingOpenQuantity,",
+						"          OpenAmount = value.DocumentLines.OpenAmount,",
+						"          OpenAmountFC = value.DocumentLines.OpenAmountFC,",
+						"          OpenAmountSC = value.DocumentLines.OpenAmountSC,",
+						"          ExLineNo = value.DocumentLines.ExLineNo,",
+						"          RequiredDate = value.DocumentLines.RequiredDate,",
+						"          RequiredQuantity = value.DocumentLines.RequiredQuantity,",
+						"          COGSCostingCode2 = value.DocumentLines.COGSCostingCode2,",
+						"          COGSCostingCode3 = value.DocumentLines.COGSCostingCode3,",
+						"          COGSCostingCode4 = value.DocumentLines.COGSCostingCode4,",
+						"          COGSCostingCode5 = value.DocumentLines.COGSCostingCode5,",
+						"          CSTforIPI = value.DocumentLines.CSTforIPI,",
+						"          CSTforPIS = value.DocumentLines.CSTforPIS,",
+						"          CSTforCOFINS = value.DocumentLines.CSTforCOFINS,",
+						"          CreditOriginCode = value.DocumentLines.CreditOriginCode,",
+						"          WithoutInventoryMovement = value.DocumentLines.WithoutInventoryMovement,",
+						"          AgreementNo = value.DocumentLines.AgreementNo,",
+						"          AgreementRowNumber = value.DocumentLines.AgreementRowNumber,",
+						"          ActualBaseEntry = value.DocumentLines.ActualBaseEntry,",
+						"          ActualBaseLine = value.DocumentLines.ActualBaseLine,",
+						"          DocEntry = value.DocumentLines.DocEntry,",
+						"          Surpluses = value.DocumentLines.Surpluses,",
+						"          DefectAndBreakup = value.DocumentLines.DefectAndBreakup,",
+						"          Shortages = value.DocumentLines.Shortages,",
+						"          ConsiderQuantity = value.DocumentLines.ConsiderQuantity,",
+						"          PartialRetirement = value.DocumentLines.PartialRetirement,",
+						"          RetirementQuantity = value.DocumentLines.RetirementQuantity,",
+						"          RetirementAPC = value.DocumentLines.RetirementAPC,",
+						"          ThirdParty = value.DocumentLines.ThirdParty,",
+						"          PoNum = value.DocumentLines.PoNum,",
+						"          PoItmNum = value.DocumentLines.PoItmNum,",
+						"          ExpenseType = value.DocumentLines.ExpenseType,",
+						"          ReceiptNumber = value.DocumentLines.ReceiptNumber,",
+						"          ExpenseOperationType = value.DocumentLines.ExpenseOperationType,",
+						"          FederalTaxID = value.DocumentLines.FederalTaxID,",
+						"          GrossProfit = value.DocumentLines.GrossProfit,",
+						"          GrossProfitFC = value.DocumentLines.GrossProfitFC,",
+						"          GrossProfitSC = value.DocumentLines.GrossProfitSC,",
+						"          PriceSource = value.DocumentLines.PriceSource,",
+						"          StgSeqNum = value.DocumentLines.StgSeqNum,",
+						"          StgEntry = value.DocumentLines.StgEntry,",
+						"          StgDesc = value.DocumentLines.StgDesc,",
+						"          UoMEntry = value.DocumentLines.UoMEntry,",
+						"          UoMCode = value.DocumentLines.UoMCode,",
+						"          InventoryQuantity = value.DocumentLines.InventoryQuantity,",
+						"          RemainingOpenInventoryQuantity = value.DocumentLines.RemainingOpenInventoryQuantity,",
+						"          ParentLineNum = value.DocumentLines.ParentLineNum,",
+						"          Incoterms = value.DocumentLines.Incoterms,",
+						"          TransportMode = value.DocumentLines.TransportMode,",
+						"          NatureOfTransaction = value.DocumentLines.NatureOfTransaction,",
+						"          DestinationCountryForImport = value.DocumentLines.DestinationCountryForImport,",
+						"          DestinationRegionForImport = value.DocumentLines.DestinationRegionForImport,",
+						"          OriginCountryForExport = value.DocumentLines.OriginCountryForExport,",
+						"          OriginRegionForExport = value.DocumentLines.OriginRegionForExport,",
+						"          ItemType = value.DocumentLines.ItemType,",
+						"          ChangeInventoryQuantityIndependently = value.DocumentLines.ChangeInventoryQuantityIndependently,",
+						"          FreeOfChargeBP = value.DocumentLines.FreeOfChargeBP,",
+						"          SACEntry = value.DocumentLines.SACEntry,",
+						"          HSNEntry = value.DocumentLines.HSNEntry,",
+						"          GrossPrice = value.DocumentLines.GrossPrice,",
+						"          GrossTotal = value.DocumentLines.GrossTotal,",
+						"          GrossTotalFC = value.DocumentLines.GrossTotalFC,",
+						"          GrossTotalSC = value.DocumentLines.GrossTotalSC,",
+						"          NCMCode = value.DocumentLines.NCMCode,",
+						"          NVECode = value.DocumentLines.NVECode,",
+						"          IndEscala = value.DocumentLines.IndEscala,",
+						"          CtrSealQty = value.DocumentLines.CtrSealQty,",
+						"          CNJPMan = value.DocumentLines.CNJPMan,",
+						"          CESTCode = value.DocumentLines.CESTCode,",
+						"          UFFiscalBenefitCode = value.DocumentLines.UFFiscalBenefitCode,",
+						"          ReverseCharge = value.DocumentLines.ReverseCharge,",
+						"          ShipToCode = value.DocumentLines.ShipToCode,",
+						"          ShipToDescription = value.DocumentLines.ShipToDescription,",
+						"          ExternalCalcTaxRate = value.DocumentLines.ExternalCalcTaxRate,",
+						"          ExternalCalcTaxAmount = value.DocumentLines.ExternalCalcTaxAmount,",
+						"          ExternalCalcTaxAmountFC = value.DocumentLines.ExternalCalcTaxAmountFC,",
+						"          ExternalCalcTaxAmountSC = value.DocumentLines.ExternalCalcTaxAmountSC,",
+						"          StandardItemIdentification = value.DocumentLines.StandardItemIdentification,",
+						"          CommodityClassification = value.DocumentLines.CommodityClassification,",
+						"          UnencumberedReason = value.DocumentLines.UnencumberedReason,",
+						"          CUSplit = value.DocumentLines.CUSplit,",
+						"          U_Installasjon = value.DocumentLines.U_Installasjon,",
+						"          U_ParentItem = value.DocumentLines.U_ParentItem,",
+						"          U_Codebars = value.DocumentLines.U_Codebars,",
+						"          U_PlannedQty = value.DocumentLines.U_PlannedQty,",
+						"          U_AIG_IN = value.DocumentLines.U_AIG_IN,",
+						"          U_AIG_IA = value.DocumentLines.U_AIG_IA,",
+						"          U_AIG_PD = value.DocumentLines.U_AIG_PD,",
+						"          U_AIG_PDate = value.DocumentLines.U_AIG_PDate,",
+						"          U_AIG_ID = value.DocumentLines.U_AIG_ID,",
+						"          U_PItemCode = value.DocumentLines.U_PItemCode,",
+						"          U_AIG_IR = value.DocumentLines.U_AIG_IR,",
+						"          U_AIG_DDate = value.DocumentLines.U_AIG_DDate,",
+						"          U_U_AIG_DDate = value.DocumentLines.U_U_AIG_DDate,",
+						"          U_DSS_Charge = value.DocumentLines.U_DSS_Charge,",
+						"          U_DSS_ProdOrdr = value.DocumentLines.U_DSS_ProdOrdr",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> Flatten",
+						"Flatten sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     recreate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SinkSQL"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_blob_sql')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "ListFiles",
+						"type": "GetMetadata",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataset": {
+								"referenceName": "ds_blob_bondura",
+								"type": "DatasetReference",
+								"parameters": {
+									"Directory": {
+										"value": "@pipeline().parameters.Stream",
+										"type": "Expression"
+									},
+									"FileName": {
+										"value": "@pipeline().parameters.WildCard",
+										"type": "Expression"
+									}
+								}
+							},
+							"fieldList": [
+								"childItems"
+							],
+							"storeSettings": {
+								"type": "AzureBlobStorageReadSettings",
+								"recursive": true,
+								"enablePartitionDiscovery": false
+							},
+							"formatSettings": {
+								"type": "JsonReadSettings"
+							}
+						}
+					},
+					{
+						"name": "ForEachFile",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "ListFiles",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('ListFiles').output.childItems",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "JsonToSqlMast",
+									"type": "Copy",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"additionalColumns": [
+												{
+													"name": "m_ds",
+													"value": "'Bondura'"
+												}
+											],
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"logSettings": {
+											"enableCopyActivityLog": true,
+											"copyActivityLogSettings": {
+												"logLevel": "Warning",
+												"enableReliableLogging": false
+											},
+											"logLocationSettings": {
+												"linkedServiceName": {
+													"referenceName": "AzureBlobStorage_json",
+													"type": "LinkedServiceReference"
+												},
+												"path": "copyactivity-logs"
+											}
+										},
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "[['DocEntry']"
+													},
+													"sink": {
+														"name": "DocEntry",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocNum']"
+													},
+													"sink": {
+														"name": "DocNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocType']"
+													},
+													"sink": {
+														"name": "DocType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['HandWritten']"
+													},
+													"sink": {
+														"name": "HandWritten",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Printed']"
+													},
+													"sink": {
+														"name": "Printed",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocDate']"
+													},
+													"sink": {
+														"name": "DocDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocDueDate']"
+													},
+													"sink": {
+														"name": "DocDueDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CardCode']"
+													},
+													"sink": {
+														"name": "CardCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CardName']"
+													},
+													"sink": {
+														"name": "CardName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Address']"
+													},
+													"sink": {
+														"name": "Address",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NumAtCard']"
+													},
+													"sink": {
+														"name": "NumAtCard",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocTotal']"
+													},
+													"sink": {
+														"name": "DocTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AttachmentEntry']"
+													},
+													"sink": {
+														"name": "AttachmentEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocCurrency']"
+													},
+													"sink": {
+														"name": "DocCurrency",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocRate']"
+													},
+													"sink": {
+														"name": "DocRate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Reference1']"
+													},
+													"sink": {
+														"name": "Reference1",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Reference2']"
+													},
+													"sink": {
+														"name": "Reference2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Comments']"
+													},
+													"sink": {
+														"name": "Comments",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['JournalMemo']"
+													},
+													"sink": {
+														"name": "JournalMemo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaymentGroupCode']"
+													},
+													"sink": {
+														"name": "PaymentGroupCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocTime']"
+													},
+													"sink": {
+														"name": "DocTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SalesPersonCode']"
+													},
+													"sink": {
+														"name": "SalesPersonCode",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TransportationCode']"
+													},
+													"sink": {
+														"name": "TransportationCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Confirmed']"
+													},
+													"sink": {
+														"name": "Confirmed",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ImportFileNum']"
+													},
+													"sink": {
+														"name": "ImportFileNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SummeryType']"
+													},
+													"sink": {
+														"name": "SummeryType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ContactPersonCode']"
+													},
+													"sink": {
+														"name": "ContactPersonCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ShowSCN']"
+													},
+													"sink": {
+														"name": "ShowSCN",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Series']"
+													},
+													"sink": {
+														"name": "Series",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TaxDate']"
+													},
+													"sink": {
+														"name": "TaxDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PartialSupply']"
+													},
+													"sink": {
+														"name": "PartialSupply",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocObjectCode']"
+													},
+													"sink": {
+														"name": "DocObjectCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ShipToCode']"
+													},
+													"sink": {
+														"name": "ShipToCode"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Indicator']"
+													},
+													"sink": {
+														"name": "Indicator",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FederalTaxID']"
+													},
+													"sink": {
+														"name": "FederalTaxID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DiscountPercent']"
+													},
+													"sink": {
+														"name": "DiscountPercent",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaymentReference']"
+													},
+													"sink": {
+														"name": "PaymentReference",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CreationDate']"
+													},
+													"sink": {
+														"name": "CreationDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UpdateDate']"
+													},
+													"sink": {
+														"name": "UpdateDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FinancialPeriod']"
+													},
+													"sink": {
+														"name": "FinancialPeriod",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UserSign']"
+													},
+													"sink": {
+														"name": "UserSign",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TransNum']"
+													},
+													"sink": {
+														"name": "TransNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VatSum']"
+													},
+													"sink": {
+														"name": "VatSum",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VatSumSys']"
+													},
+													"sink": {
+														"name": "VatSumSys",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VatSumFc']"
+													},
+													"sink": {
+														"name": "VatSumFc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NetProcedure']"
+													},
+													"sink": {
+														"name": "NetProcedure",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocTotalFc']"
+													},
+													"sink": {
+														"name": "DocTotalFc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocTotalSys']"
+													},
+													"sink": {
+														"name": "DocTotalSys",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Form1099']"
+													},
+													"sink": {
+														"name": "Form1099",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Box1099']"
+													},
+													"sink": {
+														"name": "Box1099",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RevisionPo']"
+													},
+													"sink": {
+														"name": "RevisionPo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RequriedDate']"
+													},
+													"sink": {
+														"name": "RequriedDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CancelDate']"
+													},
+													"sink": {
+														"name": "CancelDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BlockDunning']"
+													},
+													"sink": {
+														"name": "BlockDunning",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Submitted']"
+													},
+													"sink": {
+														"name": "Submitted",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Segment']"
+													},
+													"sink": {
+														"name": "Segment",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PickStatus']"
+													},
+													"sink": {
+														"name": "PickStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Pick']"
+													},
+													"sink": {
+														"name": "Pick",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaymentMethod']"
+													},
+													"sink": {
+														"name": "PaymentMethod",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaymentBlock']"
+													},
+													"sink": {
+														"name": "PaymentBlock",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaymentBlockEntry']"
+													},
+													"sink": {
+														"name": "PaymentBlockEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CentralBankIndicator']"
+													},
+													"sink": {
+														"name": "CentralBankIndicator",
+														"type": "Single"
+													}
+												},
+												{
+													"source": {
+														"path": "[['MaximumCashDiscount']"
+													},
+													"sink": {
+														"name": "MaximumCashDiscount",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Reserve']"
+													},
+													"sink": {
+														"name": "Reserve",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Project']"
+													},
+													"sink": {
+														"name": "Project",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExemptionValidityDateFrom']"
+													},
+													"sink": {
+														"name": "ExemptionValidityDateFrom",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExemptionValidityDateTo']"
+													},
+													"sink": {
+														"name": "ExemptionValidityDateTo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WareHouseUpdateType']"
+													},
+													"sink": {
+														"name": "WareHouseUpdateType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Rounding']"
+													},
+													"sink": {
+														"name": "Rounding",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExternalCorrectedDocNum']"
+													},
+													"sink": {
+														"name": "ExternalCorrectedDocNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['InternalCorrectedDocNum']"
+													},
+													"sink": {
+														"name": "InternalCorrectedDocNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NextCorrectingDocument']"
+													},
+													"sink": {
+														"name": "NextCorrectingDocument",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DeferredTax']"
+													},
+													"sink": {
+														"name": "value'][0]['DeferredTax",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TaxExemptionLetterNum']"
+													},
+													"sink": {
+														"name": "TaxExemptionLetterNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTApplied']"
+													},
+													"sink": {
+														"name": "WTApplied",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTAppliedFC']"
+													},
+													"sink": {
+														"name": "WTAppliedFC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BillOfExchangeReserved']"
+													},
+													"sink": {
+														"name": "BillOfExchangeReserved",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AgentCode']"
+													},
+													"sink": {
+														"name": "AgentCode",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTAppliedSC']"
+													},
+													"sink": {
+														"name": "WTAppliedSC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalEqualizationTax']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalEqualizationTaxFC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalEqualizationTaxSC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NumberOfInstallments']"
+													},
+													"sink": {
+														"name": "NumberOfInstallments",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ApplyTaxOnFirstInstallment']"
+													},
+													"sink": {
+														"name": "ApplyTaxOnFirstInstallment",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTNonSubjectAmount']"
+													},
+													"sink": {
+														"name": "WTNonSubjectAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTNonSubjectAmountSC']"
+													},
+													"sink": {
+														"name": "WTNonSubjectAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTNonSubjectAmountFC']"
+													},
+													"sink": {
+														"name": "WTNonSubjectAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTExemptedAmount']"
+													},
+													"sink": {
+														"name": "WTExemptedAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTExemptedAmountSC']"
+													},
+													"sink": {
+														"name": "WTExemptedAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTExemptedAmountFC']"
+													},
+													"sink": {
+														"name": "WTExemptedAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BaseAmount']"
+													},
+													"sink": {
+														"name": "BaseAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BaseAmountSC']"
+													},
+													"sink": {
+														"name": "BaseAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BaseAmountFC']"
+													},
+													"sink": {
+														"name": "BaseAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTAmount']"
+													},
+													"sink": {
+														"name": "WTAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTAmountSC']"
+													},
+													"sink": {
+														"name": "WTAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['WTAmountFC']"
+													},
+													"sink": {
+														"name": "WTAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VatDate']"
+													},
+													"sink": {
+														"name": "VatDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentsOwner']"
+													},
+													"sink": {
+														"name": "DocumentsOwner",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FolioPrefixString']"
+													},
+													"sink": {
+														"name": "FolioPrefixString",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FolioNumber']"
+													},
+													"sink": {
+														"name": "FolioNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentSubType']"
+													},
+													"sink": {
+														"name": "DocumentSubType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BPChannelCode']"
+													},
+													"sink": {
+														"name": "BPChannelCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BPChannelContact']"
+													},
+													"sink": {
+														"name": "BPChannelContact",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Address2']"
+													},
+													"sink": {
+														"name": "Address2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentStatus']"
+													},
+													"sink": {
+														"name": "DocumentStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PeriodIndicator']"
+													},
+													"sink": {
+														"name": "PeriodIndicator",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PayToCode']"
+													},
+													"sink": {
+														"name": "PayToCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ManualNumber']"
+													},
+													"sink": {
+														"name": "ManualNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UseShpdGoodsAct']"
+													},
+													"sink": {
+														"name": "UseShpdGoodsAct",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['IsPayToBank']"
+													},
+													"sink": {
+														"name": "IsPayToBank",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PayToBankCountry']"
+													},
+													"sink": {
+														"name": "PayToBankCountry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PayToBankCode']"
+													},
+													"sink": {
+														"name": "PayToBankCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PayToBankAccountNo']"
+													},
+													"sink": {
+														"name": "PayToBankAccountNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PayToBankBranch']"
+													},
+													"sink": {
+														"name": "PayToBankBranch",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BPL_IDAssignedToInvoice']"
+													},
+													"sink": {
+														"name": "BPL_IDAssignedToInvoice",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPayment']"
+													},
+													"sink": {
+														"name": "DownPayment",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReserveInvoice']"
+													},
+													"sink": {
+														"name": "ReserveInvoice",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['LanguageCode']"
+													},
+													"sink": {
+														"name": "LanguageCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TrackingNumber']"
+													},
+													"sink": {
+														"name": "TrackingNumber",
+														"type": "Single"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PickRemark']"
+													},
+													"sink": {
+														"name": "PickRemark",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ClosingDate']"
+													},
+													"sink": {
+														"name": "ClosingDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SequenceCode']"
+													},
+													"sink": {
+														"name": "SequenceCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SequenceSerial']"
+													},
+													"sink": {
+														"name": "SequenceSerial",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SeriesString']"
+													},
+													"sink": {
+														"name": "SeriesString",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SubSeriesString']"
+													},
+													"sink": {
+														"name": "SubSeriesString",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SequenceModel']"
+													},
+													"sink": {
+														"name": "SequenceModel",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UseCorrectionVATGroup']"
+													},
+													"sink": {
+														"name": "UseCorrectionVATGroup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalDiscount']"
+													},
+													"sink": {
+														"name": "TotalDiscount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentAmount']"
+													},
+													"sink": {
+														"name": "DownPaymentAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentPercentage']"
+													},
+													"sink": {
+														"name": "DownPaymentPercentage",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentType']"
+													},
+													"sink": {
+														"name": "DownPaymentType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentAmountSC']"
+													},
+													"sink": {
+														"name": "DownPaymentAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentAmountFC']"
+													},
+													"sink": {
+														"name": "DownPaymentAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VatPercent']"
+													},
+													"sink": {
+														"name": "VatPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ServiceGrossProfitPercent']"
+													},
+													"sink": {
+														"name": "ServiceGrossProfitPercent",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OpeningRemarks']"
+													},
+													"sink": {
+														"name": "OpeningRemarks",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ClosingRemarks']"
+													},
+													"sink": {
+														"name": "ClosingRemarks",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RoundingDiffAmount']"
+													},
+													"sink": {
+														"name": "RoundingDiffAmount",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RoundingDiffAmountFC']"
+													},
+													"sink": {
+														"name": "RoundingDiffAmountFC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RoundingDiffAmountSC']"
+													},
+													"sink": {
+														"name": "RoundingDiffAmountSC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Cancelled']"
+													},
+													"sink": {
+														"name": "Cancelled",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SignatureInputMessage']"
+													},
+													"sink": {
+														"name": "SignatureInputMessage",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SignatureDigest']"
+													},
+													"sink": {
+														"name": "SignatureDigest",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CertificationNumber']"
+													},
+													"sink": {
+														"name": "CertificationNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PrivateKeyVersion']"
+													},
+													"sink": {
+														"name": "PrivateKeyVersion",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ControlAccount']"
+													},
+													"sink": {
+														"name": "ControlAccount",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['InsuranceOperation347']"
+													},
+													"sink": {
+														"name": "InsuranceOperation347",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ArchiveNonremovableSalesQuotation']"
+													},
+													"sink": {
+														"name": "ArchiveNonremovableSalesQuotation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GTSChecker']"
+													},
+													"sink": {
+														"name": "GTSChecker",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GTSPayee']"
+													},
+													"sink": {
+														"name": "GTSPayee",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExtraMonth']"
+													},
+													"sink": {
+														"name": "ExtraMonth",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExtraDays']"
+													},
+													"sink": {
+														"name": "ExtraDays",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CashDiscountDateOffset']"
+													},
+													"sink": {
+														"name": "CashDiscountDateOffset",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['StartFrom']"
+													},
+													"sink": {
+														"name": "StartFrom",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NTSApproved']"
+													},
+													"sink": {
+														"name": "NTSApproved",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ETaxWebSite']"
+													},
+													"sink": {
+														"name": "ETaxWebSite",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ETaxNumber']"
+													},
+													"sink": {
+														"name": "ETaxNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['NTSApprovedNumber']"
+													},
+													"sink": {
+														"name": "NTSApprovedNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocGenerationType']"
+													},
+													"sink": {
+														"name": "EDocGenerationType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocSeries']"
+													},
+													"sink": {
+														"name": "EDocSeries",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocNum']"
+													},
+													"sink": {
+														"name": "EDocNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocExportFormat']"
+													},
+													"sink": {
+														"name": "EDocExportFormat",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocStatus']"
+													},
+													"sink": {
+														"name": "EDocStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocErrorCode']"
+													},
+													"sink": {
+														"name": "EDocErrorCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocErrorMessage']"
+													},
+													"sink": {
+														"name": "EDocErrorMessage",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DownPaymentStatus']"
+													},
+													"sink": {
+														"name": "DownPaymentStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GroupSeries']"
+													},
+													"sink": {
+														"name": "GroupSeries",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GroupNumber']"
+													},
+													"sink": {
+														"name": "GroupNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GroupHandWritten']"
+													},
+													"sink": {
+														"name": "GroupHandWritten",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReopenOriginalDocument']"
+													},
+													"sink": {
+														"name": "ReopenOriginalDocument",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReopenManuallyClosedOrCanceledDocument']"
+													},
+													"sink": {
+														"name": "ReopenManuallyClosedOrCanceledDocument",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CreateOnlineQuotation']"
+													},
+													"sink": {
+														"name": "CreateOnlineQuotation",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POSEquipmentNumber']"
+													},
+													"sink": {
+														"name": "POSEquipmentNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POSManufacturerSerialNumber']"
+													},
+													"sink": {
+														"name": "POSManufacturerSerialNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POSCashierNumber']"
+													},
+													"sink": {
+														"name": "POSCashierNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ApplyCurrentVATRatesForDownPaymentsToDraw']"
+													},
+													"sink": {
+														"name": "ApplyCurrentVATRatesForDownPaymentsToDraw",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ClosingOption']"
+													},
+													"sink": {
+														"name": "ClosingOption",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SpecifiedClosingDate']"
+													},
+													"sink": {
+														"name": "SpecifiedClosingDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OpenForLandedCosts']"
+													},
+													"sink": {
+														"name": "OpenForLandedCosts",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AuthorizationStatus']"
+													},
+													"sink": {
+														"name": "AuthorizationStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalDiscountFC']"
+													},
+													"sink": {
+														"name": "TotalDiscountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['TotalDiscountSC']"
+													},
+													"sink": {
+														"name": "TotalDiscountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RelevantToGTS']"
+													},
+													"sink": {
+														"name": "RelevantToGTS",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BPLName']"
+													},
+													"sink": {
+														"name": "BPLName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VATRegNum']"
+													},
+													"sink": {
+														"name": "VATRegNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AnnualInvoiceDeclarationReference']"
+													},
+													"sink": {
+														"name": "AnnualInvoiceDeclarationReference",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Supplier']"
+													},
+													"sink": {
+														"name": "Supplier",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Releaser']"
+													},
+													"sink": {
+														"name": "Releaser",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Receiver']"
+													},
+													"sink": {
+														"name": "Receiver",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BlanketAgreementNumber']"
+													},
+													"sink": {
+														"name": "BlanketAgreementNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['IsAlteration']"
+													},
+													"sink": {
+														"name": "IsAlteration",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CancelStatus']"
+													},
+													"sink": {
+														"name": "CancelStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AssetValueDate']"
+													},
+													"sink": {
+														"name": "AssetValueDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['InvoicePayment']"
+													},
+													"sink": {
+														"name": "InvoicePayment",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentDelivery']"
+													},
+													"sink": {
+														"name": "DocumentDelivery",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AuthorizationCode']"
+													},
+													"sink": {
+														"name": "AuthorizationCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['StartDeliveryDate']"
+													},
+													"sink": {
+														"name": "StartDeliveryDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['StartDeliveryTime']"
+													},
+													"sink": {
+														"name": "StartDeliveryTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EndDeliveryDate']"
+													},
+													"sink": {
+														"name": "EndDeliveryDate",
+														"type": "Date"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EndDeliveryTime']"
+													},
+													"sink": {
+														"name": "EndDeliveryTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['VehiclePlate']"
+													},
+													"sink": {
+														"name": "VehiclePlate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ATDocumentType']"
+													},
+													"sink": {
+														"name": "ATDocumentType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ElecCommStatus']"
+													},
+													"sink": {
+														"name": "ElecCommStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ElecCommMessage']"
+													},
+													"sink": {
+														"name": "ElecCommMessage",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReuseDocumentNum']"
+													},
+													"sink": {
+														"name": "ReuseDocumentNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReuseNotaFiscalNum']"
+													},
+													"sink": {
+														"name": "ReuseNotaFiscalNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PrintSEPADirect']"
+													},
+													"sink": {
+														"name": "PrintSEPADirect",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FiscalDocNum']"
+													},
+													"sink": {
+														"name": "FiscalDocNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POSDailySummaryNo']"
+													},
+													"sink": {
+														"name": "POSDailySummaryNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POSReceiptNo']"
+													},
+													"sink": {
+														"name": "POSReceiptNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PointOfIssueCode']"
+													},
+													"sink": {
+														"name": "PointOfIssueCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Letter']"
+													},
+													"sink": {
+														"name": "Letter",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FolioNumberFrom']"
+													},
+													"sink": {
+														"name": "FolioNumberFrom",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FolioNumberTo']"
+													},
+													"sink": {
+														"name": "FolioNumberTo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['InterimType']"
+													},
+													"sink": {
+														"name": "InterimType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RelatedType']"
+													},
+													"sink": {
+														"name": "RelatedType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['RelatedEntry']"
+													},
+													"sink": {
+														"name": "RelatedEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['SAPPassport']"
+													},
+													"sink": {
+														"name": "SAPPassport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentTaxID']"
+													},
+													"sink": {
+														"name": "DocumentTaxID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DateOfReportingControlStatementVAT']"
+													},
+													"sink": {
+														"name": "DateOfReportingControlStatementVAT",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ReportingSectionControlStatementVAT']"
+													},
+													"sink": {
+														"name": "ReportingSectionControlStatementVAT",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ExcludeFromTaxReportControlStatementVAT']"
+													},
+													"sink": {
+														"name": "ExcludeFromTaxReportControlStatementVAT",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['POS_CashRegister']"
+													},
+													"sink": {
+														"name": "POS_CashRegister",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UpdateTime']"
+													},
+													"sink": {
+														"name": "UpdateTime",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CreateQRCodeFrom']"
+													},
+													"sink": {
+														"name": "CreateQRCodeFrom",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PriceMode']"
+													},
+													"sink": {
+														"name": "PriceMode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Revision']"
+													},
+													"sink": {
+														"name": "Revision",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OriginalRefNo']"
+													},
+													"sink": {
+														"name": "OriginalRefNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OriginalRefDate']"
+													},
+													"sink": {
+														"name": "OriginalRefDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['GSTTransactionType']"
+													},
+													"sink": {
+														"name": "GSTTransactionType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OriginalCreditOrDebitNo']"
+													},
+													"sink": {
+														"name": "OriginalCreditOrDebitNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['OriginalCreditOrDebitDate']"
+													},
+													"sink": {
+														"name": "OriginalCreditOrDebitDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ECommerceOperator']"
+													},
+													"sink": {
+														"name": "ECommerceOperator",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ECommerceGSTIN']"
+													},
+													"sink": {
+														"name": "ECommerceGSTIN",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ShipFrom']"
+													},
+													"sink": {
+														"name": "ShipFrom",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CommissionTrade']"
+													},
+													"sink": {
+														"name": "CommissionTrade",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CommissionTradeReturn']"
+													},
+													"sink": {
+														"name": "CommissionTradeReturn",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['UseBillToAddrToDetermineTax']"
+													},
+													"sink": {
+														"name": "UseBillToAddrToDetermineTax",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['IssuingReason']"
+													},
+													"sink": {
+														"name": "IssuingReason",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Cig']"
+													},
+													"sink": {
+														"name": "Cig",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['Cup']"
+													},
+													"sink": {
+														"name": "Cup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['EDocType']"
+													},
+													"sink": {
+														"name": "EDocType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FCEAsPaymentMeans']"
+													},
+													"sink": {
+														"name": "FCEAsPaymentMeans",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaidToDate']"
+													},
+													"sink": {
+														"name": "PaidToDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaidToDateFC']"
+													},
+													"sink": {
+														"name": "PaidToDateFC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['PaidToDateSys']"
+													},
+													"sink": {
+														"name": "PaidToDateSys",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BaseType']"
+													},
+													"sink": {
+														"name": "BaseType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['BaseEntry']"
+													},
+													"sink": {
+														"name": "BaseEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FatherCard']"
+													},
+													"sink": {
+														"name": "FatherCard",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FatherType']"
+													},
+													"sink": {
+														"name": "FatherType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ShipState']"
+													},
+													"sink": {
+														"name": "ShipState",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['ShipPlace']"
+													},
+													"sink": {
+														"name": "ShipPlace",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['CustOffice']"
+													},
+													"sink": {
+														"name": "CustOffice",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['FCI']"
+													},
+													"sink": {
+														"name": "FCI",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['AddLegIn']"
+													},
+													"sink": {
+														"name": "AddLegIn",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['LegTextF']"
+													},
+													"sink": {
+														"name": "LegTextF",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DANFELgTxt']"
+													},
+													"sink": {
+														"name": "DANFELgTxt",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['IndFinal']"
+													},
+													"sink": {
+														"name": "IndFinal",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DataVersion']"
+													},
+													"sink": {
+														"name": "DataVersion",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['LastPageFolioNumber']"
+													},
+													"sink": {
+														"name": "LastPageFolioNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_AIG_KID']"
+													},
+													"sink": {
+														"name": "U_AIG_KID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_Ordrenummer']"
+													},
+													"sink": {
+														"name": "U_Ordrenummer",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_esurl']"
+													},
+													"sink": {
+														"name": "U_esurl",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_sluttkunde']"
+													},
+													"sink": {
+														"name": "U_sluttkunde",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_Levbet']"
+													},
+													"sink": {
+														"name": "U_Levbet",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_Sted']"
+													},
+													"sink": {
+														"name": "U_Sted",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_Opperk']"
+													},
+													"sink": {
+														"name": "U_Opperk",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_DSS_SendStatus']"
+													},
+													"sink": {
+														"name": "U_DSS_SendStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['U_DSS_EHFBuyersRef']"
+													},
+													"sink": {
+														"name": "U_DSS_EHFBuyersRef",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['m_ds']"
+													},
+													"sink": {
+														"name": "m_ds",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentAdditionalExpenses'][0]['ExpenseCode']"
+													},
+													"sink": {
+														"name": "AdditionalExpenses_ExpenseCode",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentAdditionalExpenses'][0]['LineTotal']"
+													},
+													"sink": {
+														"name": "AdditionalExpenses_LineTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentAdditionalExpenses'][0]['LineTotalFC']"
+													},
+													"sink": {
+														"name": "AdditionalExpenses_LineTotalFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "[['DocumentAdditionalExpenses'][0]['LineTotalSys']"
+													},
+													"sink": {
+														"name": "AdditionalExpenses_LineTotalSys",
+														"type": "Double"
+													}
+												}
+											],
+											"collectionReference": "$['value']"
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_blob_bondura",
+											"type": "DatasetReference",
+											"parameters": {
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "sql_bo_sap_invoices",
+											"type": "DatasetReference",
+											"parameters": {
+												"tableName": "stg_invoices_mast"
+											}
+										}
+									]
+								},
+								{
+									"name": "JsonToSqlDet",
+									"type": "Copy",
+									"state": "Inactive",
+									"onInactiveMarkAs": "Succeeded",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "JsonSource",
+											"storeSettings": {
+												"type": "AzureBlobStorageReadSettings",
+												"recursive": true,
+												"enablePartitionDiscovery": false
+											},
+											"formatSettings": {
+												"type": "JsonReadSettings"
+											}
+										},
+										"sink": {
+											"type": "AzureSqlSink",
+											"writeBehavior": "insert",
+											"sqlWriterUseTableLock": false,
+											"tableOption": "autoCreate",
+											"disableMetricsCollection": false
+										},
+										"enableStaging": false,
+										"enableSkipIncompatibleRow": true,
+										"translator": {
+											"type": "TabularTranslator",
+											"mappings": [
+												{
+													"source": {
+														"path": "$['value'][0]['DocNum']"
+													},
+													"sink": {
+														"name": "DocNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDate']"
+													},
+													"sink": {
+														"name": "DocDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocDueDate']"
+													},
+													"sink": {
+														"name": "DocDueDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardCode']"
+													},
+													"sink": {
+														"name": "CardCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['CardName']"
+													},
+													"sink": {
+														"name": "CardName",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineNum']"
+													},
+													"sink": {
+														"name": "LineNum",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemCode']"
+													},
+													"sink": {
+														"name": "ItemCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemDescription']"
+													},
+													"sink": {
+														"name": "ItemDescription",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Quantity']"
+													},
+													"sink": {
+														"name": "Quantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipDate']"
+													},
+													"sink": {
+														"name": "ShipDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Price']"
+													},
+													"sink": {
+														"name": "Price",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PriceAfterVAT']"
+													},
+													"sink": {
+														"name": "PriceAfterVAT",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Currency']"
+													},
+													"sink": {
+														"name": "Currency",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Rate']"
+													},
+													"sink": {
+														"name": "Rate",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DiscountPercent']"
+													},
+													"sink": {
+														"name": "DiscountPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VendorNum']"
+													},
+													"sink": {
+														"name": "VendorNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SerialNum']"
+													},
+													"sink": {
+														"name": "SerialNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WarehouseCode']"
+													},
+													"sink": {
+														"name": "WarehouseCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SalesPersonCode']"
+													},
+													"sink": {
+														"name": "SalesPersonCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CommisionPercent']"
+													},
+													"sink": {
+														"name": "CommisionPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TreeType']"
+													},
+													"sink": {
+														"name": "TreeType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AccountCode']"
+													},
+													"sink": {
+														"name": "AccountCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UseBaseUnits']"
+													},
+													"sink": {
+														"name": "UseBaseUnits",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SupplierCatNum']"
+													},
+													"sink": {
+														"name": "SupplierCatNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode']"
+													},
+													"sink": {
+														"name": "CostingCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ProjectCode']"
+													},
+													"sink": {
+														"name": "ProjectCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BarCode']"
+													},
+													"sink": {
+														"name": "BarCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VatGroup']"
+													},
+													"sink": {
+														"name": "VatGroup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height1']"
+													},
+													"sink": {
+														"name": "Height1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Hight1Unit']"
+													},
+													"sink": {
+														"name": "Hight1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height2']"
+													},
+													"sink": {
+														"name": "Height2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Height2Unit']"
+													},
+													"sink": {
+														"name": "Height2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh1']"
+													},
+													"sink": {
+														"name": "Lengh1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh1Unit']"
+													},
+													"sink": {
+														"name": "Lengh1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh2']"
+													},
+													"sink": {
+														"name": "Lengh2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Lengh2Unit']"
+													},
+													"sink": {
+														"name": "Lengh2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight1']"
+													},
+													"sink": {
+														"name": "Weight1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight1Unit']"
+													},
+													"sink": {
+														"name": "Weight1Unit",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight2']"
+													},
+													"sink": {
+														"name": "Weight2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Weight2Unit']"
+													},
+													"sink": {
+														"name": "Weight2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor1']"
+													},
+													"sink": {
+														"name": "Factor1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor2']"
+													},
+													"sink": {
+														"name": "Factor2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor3']"
+													},
+													"sink": {
+														"name": "Factor3",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Factor4']"
+													},
+													"sink": {
+														"name": "Factor4",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseType']"
+													},
+													"sink": {
+														"name": "BaseType",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseEntry']"
+													},
+													"sink": {
+														"name": "BaseEntry",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseLine']"
+													},
+													"sink": {
+														"name": "BaseLine",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Volume']"
+													},
+													"sink": {
+														"name": "Volume",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VolumeUnit']"
+													},
+													"sink": {
+														"name": "VolumeUnit",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width1']"
+													},
+													"sink": {
+														"name": "Width1",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width1Unit']"
+													},
+													"sink": {
+														"name": "Width1Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width2']"
+													},
+													"sink": {
+														"name": "Width2",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Width2Unit']"
+													},
+													"sink": {
+														"name": "Width2Unit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Address']"
+													},
+													"sink": {
+														"name": "Address",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxCode']"
+													},
+													"sink": {
+														"name": "TaxCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxType']"
+													},
+													"sink": {
+														"name": "TaxType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxLiable']"
+													},
+													"sink": {
+														"name": "TaxLiable",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickStatus']"
+													},
+													"sink": {
+														"name": "PickStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickQuantity']"
+													},
+													"sink": {
+														"name": "PickQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickListIdNumber']"
+													},
+													"sink": {
+														"name": "PickListIdNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginalItem']"
+													},
+													"sink": {
+														"name": "OriginalItem",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BackOrder']"
+													},
+													"sink": {
+														"name": "BackOrder",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FreeText']"
+													},
+													"sink": {
+														"name": "FreeText",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShippingMethod']"
+													},
+													"sink": {
+														"name": "ShippingMethod",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetNum']"
+													},
+													"sink": {
+														"name": "POTargetNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetEntry']"
+													},
+													"sink": {
+														"name": "POTargetEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['POTargetRowNum']"
+													},
+													"sink": {
+														"name": "POTargetRowNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrectionInvoiceItem']"
+													},
+													"sink": {
+														"name": "CorrectionInvoiceItem",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToStock']"
+													},
+													"sink": {
+														"name": "CorrInvAmountToStock",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CorrInvAmountToDiffAcct']"
+													},
+													"sink": {
+														"name": "CorrInvAmountToDiffAcct",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTax']"
+													},
+													"sink": {
+														"name": "AppliedTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxFC']"
+													},
+													"sink": {
+														"name": "AppliedTaxFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AppliedTaxSC']"
+													},
+													"sink": {
+														"name": "AppliedTaxSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WTLiable']"
+													},
+													"sink": {
+														"name": "WTLiable",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DeferredTax']"
+													},
+													"sink": {
+														"name": "DeferredTax",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['EqualizationTaxPercent']"
+													},
+													"sink": {
+														"name": "EqualizationTaxPercent",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTax']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxFC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalEqualizationTaxSC']"
+													},
+													"sink": {
+														"name": "TotalEqualizationTaxSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmount']"
+													},
+													"sink": {
+														"name": "NetTaxAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountFC']"
+													},
+													"sink": {
+														"name": "NetTaxAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NetTaxAmountSC']"
+													},
+													"sink": {
+														"name": "NetTaxAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['MeasureUnit']"
+													},
+													"sink": {
+														"name": "MeasureUnit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnitsOfMeasurment']"
+													},
+													"sink": {
+														"name": "UnitsOfMeasurment",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineTotal']"
+													},
+													"sink": {
+														"name": "LineTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxPercentagePerRow']"
+													},
+													"sink": {
+														"name": "TaxPercentagePerRow",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxTotal']"
+													},
+													"sink": {
+														"name": "TaxTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ConsumerSalesForecast']"
+													},
+													"sink": {
+														"name": "ConsumerSalesForecast",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExciseAmount']"
+													},
+													"sink": {
+														"name": "ExciseAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxPerUnit']"
+													},
+													"sink": {
+														"name": "TaxPerUnit",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TotalInclTax']"
+													},
+													"sink": {
+														"name": "TotalInclTax",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CountryOrg']"
+													},
+													"sink": {
+														"name": "CountryOrg",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SWW']"
+													},
+													"sink": {
+														"name": "SWW",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TransactionType']"
+													},
+													"sink": {
+														"name": "TransactionType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DistributeExpense']"
+													},
+													"sink": {
+														"name": "DistributeExpense",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RowTotalFC']"
+													},
+													"sink": {
+														"name": "RowTotalFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RowTotalSC']"
+													},
+													"sink": {
+														"name": "RowTotalSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyInmPrice']"
+													},
+													"sink": {
+														"name": "LastBuyInmPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumFc']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSumFc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSumSc']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSumSc",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LastBuyDistributeSum']"
+													},
+													"sink": {
+														"name": "LastBuyDistributeSum",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumForeign']"
+													},
+													"sink": {
+														"name": "StockDistributesumForeign",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesumSystem']"
+													},
+													"sink": {
+														"name": "StockDistributesumSystem",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockDistributesum']"
+													},
+													"sink": {
+														"name": "StockDistributesum",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StockInmPrice']"
+													},
+													"sink": {
+														"name": "StockInmPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PickStatusEx']"
+													},
+													"sink": {
+														"name": "PickStatusEx",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPM']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPM",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMFC']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPMFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxBeforeDPMSC']"
+													},
+													"sink": {
+														"name": "TaxBeforeDPMSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CFOPCode']"
+													},
+													"sink": {
+														"name": "CFOPCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTCode']"
+													},
+													"sink": {
+														"name": "CSTCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Usage']"
+													},
+													"sink": {
+														"name": "Usage",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TaxOnly']"
+													},
+													"sink": {
+														"name": "TaxOnly",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['VisualOrder']"
+													},
+													"sink": {
+														"name": "VisualOrder",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['BaseOpenQuantity']"
+													},
+													"sink": {
+														"name": "BaseOpenQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnitPrice']"
+													},
+													"sink": {
+														"name": "UnitPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineStatus']"
+													},
+													"sink": {
+														"name": "LineStatus",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PackageQuantity']"
+													},
+													"sink": {
+														"name": "PackageQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Text']"
+													},
+													"sink": {
+														"name": "Text",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LineType']"
+													},
+													"sink": {
+														"name": "LineType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode']"
+													},
+													"sink": {
+														"name": "COGSCostingCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSAccountCode']"
+													},
+													"sink": {
+														"name": "COGSAccountCode",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ChangeAssemlyBoMWarehouse']"
+													},
+													"sink": {
+														"name": "ChangeAssemlyBoMWarehouse",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossBuyPrice']"
+													},
+													"sink": {
+														"name": "GrossBuyPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossBase']"
+													},
+													"sink": {
+														"name": "GrossBase",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitTotalBasePrice']"
+													},
+													"sink": {
+														"name": "GrossProfitTotalBasePrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode2']"
+													},
+													"sink": {
+														"name": "CostingCode2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode3']"
+													},
+													"sink": {
+														"name": "CostingCode3",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode4']"
+													},
+													"sink": {
+														"name": "CostingCode4",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CostingCode5']"
+													},
+													"sink": {
+														"name": "CostingCode5",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemDetails']"
+													},
+													"sink": {
+														"name": "ItemDetails",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['LocationCode']"
+													},
+													"sink": {
+														"name": "LocationCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualDeliveryDate']"
+													},
+													"sink": {
+														"name": "ActualDeliveryDate",
+														"type": "DateTime"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenQuantity']"
+													},
+													"sink": {
+														"name": "RemainingOpenQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmount']"
+													},
+													"sink": {
+														"name": "OpenAmount",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmountFC']"
+													},
+													"sink": {
+														"name": "OpenAmountFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OpenAmountSC']"
+													},
+													"sink": {
+														"name": "OpenAmountSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExLineNo']"
+													},
+													"sink": {
+														"name": "ExLineNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RequiredDate']"
+													},
+													"sink": {
+														"name": "RequiredDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RequiredQuantity']"
+													},
+													"sink": {
+														"name": "RequiredQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode2']"
+													},
+													"sink": {
+														"name": "COGSCostingCode2",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode3']"
+													},
+													"sink": {
+														"name": "COGSCostingCode3",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode4']"
+													},
+													"sink": {
+														"name": "COGSCostingCode4",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['COGSCostingCode5']"
+													},
+													"sink": {
+														"name": "COGSCostingCode5",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforIPI']"
+													},
+													"sink": {
+														"name": "CSTforIPI",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforPIS']"
+													},
+													"sink": {
+														"name": "CSTforPIS",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CSTforCOFINS']"
+													},
+													"sink": {
+														"name": "CSTforCOFINS",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CreditOriginCode']"
+													},
+													"sink": {
+														"name": "CreditOriginCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['WithoutInventoryMovement']"
+													},
+													"sink": {
+														"name": "WithoutInventoryMovement",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AgreementNo']"
+													},
+													"sink": {
+														"name": "AgreementNo",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['AgreementRowNumber']"
+													},
+													"sink": {
+														"name": "AgreementRowNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualBaseEntry']"
+													},
+													"sink": {
+														"name": "ActualBaseEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ActualBaseLine']"
+													},
+													"sink": {
+														"name": "ActualBaseLine",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DocEntry']"
+													},
+													"sink": {
+														"name": "DocEntry",
+														"type": "Int32"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Surpluses']"
+													},
+													"sink": {
+														"name": "Surpluses",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DefectAndBreakup']"
+													},
+													"sink": {
+														"name": "DefectAndBreakup",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Shortages']"
+													},
+													"sink": {
+														"name": "Shortages",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ConsiderQuantity']"
+													},
+													"sink": {
+														"name": "ConsiderQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PartialRetirement']"
+													},
+													"sink": {
+														"name": "PartialRetirement",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RetirementQuantity']"
+													},
+													"sink": {
+														"name": "RetirementQuantity",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RetirementAPC']"
+													},
+													"sink": {
+														"name": "RetirementAPC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ThirdParty']"
+													},
+													"sink": {
+														"name": "ThirdParty",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PoNum']"
+													},
+													"sink": {
+														"name": "PoNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PoItmNum']"
+													},
+													"sink": {
+														"name": "PoItmNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExpenseType']"
+													},
+													"sink": {
+														"name": "ExpenseType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ReceiptNumber']"
+													},
+													"sink": {
+														"name": "ReceiptNumber",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExpenseOperationType']"
+													},
+													"sink": {
+														"name": "ExpenseOperationType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FederalTaxID']"
+													},
+													"sink": {
+														"name": "FederalTaxID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfit']"
+													},
+													"sink": {
+														"name": "GrossProfit",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitFC']"
+													},
+													"sink": {
+														"name": "GrossProfitFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossProfitSC']"
+													},
+													"sink": {
+														"name": "GrossProfitSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['PriceSource']"
+													},
+													"sink": {
+														"name": "PriceSource",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgSeqNum']"
+													},
+													"sink": {
+														"name": "StgSeqNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgEntry']"
+													},
+													"sink": {
+														"name": "StgEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StgDesc']"
+													},
+													"sink": {
+														"name": "StgDesc",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UoMEntry']"
+													},
+													"sink": {
+														"name": "UoMEntry",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UoMCode']"
+													},
+													"sink": {
+														"name": "UoMCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['InventoryQuantity']"
+													},
+													"sink": {
+														"name": "InventoryQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['RemainingOpenInventoryQuantity']"
+													},
+													"sink": {
+														"name": "RemainingOpenInventoryQuantity",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ParentLineNum']"
+													},
+													"sink": {
+														"name": "ParentLineNum",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['Incoterms']"
+													},
+													"sink": {
+														"name": "Incoterms",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['TransportMode']"
+													},
+													"sink": {
+														"name": "TransportMode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NatureOfTransaction']"
+													},
+													"sink": {
+														"name": "NatureOfTransaction",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DestinationCountryForImport']"
+													},
+													"sink": {
+														"name": "DestinationCountryForImport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['DestinationRegionForImport']"
+													},
+													"sink": {
+														"name": "DestinationRegionForImport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginCountryForExport']"
+													},
+													"sink": {
+														"name": "OriginCountryForExport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['OriginRegionForExport']"
+													},
+													"sink": {
+														"name": "OriginRegionForExport",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ItemType']"
+													},
+													"sink": {
+														"name": "ItemType",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ChangeInventoryQuantityIndependently']"
+													},
+													"sink": {
+														"name": "ChangeInventoryQuantityIndependently",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['FreeOfChargeBP']"
+													},
+													"sink": {
+														"name": "FreeOfChargeBP",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['SACEntry']"
+													},
+													"sink": {
+														"name": "SACEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['HSNEntry']"
+													},
+													"sink": {
+														"name": "HSNEntry",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossPrice']"
+													},
+													"sink": {
+														"name": "GrossPrice",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotal']"
+													},
+													"sink": {
+														"name": "GrossTotal",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotalFC']"
+													},
+													"sink": {
+														"name": "GrossTotalFC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['GrossTotalSC']"
+													},
+													"sink": {
+														"name": "GrossTotalSC",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NCMCode']"
+													},
+													"sink": {
+														"name": "NCMCode",
+														"type": "Int16"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['NVECode']"
+													},
+													"sink": {
+														"name": "NVECode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['IndEscala']"
+													},
+													"sink": {
+														"name": "IndEscala",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CtrSealQty']"
+													},
+													"sink": {
+														"name": "CtrSealQty",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CNJPMan']"
+													},
+													"sink": {
+														"name": "CNJPMan",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CESTCode']"
+													},
+													"sink": {
+														"name": "CESTCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UFFiscalBenefitCode']"
+													},
+													"sink": {
+														"name": "UFFiscalBenefitCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ReverseCharge']"
+													},
+													"sink": {
+														"name": "ReverseCharge",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipToCode']"
+													},
+													"sink": {
+														"name": "ShipToCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ShipToDescription']"
+													},
+													"sink": {
+														"name": "ShipToDescription",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxRate']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxRate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmount']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmount",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountFC']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmountFC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['ExternalCalcTaxAmountSC']"
+													},
+													"sink": {
+														"name": "ExternalCalcTaxAmountSC",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['StandardItemIdentification']"
+													},
+													"sink": {
+														"name": "StandardItemIdentification",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CommodityClassification']"
+													},
+													"sink": {
+														"name": "CommodityClassification",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['UnencumberedReason']"
+													},
+													"sink": {
+														"name": "UnencumberedReason",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['CUSplit']"
+													},
+													"sink": {
+														"name": "CUSplit",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_Installasjon']"
+													},
+													"sink": {
+														"name": "U_Installasjon",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_ParentItem']"
+													},
+													"sink": {
+														"name": "U_ParentItem",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_Codebars']"
+													},
+													"sink": {
+														"name": "U_Codebars",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_PlannedQty']"
+													},
+													"sink": {
+														"name": "U_PlannedQty",
+														"type": "Double"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IN']"
+													},
+													"sink": {
+														"name": "U_AIG_IN",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IA']"
+													},
+													"sink": {
+														"name": "U_AIG_IA",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PD']"
+													},
+													"sink": {
+														"name": "U_AIG_PD",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_PDate']"
+													},
+													"sink": {
+														"name": "U_AIG_PDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_ID']"
+													},
+													"sink": {
+														"name": "U_AIG_ID",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_PItemCode']"
+													},
+													"sink": {
+														"name": "U_PItemCode",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_IR']"
+													},
+													"sink": {
+														"name": "U_AIG_IR",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_AIG_DDate']"
+													},
+													"sink": {
+														"name": "U_AIG_DDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_U_AIG_DDate']"
+													},
+													"sink": {
+														"name": "U_U_AIG_DDate",
+														"type": "String"
+													}
+												},
+												{
+													"source": {
+														"path": "$['value'][0]['DocumentLines'][0]['U_DSS_Charge']"
+													},
+													"sink": {
+														"name": "U_DSS_Charge",
+														"type": "String"
+													}
+												}
+											],
+											"collectionReference": "",
+											"mapComplexValuesToString": true
+										}
+									},
+									"inputs": [
+										{
+											"referenceName": "ds_blob_bondura",
+											"type": "DatasetReference",
+											"parameters": {
+												"Directory": {
+													"value": "@pipeline().parameters.Stream",
+													"type": "Expression"
+												},
+												"FileName": {
+													"value": "@item().name",
+													"type": "Expression"
+												}
+											}
+										}
+									],
+									"outputs": [
+										{
+											"referenceName": "sql_bo_sap_invoices",
+											"type": "DatasetReference",
+											"parameters": {
+												"tableName": "stg_invoices_lines_test"
+											}
+										}
+									]
+								},
+								{
+									"name": "JsonParserSql",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.12:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "df_jsonParse_Sql",
+											"type": "DataFlowReference",
+											"parameters": {},
+											"datasetParameters": {
+												"ReadJsonFile": {},
+												"SinkSQL": {
+													"tableName": "stg_invoices_det"
+												}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"parameters": {
+					"Stream": {
+						"type": "string",
+						"defaultValue": "Invoices_new"
+					},
+					"WildCard": {
+						"type": "string",
+						"defaultValue": "*"
+					}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/pip_bo_sap_invoices_docLines')]",
@@ -1599,7 +6392,7 @@
 			"properties": {
 				"activities": [
 					{
-						"name": "Data flow1",
+						"name": "dfParser",
 						"type": "ExecuteDataFlow",
 						"dependsOn": [],
 						"policy": {
@@ -1612,12 +6405,14 @@
 						"userProperties": [],
 						"typeProperties": {
 							"dataflow": {
-								"referenceName": "df_bo_invoices_doclines_lake",
+								"referenceName": "df_jsonParse_Sql",
 								"type": "DataFlowReference",
 								"parameters": {},
 								"datasetParameters": {
 									"ReadJsonFile": {},
-									"SinkSQL": {}
+									"SinkSQL": {
+										"tableName": "stg_invoices_det"
+									}
 								}
 							},
 							"staging": {},
@@ -1635,7 +6430,7 @@
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/dataflows/df_bo_invoices_doclines_lake')]"
+				"[concat(variables('factoryId'), '/dataflows/df_jsonParse_Sql')]"
 			]
 		},
 		{
