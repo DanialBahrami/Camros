@@ -13,6 +13,87 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/dataflow_budget_lines')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "RestResource_bo_budgets",
+								"type": "DatasetReference"
+							},
+							"name": "ReadAPI",
+							"description": "Read Budgets API, AccountCode=3000"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "AzureSqlTable_bo_budgets_lines",
+								"type": "DatasetReference"
+							},
+							"name": "SqlDimTable"
+						}
+					],
+					"transformations": [
+						{
+							"name": "Flatten"
+						},
+						{
+							"name": "DataSourceColumn"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          body as ({@odata.context} as string, {@odata.count} as short, value as (AccountCode as short, BudgetBalanceCreditLoc as double, BudgetBalanceCreditSys as double, BudgetBalanceDebitLoc as double, BudgetBalanceDebitSys as double, BudgetCostAccountingLines as string[], BudgetLines as (AccountCode as short, BalSysTotCredit as double, BalSysTotDebit as double, BalTotCredit as double, BalTotDebit as double, BudgetKey as short, BudgetSysTotCredit as double, BudgetSysTotDebit as double, BudgetTotCredit as double, BudgetTotDebit as double, FutExpenCredit as double, FutExpenDebit as double, FutExpenSysCredit as double, FutExpenSysDebit as double, FutIncomesCredit as double, FutIncomesSysCredit as double, FutIncomesSysDebit as double, FutureIncomeDeb as double, PrecentOfAnnualBudgetAmount as double, RowDetails as string, RowNumber as short)[], BudgetScenario as short, DivisionCode as short, FutureAnnualExpensesCreditLoc as double, FutureAnnualExpensesCreditSys as double, FutureAnnualExpensesDebitLoc as double, FutureAnnualExpensesDebitSys as double, FutureAnnualRevenuesCredit as double, FutureAnnualRevenuesDebit as double, FutureRevenuesDebitLoc as double, FutureRevenuesDebitSys as double, Numerator as short, ParentAccPercent as double, ParentAccountKey as string, StartofFiscalYear as date, TotalAnnualBudgetCreditLoc as double, TotalAnnualBudgetCreditSys as double, TotalAnnualBudgetDebitLoc as double, TotalAnnualBudgetDebitSys as double)[]),",
+						"          headers as [string,string]",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     httpMethod: 'GET',",
+						"     timeout: 30,",
+						"     requestInterval: 0,",
+						"     headers: ['m_ds' -> 'Bondura'],",
+						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
+						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
+						"     mapColumn(",
+						"          BudgetScenario = body.value.BudgetScenario,",
+						"          RowNumber = body.value.BudgetLines.RowNumber,",
+						"          PrecentOfAnnualBudgetAmount = body.value.BudgetLines.PrecentOfAnnualBudgetAmount,",
+						"          BudgetTotCredit = body.value.BudgetLines.BudgetTotCredit,",
+						"          BudgetSysTotCredit = body.value.BudgetLines.BudgetSysTotCredit",
+						"     ),",
+						"     skipDuplicateMapInputs: false,",
+						"     skipDuplicateMapOutputs: false) ~> Flatten",
+						"Flatten derive(m_ds = 'Bondura') ~> DataSourceColumn",
+						"DataSourceColumn sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     input(",
+						"          BudgetScenario as integer,",
+						"          PrecentOfAnnualBudgetAmount as double,",
+						"          RowNumber as integer,",
+						"          BudgetTotCredit as double,",
+						"          BudgetSysTotCredit as double,",
+						"          m_ds as string",
+						"     ),",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     truncate:true,",
+						"     format: 'table',",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> SqlDimTable"
+					]
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/df_bo_invoices')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -7104,8 +7185,6 @@
 					{
 						"name": "Copy data1",
 						"type": "Copy",
-						"state": "Inactive",
-						"onInactiveMarkAs": "Succeeded",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.12:00:00",
@@ -7368,7 +7447,9 @@
 				},
 				"annotations": []
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/dataflow_budget_lines')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/trigger_daily')]",

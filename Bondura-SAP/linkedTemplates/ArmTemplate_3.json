@@ -469,13 +469,189 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/pip_salesPersons')]",
+			"name": "[concat(parameters('factoryName'), '/pip_salePersons_api')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "JsonToSQL",
+						"name": "ApiCall",
+						"type": "Copy",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "RestSource",
+								"httpRequestTimeout": "00:01:40",
+								"requestInterval": "00.00:00:00.010",
+								"requestMethod": "GET",
+								"paginationRules": {
+									"QueryParameters.{skip}": "RANGE:0:35:1"
+								}
+							},
+							"sink": {
+								"type": "AzureSqlSink",
+								"writeBehavior": "insert",
+								"sqlWriterUseTableLock": false,
+								"tableOption": "autoCreate",
+								"disableMetricsCollection": false
+							},
+							"enableStaging": false,
+							"translator": {
+								"type": "TabularTranslator",
+								"mappings": [
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeCode']"
+										},
+										"sink": {
+											"name": "SalesEmployeeCode",
+											"type": "Int32"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['SalesEmployeeName']"
+										},
+										"sink": {
+											"name": "SalesEmployeeName",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Remarks']"
+										},
+										"sink": {
+											"name": "Remarks",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionForSalesEmployee']"
+										},
+										"sink": {
+											"name": "CommissionForSalesEmployee",
+											"type": "Double"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['CommissionGroup']"
+										},
+										"sink": {
+											"name": "CommissionGroup",
+											"type": "Int16"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Locked']"
+										},
+										"sink": {
+											"name": "Locked",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['EmployeeID']"
+										},
+										"sink": {
+											"name": "EmployeeID",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Active']"
+										},
+										"sink": {
+											"name": "Active",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Telephone']"
+										},
+										"sink": {
+											"name": "Telephone",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Mobile']"
+										},
+										"sink": {
+											"name": "Mobile",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Fax']"
+										},
+										"sink": {
+											"name": "Fax",
+											"type": "String"
+										}
+									},
+									{
+										"source": {
+											"path": "$['value'][0]['Email']"
+										},
+										"sink": {
+											"name": "Email",
+											"type": "String"
+										}
+									}
+								],
+								"collectionReference": ""
+							}
+						},
+						"inputs": [
+							{
+								"referenceName": "ds_bo_sap_salepersons",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						],
+						"outputs": [
+							{
+								"referenceName": "sql_bo_sap_salespersons",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						]
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/sql_bo_sap_salespersons')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pip_salesPersons_file')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "cpyJsonSql",
 						"type": "Copy",
 						"dependsOn": [],
 						"policy": {
@@ -617,12 +793,13 @@
 											"type": "String"
 										}
 									}
-								]
+								],
+								"collectionReference": "$['value']"
 							}
 						},
 						"inputs": [
 							{
-								"referenceName": "ds_bo_json_test",
+								"referenceName": "ds_blob_sap",
 								"type": "DatasetReference",
 								"parameters": {}
 							}
@@ -3351,87 +3528,6 @@
 						"     skipDuplicateMapInputs: true,",
 						"     skipDuplicateMapOutputs: true,",
 						"     errorHandlingOption: 'stopOnFirstError') ~> AzureSQL"
-					]
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/dataflow_budget_lines')]",
-			"type": "Microsoft.DataFactory/factories/dataflows",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"type": "MappingDataFlow",
-				"typeProperties": {
-					"sources": [
-						{
-							"dataset": {
-								"referenceName": "RestResource_bo_budgets",
-								"type": "DatasetReference"
-							},
-							"name": "ReadAPI",
-							"description": "Read Budgets API, AccountCode=3000"
-						}
-					],
-					"sinks": [
-						{
-							"dataset": {
-								"referenceName": "AzureSqlTable_bo_budgets_lines",
-								"type": "DatasetReference"
-							},
-							"name": "SqlDimTable"
-						}
-					],
-					"transformations": [
-						{
-							"name": "Flatten"
-						},
-						{
-							"name": "DataSourceColumn"
-						}
-					],
-					"scriptLines": [
-						"source(output(",
-						"          body as ({@odata.context} as string, {@odata.count} as short, value as (AccountCode as short, BudgetBalanceCreditLoc as double, BudgetBalanceCreditSys as double, BudgetBalanceDebitLoc as double, BudgetBalanceDebitSys as double, BudgetCostAccountingLines as string[], BudgetLines as (AccountCode as short, BalSysTotCredit as double, BalSysTotDebit as double, BalTotCredit as double, BalTotDebit as double, BudgetKey as short, BudgetSysTotCredit as double, BudgetSysTotDebit as double, BudgetTotCredit as double, BudgetTotDebit as double, FutExpenCredit as double, FutExpenDebit as double, FutExpenSysCredit as double, FutExpenSysDebit as double, FutIncomesCredit as double, FutIncomesSysCredit as double, FutIncomesSysDebit as double, FutureIncomeDeb as double, PrecentOfAnnualBudgetAmount as double, RowDetails as string, RowNumber as short)[], BudgetScenario as short, DivisionCode as short, FutureAnnualExpensesCreditLoc as double, FutureAnnualExpensesCreditSys as double, FutureAnnualExpensesDebitLoc as double, FutureAnnualExpensesDebitSys as double, FutureAnnualRevenuesCredit as double, FutureAnnualRevenuesDebit as double, FutureRevenuesDebitLoc as double, FutureRevenuesDebitSys as double, Numerator as short, ParentAccPercent as double, ParentAccountKey as string, StartofFiscalYear as date, TotalAnnualBudgetCreditLoc as double, TotalAnnualBudgetCreditSys as double, TotalAnnualBudgetDebitLoc as double, TotalAnnualBudgetDebitSys as double)[]),",
-						"          headers as [string,string]",
-						"     ),",
-						"     allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     httpMethod: 'GET',",
-						"     timeout: 30,",
-						"     requestInterval: 0,",
-						"     headers: ['m_ds' -> 'Bondura'],",
-						"     responseFormat: ['type' -> 'json', 'documentForm' -> 'arrayOfDocuments']) ~> ReadAPI",
-						"ReadAPI foldDown(unrollMultiple(body.value,body.value.BudgetLines),",
-						"     mapColumn(",
-						"          BudgetScenario = body.value.BudgetScenario,",
-						"          RowNumber = body.value.BudgetLines.RowNumber,",
-						"          PrecentOfAnnualBudgetAmount = body.value.BudgetLines.PrecentOfAnnualBudgetAmount,",
-						"          BudgetTotCredit = body.value.BudgetLines.BudgetTotCredit,",
-						"          BudgetSysTotCredit = body.value.BudgetLines.BudgetSysTotCredit",
-						"     ),",
-						"     skipDuplicateMapInputs: false,",
-						"     skipDuplicateMapOutputs: false) ~> Flatten",
-						"Flatten derive(m_ds = 'Bondura') ~> DataSourceColumn",
-						"DataSourceColumn sink(allowSchemaDrift: true,",
-						"     validateSchema: false,",
-						"     input(",
-						"          BudgetScenario as integer,",
-						"          PrecentOfAnnualBudgetAmount as double,",
-						"          RowNumber as integer,",
-						"          BudgetTotCredit as double,",
-						"          BudgetSysTotCredit as double,",
-						"          m_ds as string",
-						"     ),",
-						"     deletable:false,",
-						"     insertable:true,",
-						"     updateable:false,",
-						"     upsertable:false,",
-						"     truncate:true,",
-						"     format: 'table',",
-						"     skipDuplicateMapInputs: true,",
-						"     skipDuplicateMapOutputs: true,",
-						"     errorHandlingOption: 'stopOnFirstError') ~> SqlDimTable"
 					]
 				}
 			},

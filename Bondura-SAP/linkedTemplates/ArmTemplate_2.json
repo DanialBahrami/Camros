@@ -229,7 +229,8 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobStorageLocation",
-						"folderPath": "Invoices",
+						"fileName": "salesPersons_2024-06-12T11:05:50.5160254Z.json",
+						"folderPath": "SalesPersons",
 						"container": "bondura"
 					}
 				},
@@ -3559,7 +3560,7 @@
 				"annotations": [],
 				"type": "RestResource",
 				"typeProperties": {
-					"relativeUrl": "SalesPersons"
+					"relativeUrl": "SalesPersons?$skip={skip}&$top=1"
 				},
 				"schema": []
 			},
