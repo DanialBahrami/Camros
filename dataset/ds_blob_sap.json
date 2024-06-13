@@ -13,8 +13,7 @@
 				"fileName": "salesPersons_2024-06-12T11:05:50.5160254Z.json",
 				"folderPath": "SalesPersons",
 				"container": "bondura"
-			},
-			"encodingName": "UTF-8 without BOM"
+			}
 		},
 		"schema": {
 			"type": "object",
